@@ -1,21 +1,37 @@
 import socket
+import threading
 from middleware.master_election import MasterElection
 from controllers.master_node import MasterNode
+from middleware.messaging import Messaging
 
 # Lista de direcciones IP de los nodos
 NODE_IPS = ["192.168.1.1", "192.168.1.2", "192.168.1.3", "192.168.1.4"]
 
+def get_node_id_from_ip(ip):
+    return int(ip.split('.')[-1])
+
 def connect_to_nodes():
     connections = []
+    active_node_ids = []
     for ip in NODE_IPS:
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((ip, 8080))  # Asumiendo que los nodos escuchan en el puerto 8080
-            connections.append(s)
-            print(f"Conectado al nodo {ip}")
+            s.send("CONECTAR".encode('utf-8'))
+            response = s.recv(1024).decode('utf-8')
+            if response == "CONFIRMADO":
+                connections.append(s)
+                active_node_ids.append(get_node_id_from_ip(ip))
+                print(f"Conectado al nodo {ip} y confirmado")
+            else:
+                print(f"Conexión al nodo {ip} no confirmada")
         except ConnectionError:
             print(f"No se pudo conectar al nodo {ip}")
-    return connections
+    return connections, active_node_ids
+
+def handle_message(message, address):
+    print(f"Recibido: {message} de {address}")
+    return "CONFIRMADO"
 
 def main_menu():
     print("Sistema de Gestión de Emergencias Médicas")
@@ -33,9 +49,18 @@ def main_menu():
     return choice
 
 def main():
-    connections = connect_to_nodes()
-    node_id = 1  # Asignar un ID único a este nodo
-    election = MasterElection(node_id, [2, 3, 4])  # IDs de los otros nodos
+    local_ip = socket.gethostbyname(socket.gethostname())
+    messaging = Messaging(local_ip)
+
+    # Iniciar el servidor en un hilo separado
+    server_thread = threading.Thread(target=messaging.start_server, args=(handle_message,))
+    server_thread.daemon = True
+    server_thread.start()
+
+    connections, active_node_ids = connect_to_nodes()
+    node_id = get_node_id_from_ip(local_ip)  # Obtener el ID del nodo desde la IP local
+    
+    election = MasterElection(node_id, [id for id in active_node_ids if id != node_id])  # IDs de los otros nodos
     election.start()
     election.start_election()
 
