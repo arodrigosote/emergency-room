@@ -3,7 +3,7 @@ from middleware.master_election import MasterElection
 from controllers.master_node import MasterNode
 
 # Lista de direcciones IP de los nodos
-NODE_IPS = ["192.168.1.1", "192.168.1.2", "192.168.1.3", "192.168.1.4"]
+NODE_IPS = ["192.168.174.131", "192.168.174.132", "192.168.174.133", "192.168.174.134"]
 
 def connect_to_nodes():
     connections = []
