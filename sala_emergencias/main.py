@@ -5,8 +5,8 @@ from controllers.master_node import MasterNode
 from middleware.messaging import Messaging
 
 # Lista de direcciones IP de los nodos
-NODE_IPS = ["192.168.174.131", "192.168.174.132", "192.168.174.133", "192.168.174.134"]
-
+#NODE_IPS = ["192.168.174.131", "192.168.174.132", "192.168.174.133", "192.168.174.134"]
+NODE_IPS = ["172.16.89.131", "172.16.89.132", "172.16.89.133", "172.16.89.134"]
 def get_node_id_from_ip(ip):
     return int(ip.split('.')[-1])
 
