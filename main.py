@@ -4,7 +4,7 @@ def opcion1():
     nodes = get_network_nodes()
     print("Nodos en la red:")
     for node in nodes:
-        print(f"ID: {node['ip']}, IP: {node['mac']}")
+        print(f"ID: {node['id']}, IP: {node['ip']}, MAC: {node['mac']}")
 
 def opcion2():
     print("Opción 2 seleccionada")
