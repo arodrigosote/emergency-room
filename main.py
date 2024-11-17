@@ -53,7 +53,7 @@ def connect_clients(nodes):
     for node in nodes:
         node_id = int(node['id'])
         if node_id in [1, 2, 254]:  # Salta nodos específicos (opcional)
-            print(f"Saltando conexión para el nodo con ID {node_id}")
+            # print(f"Saltando conexión para el nodo con ID {node_id}")
             continue
 
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -63,9 +63,9 @@ def connect_clients(nodes):
             print(f"[Conexión exitosa] Nodo {node['id']} conectado.")
         except Exception as e:
             print(f"[Error] No se pudo conectar con el nodo {node['ip']}: {e}")
-        finally:
-            if node['id'] not in active_connections:
-                client.close()
+        # finally:
+        #     if node['id'] not in active_connections:
+        #         client.close()
 
 def enviar_mensaje():
     print("[Enviar mensaje] Nodos disponibles:")
@@ -90,10 +90,11 @@ def main():
 
     while True:
         nodes = get_network_nodes()
-        print("[Nodos en la red]:")
-        for node in nodes:
-            print(f"ID: {node['id']}, IP: {node['ip']}, MAC: {node['mac']}")
+        # print("[Nodos en la red]:")
+        # for node in nodes:
+        #     print(f"ID: {node['id']}, IP: {node['ip']}, MAC: {node['mac']}")
         connect_clients(nodes)
+        
         mostrar_menu()
         opcion = input("Seleccione una opción: ")
         if opcion == '1':
