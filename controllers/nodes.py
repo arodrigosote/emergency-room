@@ -1,20 +1,22 @@
 import os
-import netifaces
+import socket
 
 def get_network_nodes():
     nodes = []
-    interfaces = netifaces.interfaces()
-    local_ip = None
+    hostname = socket.gethostname()
+    local_ip = socket.gethostbyname(hostname)
 
-    for interface in interfaces:
-        if netifaces.AF_INET in netifaces.ifaddresses(interface):
-            addr_info = netifaces.ifaddresses(interface)[netifaces.AF_INET][0]
-            if addr_info['addr'] != '127.0.0.1':
-                local_ip = addr_info['addr']
-                break
-
-    if local_ip is None:
-        raise RuntimeError("No se pudo obtener la dirección IP de la interfaz de red")
+    if local_ip.startswith("192."):
+        # Obtener la dirección IP de la interfaz de red activa
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            # No se envía ningún dato, solo se utiliza para obtener la IP
+            s.connect(("8.8.8.8", 80))
+            local_ip = s.getsockname()[0]
+        except Exception as e:
+            raise RuntimeError("No se pudo obtener la dirección IP de la interfaz de red") from e
+        finally:
+            s.close()
 
     subnet = '.'.join(local_ip.split('.')[:-1]) + '.'
 
