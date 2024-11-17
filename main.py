@@ -7,6 +7,9 @@ from utils.menu import mostrar_menu
 active_connections = {}
 
 def handle_client(client_socket, addr):
+    """
+    Maneja la comunicación con un cliente específico.
+    """
     try:
         print(f"[Servidor] Conexión establecida con {addr}")
         while True:
@@ -17,15 +20,16 @@ def handle_client(client_socket, addr):
             response = f"Servidor recibió: {data.decode()}"
             client_socket.send(response.encode())
     except Exception as e:
-        print(f"Error con el cliente {addr}: {e}")
+        print(f"[Error] Cliente {addr}: {e}")
     finally:
         client_socket.close()
         print(f"[Servidor] Conexión cerrada con {addr}")
 
 def start_server():
+    """
+    Inicia el servidor y espera conexiones entrantes.
+    """
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    # Permitir reutilizar el puerto en caso de que esté en TIME_WAIT
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
     try:
@@ -34,40 +38,49 @@ def start_server():
         print("\n[Servidor] Escuchando en el puerto 9999")
         while True:
             client_socket, addr = server.accept()
-            client_handler = threading.Thread(target=handle_client, args=(client_socket, addr))
+            client_handler = threading.Thread(target=handle_client, args=(client_socket, addr), daemon=True)
             client_handler.start()
     except OSError as e:
         if "Address already in use" in str(e):
             print("[Error] El puerto 9999 ya está en uso. Liberando...")
             server.close()
-            # Intentar reiniciar el servidor
-            start_server()
+            # Liberar conexiones activas
+            for conn in active_connections.values():
+                conn.close()
+            active_connections.clear()
+            start_server()  # Intentar reiniciar el servidor
         else:
-            print(f"[Error] Ocurrió un problema: {e}")
+            print(f"[Error] Problema al iniciar el servidor: {e}")
     except Exception as e:
-        print(f"Error al iniciar el servidor: {e}")
+        print(f"[Error] Error desconocido al iniciar el servidor: {e}")
     finally:
         server.close()
 
 def connect_clients(nodes):
+    """
+    Conecta a los nodos disponibles en la red.
+    """
     for node in nodes:
         node_id = int(node['id'])
-        if node_id in [1, 2, 254]:  # Salta nodos específicos (opcional)
-            # print(f"Saltando conexión para el nodo con ID {node_id}")
+        if node_id in [1, 2, 254]:  # Opcional: omitir nodos específicos
             continue
 
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
+            print(f"[Intentando conectar] Nodo ID: {node_id}, IP: {node['ip']}")
             client.connect((node['ip'], 9999))
-            active_connections[node['id']] = client  # Almacena la conexión activa
-            print(f"[Conexión exitosa] Nodo {node['id']} conectado.")
+            active_connections[node_id] = client  # Almacena la conexión activa
+            print(f"[Conexión exitosa] Nodo {node_id} conectado. Activas: {list(active_connections.keys())}")
         except Exception as e:
             print(f"[Error] No se pudo conectar con el nodo {node['ip']}: {e}")
-        # finally:
-        #     if node['id'] not in active_connections:
-        #         client.close()
+        finally:
+            if node_id not in active_connections:
+                client.close()  # Asegurarse de cerrar conexiones fallidas
 
 def enviar_mensaje():
+    """
+    Envía un mensaje a un nodo conectado.
+    """
     print("[Enviar mensaje] Nodos disponibles:")
     for node_id in active_connections.keys():
         print(f"ID: {node_id}")
@@ -77,29 +90,36 @@ def enviar_mensaje():
     try:
         destino = int(destino)
         if destino in active_connections:
-            active_connections[destino].send(mensaje.encode())
-            print(f"[Mensaje enviado] A nodo {destino}: {mensaje}")
+            client_socket = active_connections[destino]
+            if client_socket.fileno() != -1:  # Verifica que el socket siga activo
+                client_socket.send(mensaje.encode())
+                print(f"[Mensaje enviado] A nodo {destino}: {mensaje}")
+            else:
+                print(f"[Error] La conexión con el nodo {destino} no está activa.")
         else:
             print(f"[Error] Nodo {destino} no está conectado.")
     except Exception as e:
         print(f"[Error] No se pudo enviar el mensaje: {e}")
 
 def mostrar_conexiones():
+    """
+    Muestra las conexiones activas.
+    """
     print("[Conexiones activas]:")
     for node_id in active_connections.keys():
         print(f"ID: {node_id}")
 
 def main():
+    """
+    Punto de entrada principal del programa.
+    """
     server_thread = threading.Thread(target=start_server, daemon=True)
     server_thread.start()
 
     while True:
-        nodes = get_network_nodes()
-        # print("[Nodos en la red]:")
-        # for node in nodes:
-        #     print(f"ID: {node['id']}, IP: {node['ip']}, MAC: {node['mac']}")
+        nodes = get_network_nodes()  # Obtener nodos de la red
         connect_clients(nodes)
-        
+
         mostrar_menu()
         opcion = input("Seleccione una opción: ")
         if opcion == '1':
@@ -113,6 +133,11 @@ def main():
             break
         else:
             print("Opción no válida, intente de nuevo.")
+
+    # Liberar recursos antes de salir
+    for conn in active_connections.values():
+        conn.close()
+    active_connections.clear()
 
 if __name__ == "__main__":
     main()
