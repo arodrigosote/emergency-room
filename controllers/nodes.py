@@ -30,3 +30,4 @@ def get_network_nodes():
         nodes.append({'ip': respuesta.psrc, 'mac': respuesta.hwsrc})
 
     return nodes
+
