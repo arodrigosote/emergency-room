@@ -9,8 +9,8 @@ def main():
     servidor_hilo.start()
 
     # Lista de direcciones IP de otros servidores
-    #servidores = ['192.168.174.132', '192.168.174.133', '192.168.174.133', ]
-    servidores = ['172.16.89.131', '172.16.89.132', '172.16.89.133', ]
+    servidores = ['192.168.174.138', '192.168.174.139', '192.168.174.140', ]
+    # servidores = ['192.168.174.139', '172.16.89.138', '172.16.89.133', ]
     conexiones_activas = []
 
     for servidor in servidores:
