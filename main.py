@@ -40,7 +40,7 @@ def connect_clients(nodes):
             continue
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            client.connect((node['ip'], 9999))
+            client.connect((node['ip'], 8080))
             response = client.recv(4096)
             print(f"Respuesta del servidor {node['ip']}: {response.decode()}")
         except Exception as e:
