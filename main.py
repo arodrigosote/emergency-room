@@ -19,9 +19,9 @@ def handle_client(client_socket):
 def start_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        server.bind(("0.0.0.0", 9999))
+        server.bind(("localhost", 8080))
         server.listen(15)
-        print("Servidor escuchando en el puerto 9999")
+        print("\nServidor escuchando en el puerto 8080")
         while True:
             client_socket, addr = server.accept()
             print(f"Conexión aceptada de {addr}")
@@ -34,6 +34,10 @@ def start_server():
 
 def connect_clients(nodes):
     for node in nodes:
+        node_id = int(node['id'])
+        if node_id in [1, 2, 254]:
+            print(f"Saltando conexión para el nodo con ID {node_id}")
+            continue
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             client.connect((node['ip'], 9999))
@@ -49,6 +53,7 @@ def opcion1():
     print("Nodos en la red:")
     for node in nodes:
         print(f"ID: {node['id']}, IP: {node['ip']}, MAC: {node['mac']}")
+    
     connect_clients(nodes)
 
 def main():
