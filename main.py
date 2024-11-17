@@ -1,4 +1,4 @@
-from controllers.nodes import connect_nodes, get_network_nodes
+from controllers.nodes import get_network_nodes
 
 def opcion1():
     nodes = get_network_nodes()
