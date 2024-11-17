@@ -34,6 +34,10 @@ def start_server():
 
 def connect_clients(nodes):
     for node in nodes:
+        node_id = int(node['id'])
+        if node_id in [1, 2, 254]:
+            print(f"Saltando conexión para el nodo con ID {node_id}")
+            continue
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             client.connect((node['ip'], 9999))
