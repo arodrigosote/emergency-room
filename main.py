@@ -84,6 +84,11 @@ def enviar_mensaje():
     except Exception as e:
         print(f"[Error] No se pudo enviar el mensaje: {e}")
 
+def mostrar_conexiones():
+    print("[Conexiones activas]:")
+    for node_id in active_connections.keys():
+        print(f"ID: {node_id}")
+
 def main():
     server_thread = threading.Thread(target=start_server, daemon=True)
     server_thread.start()
@@ -101,6 +106,8 @@ def main():
             print("[Escaneo de red] Buscando nodos disponibles...")
         elif opcion == '2':
             enviar_mensaje()
+        elif opcion == '3':
+            mostrar_conexiones()
         elif opcion == '5':
             print("Saliendo...")
             break
