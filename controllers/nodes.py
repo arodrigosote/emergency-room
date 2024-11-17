@@ -27,7 +27,11 @@ def get_network_nodes():
     resultado = srp(paquete, timeout=2, verbose=False)[0]
 
     for envio, respuesta in resultado:
-        nodes.append({'ip': respuesta.psrc, 'mac': respuesta.hwsrc})
+        nodes.append({
+            'ip': respuesta.psrc, 
+            'mac': respuesta.hwsrc,
+            'id': respuesta.psrc.split('.')[-1]  # Agregar el ID como el último segmento de la IP
+        })
 
     return nodes
 
