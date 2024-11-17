@@ -24,6 +24,10 @@ def handle_client(client_socket, addr):
 
 def start_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Permitir reutilizar el puerto en caso de que esté en TIME_WAIT
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
     try:
         server.bind(("0.0.0.0", 9999))
         server.listen(15)
@@ -32,6 +36,14 @@ def start_server():
             client_socket, addr = server.accept()
             client_handler = threading.Thread(target=handle_client, args=(client_socket, addr))
             client_handler.start()
+    except OSError as e:
+        if "Address already in use" in str(e):
+            print("[Error] El puerto 9999 ya está en uso. Liberando...")
+            server.close()
+            # Intentar reiniciar el servidor
+            start_server()
+        else:
+            print(f"[Error] Ocurrió un problema: {e}")
     except Exception as e:
         print(f"Error al iniciar el servidor: {e}")
     finally:
