@@ -1,5 +1,6 @@
 from models.emergency_room import listar_salas_emergencia
 from models.doctors import listar_doctores
+from models.master_node import obtener_nodo_maestro
 from controllers.database import mostrar_log_base_datos, mostrar_log_servidor
 from utils.log import log_message
 
@@ -79,5 +80,9 @@ def realizar_accion_utilidades(opcion):
         print("\nMostrando Log de servidor")
         mostrar_log_servidor()  # Llamar a la función para mostrar log de servidor
         log_message("[Utilidades] Mostrando Log de servidor.")
+    elif opcion == '4':
+        print("\nMostrando Nodo Maestro")
+        obtener_nodo_maestro() # Llamar a la función para mostrar nodo maestro
+        log_message("[Utilidades] Mostrando Nodo Maestro.")
     else:
         print("Opción no válida, intente de nuevo.")

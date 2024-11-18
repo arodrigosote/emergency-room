@@ -4,6 +4,7 @@ from controllers.nodes import get_network_nodes
 from datetime import datetime
 import os
 from utils.log import log_message
+from models.master_node import actualizar_nodo_maestro
 
 # Diccionario para mantener las conexiones activas
 active_connections = {}
@@ -102,7 +103,7 @@ def connect_clients(nodes):
             instruction_code = "01"
             message = f"{instruction_code} Hola, soy un nodo nuevo en el sistema"
             client.send(message.encode())
-
+            elegir_nodo_maestro()
             log_message(f"[Conexión exitosa] Nodo {node_id} conectado. Activas: {list(active_connections.keys())}")
         except Exception as e:
             log_message(f"[Error] No se pudo conectar con el nodo {node['ip']}: {e}")
@@ -117,9 +118,12 @@ def mostrar_conexiones():
     for node_id in active_connections.keys():
         log_message(f"ID: {node_id}")
 
-def elegir_nodo_maestro(nodes):
+def elegir_nodo_maestro():
     global master_node
-    if nodes:
-        master_node = max(nodes, key=lambda node: int(node['id']))
+    if active_connections:
+        master_node_id = max(active_connections.keys())
+        master_node_ip = active_connections[master_node_id].getpeername()[0]
+        master_node = {'id': master_node_id, 'ip': master_node_ip}
         log_message(f"[Nodo Maestro] Nodo {master_node['id']} con IP {master_node['ip']} es el nodo maestro.")
+        actualizar_nodo_maestro(master_node_ip)
         return master_node
