@@ -4,7 +4,7 @@ from controllers.nodes import get_network_nodes
 from utils.menu import mostrar_menu, mostrar_menu_trabajador_social, mostrar_menu_doctor, realizar_accion_trabajador_social, realizar_accion_doctor
 from controllers.server_client import start_server, connect_clients, mostrar_conexiones
 from controllers.messages import enviar_mensaje_a_nodo, enviar_mensaje_a_todos
-from controllers.database import init_db, listar_salas_emergencia  # Importar la función para listar salas de emergencia
+from controllers.database import init_db, listar_salas_emergencia, agregar_sala_emergencia
 
 # Diccionario para mantener las conexiones activas
 active_connections = {}
@@ -14,6 +14,9 @@ def main():
     server_thread.start()
 
     init_db()
+
+    # Agregar una nueva sala de emergencia
+    agregar_sala_emergencia("Sala Principal", 5)
 
     try:
         while True:
