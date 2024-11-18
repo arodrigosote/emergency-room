@@ -11,11 +11,12 @@ def listar_salas_emergencia():
     conn.close()
 
     # Mostrar las salas en una tabla por consola sin utilizar tabulate
-    headers = ["ID Sala", "Nombre", "IP", "Estado", "Es Maestro", "Capacidad Total", "Capacidad Disponible" ]
-    print(f"{headers[0]:<10} {headers[1]:<20} {headers[2]:<10} {headers[3]:<10} {headers[4]:<15} {headers[5]:<20} {headers[6]:<15}")
-    print("-" * 100)
+    headers = ["ID Sala", "Nombre", "IP", "Estado", "Es Maestro", "Capacidad Total", "Capacidad Disponible"]
+    header_line = "{:<10} {:<20} {:<15} {:<10} {:<15} {:<20} {:<20}".format(*headers)
+    print(header_line)
+    print("-" * len(header_line))
     for sala in salas:
-        print(f"{sala[0]:<10} {sala[1]:<20} {sala[2]:<10} {sala[3]:<10} {sala[4]:<15} {sala[5]:<20} {sala[6]:<15}")
+        print(f"{sala[0]:<10} {sala[1]:<20} {sala[2]:<15} {sala[3]:<10} {sala[4]:<15} {sala[5]:<20} {sala[6]:<20}")
 
 
 def agregar_sala_emergencia(nombre, capacidad_total, ip):
