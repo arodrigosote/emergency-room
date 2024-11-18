@@ -17,7 +17,7 @@ def main():
     init_db()
 
     # Ruta completa del archivo a limpiar
-    history_dir = os.path.join(os.path.dirname(__file__), '..', 'history')
+    history_dir = os.path.join(os.path.dirname(__file__), 'history')
     history_file = os.path.join(history_dir, 'db_changes.txt')
 
     # Verificar si el archivo existe y limpiarlo
