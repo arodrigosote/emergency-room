@@ -1,23 +1,16 @@
 import socket
 import threading
 from controllers.nodes import get_network_nodes
-from utils.menu import mostrar_menu, mostrar_menu_trabajador_social, mostrar_menu_doctor
-from controllers.server_client import start_server, connect_clients, enviar_mensaje, mostrar_conexiones, elegir_nodo_maestro
-from controllers.messages import enviar_mensaje_a_nodo, enviar_mensaje_a_todos, enviar_mensaje_consenso, procesar_respuesta_consenso
-from controllers.database import init_db, agregar_sala_emergencia  # Importar las funciones para inicializar la base de datos y agregar sala de emergencia
+from utils.menu import mostrar_menu
+from controllers.server_client import start_server, connect_clients, enviar_mensaje, mostrar_conexiones
+from controllers.messages import enviar_mensaje_a_nodo, enviar_mensaje_a_todos
 
 # Diccionario para mantener las conexiones activas
 active_connections = {}
 
 def main():
-    # Inicializar la base de datos
-    init_db()
-
     server_thread = threading.Thread(target=start_server, daemon=True)
     server_thread.start()
-
-    # Agregar una nueva sala de emergencia
-    #agregar_sala_emergencia("Sala Principal", 5)
 
     try:
         while True:
@@ -29,8 +22,6 @@ def main():
                     if conn:
                         active_connections[node_id] = conn
 
-            master_node = elegir_nodo_maestro(nodes)  # Elegir el nodo maestro
-
             mostrar_menu()
 
             try:
@@ -40,20 +31,15 @@ def main():
                 break
 
             if opcion == '1':
-                # Enviar mensaje de consenso antes de registrar visita
-                respuestas = enviar_mensaje_consenso("CONSENSO: Registrar visita de emergencia")
-                if procesar_respuesta_consenso(respuestas):
-                    print("Registrando visita de emergencia...")
-                else:
-                    print("No se pudo registrar la visita de emergencia por falta de consenso.")
+                print("[Escaneo de red] Buscando nodos disponibles...")
             elif opcion == '2':
-                # Enviar mensaje de consenso antes de cerrar visita
-                respuestas = enviar_mensaje_consenso("CONSENSO: Cerrar visita de emergencia")
-                if procesar_respuesta_consenso(respuestas):
-                    print("Cerrando visita de emergencia...")
-                else:
-                    print("No se pudo cerrar la visita de emergencia por falta de consenso.")
+                nodo_id = input("Ingrese el ID del nodo al que desea enviar el mensaje: ")
+                mensaje = input("Ingrese el mensaje a enviar: ")
+                enviar_mensaje_a_nodo(mensaje, nodo_id)
             elif opcion == '3':
+                mensaje = input("Ingrese el mensaje a enviara todos: ")
+                enviar_mensaje_a_todos(mensaje)
+            elif opcion == '5':
                 print("Saliendo...")
                 break
             else:

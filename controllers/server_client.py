@@ -1,36 +1,26 @@
 import socket
 import threading
-from controllers.messages import enviar_mensaje_consenso, procesar_respuesta_consenso
 
 # Diccionario para mantener las conexiones activas
 active_connections = {}
-master_node = None
 
 def handle_client(client_socket, addr):
     # Maneja la conexión con un cliente
     try:
+        #print(f"[Servidor] Conexión establecida con {addr}")
         while True:
             data = client_socket.recv(1024)
             if not data:
                 break
-            mensaje = data.decode()
-            if mensaje.startswith("CONSENSO"):
-                # Procesar mensaje de consenso
-                respuesta = "OK" if procesar_mensaje_consenso(mensaje) else "NO"
-                client_socket.send(respuesta.encode())
-            else:
-                print(f"[Mensaje recibido] De {addr}: {mensaje}")
-                response = f"Servidor recibió: {mensaje}"
-                client_socket.send(response.encode())
+            print(f"[Mensaje recibido] De {addr}: {data.decode()}")
+            response = f"Servidor recibió: {data.decode()}"
+            client_socket.send(response.encode())
     except Exception as e:
+        #print(f"[Error] Cliente {addr}: {e}")
         print('')
     finally:
         client_socket.close()
-
-def procesar_mensaje_consenso(mensaje):
-    # Procesa el mensaje de consenso y devuelve True si se aprueba, False si se rechaza
-    # Aquí puedes agregar la lógica para procesar el mensaje de consenso
-    return True
+        #print(f"[Servidor] Conexión cerrada con {addr}")
 
 def start_server():
     # Inicia el servidor y maneja solicitudes de clientes
@@ -78,32 +68,11 @@ def connect_clients(nodes):
             client.connect((node['ip'], 9999))
             active_connections[node_id] = client  # Almacena la conexión activa
             print(f"[Conexión exitosa] Nodo {node_id} conectado. Activas: {list(active_connections.keys())}")
-
-            # Verificar si el nodo remoto está conectado de vuelta
-            client.send("CHECK_CONNECTION".encode())
-            respuesta = client.recv(1024).decode()
-            if respuesta == "NOT_CONNECTED":
-                print(f"[Conexión inversa] Nodo {node_id} no está conectado de vuelta. Intentando conectar...")
-                connect_back(node['ip'], node_id)
         except Exception as e:
             print(f"[Error] No se pudo conectar con el nodo {node['ip']}: {e}")
         finally:
             if node_id not in active_connections:
                 client.close()  # Asegurarse de cerrar conexiones fallidas
-
-def connect_back(ip, node_id):
-    # Conecta de vuelta al nodo que no está conectado
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        print(f"[Intentando conectar de vuelta] Nodo ID: {node_id}, IP: {ip}")
-        client.connect((ip, 9999))
-        active_connections[node_id] = client  # Almacena la conexión activa
-        print(f"[Conexión inversa exitosa] Nodo {node_id} conectado de vuelta. Activas: {list(active_connections.keys())}")
-    except Exception as e:
-        print(f"[Error] No se pudo conectar de vuelta con el nodo {ip}: {e}")
-    finally:
-        if node_id not in active_connections:
-            client.close()  # Asegurarse de cerrar conexiones fallidas
 
 def enviar_mensaje():
     # Envia un mensaje a un nodo
@@ -132,10 +101,3 @@ def mostrar_conexiones():
     print("[Conexiones activas]:")
     for node_id in active_connections.keys():
         print(f"ID: {node_id}")
-
-def elegir_nodo_maestro(nodes):
-    global master_node
-    if nodes:
-        master_node = max(nodes, key=lambda node: int(node['id']))
-        print(f"[Nodo Maestro] Nodo {master_node['id']} con IP {master_node['ip']} es el nodo maestro.")
-        return master_node
