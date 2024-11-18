@@ -17,6 +17,13 @@ def get_network_nodes():
     finally:
         s.close()
 
+    # Incluir el propio nodo en la lista de nodos
+    nodes.append({
+        'ip': local_ip,
+        'mac': '00:00:00:00:00:00',  # Placeholder para la MAC del propio nodo
+        'id': local_ip.split('.')[-1]
+    })
+
     # Calcular el rango de la subred
     subnet = '.'.join(local_ip.split('.')[:-1]) + '.0/24'
 
@@ -27,11 +34,12 @@ def get_network_nodes():
     resultado = srp(paquete, timeout=2, verbose=False)[0]
 
     for envio, respuesta in resultado:
-        nodes.append({
-            'ip': respuesta.psrc, 
-            'mac': respuesta.hwsrc,
-            'id': respuesta.psrc.split('.')[-1]  # Agregar el ID como el último segmento de la IP
-        })
+        if respuesta.psrc != local_ip:  # Excluir el propio nodo ya incluido
+            nodes.append({
+                'ip': respuesta.psrc, 
+                'mac': respuesta.hwsrc,
+                'id': respuesta.psrc.split('.')[-1]  # Agregar el ID como el último segmento de la IP
+            })
 
     return nodes
 
