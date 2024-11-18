@@ -31,13 +31,15 @@ def agregar_sala_emergencia(nombre, capacidad_total):
     conn.close()
     print(f"\n[Base de Datos] Sala de emergencia '{nombre}' agregada con capacidad total de {capacidad_total}.")
 
-    # Registrar el cambio en un archivo de texto
     history_dir = os.path.join(os.path.dirname(__file__), '..', 'history')
     os.makedirs(history_dir, exist_ok=True)
     history_file = os.path.join(history_dir, 'db_changes.txt')
+
+    # Escribir las dos líneas en el archivo
     with open(history_file, 'a') as f:
-        f.write(f"Agregada sala de emergencia: {nombre}, Capacidad Total: {capacidad_total}\n")
-        f.write(f"QUERY: {query.strip()} ({nombre}, {capacidad_total}, {capacidad_total})\n")
+        f.write(f"# Agregada sala de emergencia: {nombre}, Capacidad Total: {capacidad_total}\n")
+        f.write(f"& {query.strip()} ({nombre}, {capacidad_total}, {capacidad_total})\n")
+
 
 def listar_salas_emergencia():
     # Lista todas las salas de emergencia en la base de datos y las muestra en una tabla por consola

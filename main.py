@@ -5,6 +5,7 @@ from utils.menu import mostrar_menu, mostrar_menu_trabajador_social, mostrar_men
 from controllers.server_client import start_server, connect_clients, mostrar_conexiones
 from controllers.messages import enviar_mensaje_a_nodo, enviar_mensaje_a_todos
 from controllers.database import init_db, listar_salas_emergencia, agregar_sala_emergencia
+import os
 
 # Diccionario para mantener las conexiones activas
 active_connections = {}
@@ -14,6 +15,9 @@ def main():
     server_thread.start()
 
     init_db()
+
+    # Borrar el log del archivo db_changes
+    open('db_changes.txt', 'w').close()
 
     # Agregar una nueva sala de emergencia
     agregar_sala_emergencia(f"Sala Emergencia", 5)
