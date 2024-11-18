@@ -8,7 +8,7 @@ active_connections = {}
 def handle_client(client_socket, addr):
     # Maneja la conexión con un cliente
     try:
-        print(f"[Servidor] Conexión establecida con {addr}")
+        #print(f"[Servidor] Conexión establecida con {addr}")
         while True:
             data = client_socket.recv(1024)
             if not data:
@@ -17,10 +17,11 @@ def handle_client(client_socket, addr):
             response = f"Servidor recibió: {data.decode()}"
             client_socket.send(response.encode())
     except Exception as e:
-        print(f"[Error] Cliente {addr}: {e}")
+        #print(f"[Error] Cliente {addr}: {e}")
+        print('')
     finally:
         client_socket.close()
-        print(f"[Servidor] Conexión cerrada con {addr}")
+        #print(f"[Servidor] Conexión cerrada con {addr}")
 
 def start_server():
     # Inicia el servidor y maneja solicitudes de clientes

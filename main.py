@@ -3,6 +3,7 @@ import threading
 from controllers.nodes import get_network_nodes
 from utils.menu import mostrar_menu
 from controllers.server_client import start_server, connect_clients, enviar_mensaje, mostrar_conexiones
+from controllers.messages import enviar_mensaje_a_nodo
 
 # Diccionario para mantener las conexiones activas
 active_connections = {}
@@ -21,7 +22,6 @@ def main():
                     if conn:
                         active_connections[node_id] = conn
 
-
             mostrar_menu()
             try:
                 opcion = input("Seleccione una opción: ")
@@ -32,7 +32,9 @@ def main():
             if opcion == '1':
                 print("[Escaneo de red] Buscando nodos disponibles...")
             elif opcion == '2':
-                enviar_mensaje()
+                nodo_id = input("Ingrese el ID del nodo al que desea enviar el mensaje: ")
+                mensaje = input("Ingrese el mensaje a enviar: ")
+                enviar_mensaje_a_nodo(mensaje, nodo_id)
             elif opcion == '3':
                 mostrar_conexiones()
             elif opcion == '5':
@@ -46,7 +48,6 @@ def main():
             if hasattr(conn, 'close'):
                 conn.close()
         active_connections.clear()
-
 
 if __name__ == "__main__":
     main()
