@@ -22,11 +22,8 @@ def agregar_sala_emergencia(nombre, capacidad_total):
     # Agrega una nueva sala de emergencia en la base de datos
     conn = sqlite3.connect('nodos.db')
     cursor = conn.cursor()
-    query = '''
-        INSERT INTO salas_emergencia (nombre, capacidad_total, capacidad_disponible)
-        VALUES (?, ?, ?)
-    '''
-    cursor.execute(query, (nombre, capacidad_total, capacidad_total))
+    query = f"INSERT INTO salas_emergencia (nombre, capacidad_total, capacidad_disponible) VALUES ({nombre}, {capacidad_total}, {capacidad_total})"	
+    cursor.execute(query)
     conn.commit()
     conn.close()
     print(f"\n[Base de Datos] Sala de emergencia '{nombre}' agregada con capacidad total de {capacidad_total}.")
@@ -38,7 +35,7 @@ def agregar_sala_emergencia(nombre, capacidad_total):
     # Escribir las dos líneas en el archivo
     with open(history_file, 'a') as f:
         f.write(f"# Agregada sala de emergencia: {nombre}, Capacidad Total: {capacidad_total}\n")
-        f.write(f"& {query.strip()} ({nombre}, {capacidad_total}, {capacidad_total})\n")
+        f.write(f"& {query.strip()}\n")
 
 
 def listar_salas_emergencia():
