@@ -1,5 +1,5 @@
 -- Eliminar la base de datos si ya está creada (descomentar para usar)
--- DROP DATABASE IF EXISTS nodos;
+DROP DATABASE IF EXISTS nodos;
 
 -- Crear la base de datos si no está creada
 PRAGMA foreign_keys = OFF;
