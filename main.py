@@ -38,7 +38,7 @@ def main():
                 enviar_mensaje_a_nodo(mensaje, nodo_id)
             elif opcion == '3':
                 mensaje = input("Ingrese el mensaje a enviara todos: ")
-                enviar_mensaje_a_todos()
+                enviar_mensaje_a_todos(mensaje)
             elif opcion == '5':
                 print("Saliendo...")
                 break
