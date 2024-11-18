@@ -1,6 +1,5 @@
 import sqlite3
 import os
-from tabulate import tabulate
 
 def init_db():
     # Inicializa la base de datos
@@ -39,6 +38,9 @@ def listar_salas_emergencia():
     salas = cursor.fetchall()
     conn.close()
 
-    # Mostrar las salas en una tabla por consola
+    # Mostrar las salas en una tabla por consola sin utilizar tabulate
     headers = ["ID Sala", "Nombre", "Estado", "Es Maestro", "Capacidad Total", "Capacidad Disponible"]
-    print(tabulate(salas, headers, tablefmt="grid"))
+    print(f"{headers[0]:<10} {headers[1]:<20} {headers[2]:<10} {headers[3]:<10} {headers[4]:<15} {headers[5]:<20}")
+    print("-" * 85)
+    for sala in salas:
+        print(f"{sala[0]:<10} {sala[1]:<20} {sala[2]:<10} {sala[3]:<10} {sala[4]:<15} {sala[5]:<20}")
