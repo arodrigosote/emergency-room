@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS salas_emergencia (
     id_sala INTEGER PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     ip VARCHAR(30) NOT NULL,
-    estado VARCHAR(20) DEFAULT 'activo', -- activo/inactivo
+    estado VARCHAR(20) DEFAULT 'inactivo', -- activo/inactivo
     es_maestro BOOLEAN DEFAULT 0,
     capacidad_total INTEGER NOT NULL,
     capacidad_disponible INTEGER NOT NULL

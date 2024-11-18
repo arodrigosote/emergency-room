@@ -1,12 +1,12 @@
 import socket
 import threading
-from controllers.nodes import get_network_nodes
+from controllers.nodes import get_network_nodes, get_own_node
 from utils.menu import mostrar_menu, mostrar_menu_trabajador_social, mostrar_menu_doctor, realizar_accion_trabajador_social, realizar_accion_doctor, mostrar_menu_utilidades, realizar_accion_utilidades, mostrar_menu_utilidades
 from utils.log import log_message
 from controllers.server_client import start_server, connect_clients, mostrar_conexiones
 from controllers.messages import enviar_mensaje_a_nodo, enviar_mensaje_a_todos
 from controllers.database import init_db, agregar_doctores, agregar_salas_emergencia
-from models.emergency_room import agregar_sala_emergencia, listar_salas_emergencia
+from models.emergency_room import agregar_sala_emergencia, listar_salas_emergencia, activar_sala
 import os
 
 # Diccionario para mantener las conexiones activas
@@ -41,6 +41,9 @@ def main():
     agregar_salas_emergencia()
     agregar_doctores()
 
+    own_node = get_own_node()# Cambiar el estado de la sala a activado
+    activar_sala(own_node.get("id"))
+
     try:
         while True:
             nodes = get_network_nodes()  # Obtener nodos de la red
@@ -49,7 +52,7 @@ def main():
                 if node_id not in active_connections:
                     conn = connect_clients([node])
                     #Eleccion del nodo maestro
-                    
+
                     if conn:
                         active_connections[node_id] = conn
 
