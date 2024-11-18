@@ -1,5 +1,7 @@
+from utils.log import log_message
 import sqlite3
 import os
+
 
 def init_db():
     # Inicializa la base de datos
@@ -16,7 +18,7 @@ def init_db():
     
     conn.commit()
     conn.close()
-    print("\n[Base de Datos] Base de datos inicializada.")
+    log_message("\n[Base de Datos] Base de datos inicializada.")
 
 
 def agregar_doctores():
@@ -38,12 +40,13 @@ def agregar_doctores():
         
         cursor.executemany(query, doctores)
         conn.commit()
-        print("\n[Base de Datos] 5 doctores agregados a la base de datos.")
+        log_message("\n[Base de Datos] 5 doctores agregados a la base de datos.")
     except sqlite3.Error as e:
-        print(f"\n[Error] No se pudo agregar los doctores: {e}")
+        log_message(f"\n[Error] No se pudo agregar los doctores: {e}")
     finally:
         conn.close()
 
+"""
     # Manejo del historial
     history_dir = os.path.join(os.path.dirname(__file__), '..', 'history')
     os.makedirs(history_dir, exist_ok=True)
@@ -54,7 +57,8 @@ def agregar_doctores():
         for doctor in doctores:
             formatted_query = f"INSERT INTO doctores (nombre, especialidad) VALUES ('{doctor[0]}', '{doctor[1]}')"
             f.write(f"# Agregado doctor: {doctor[0]}, Especialidad: {doctor[1]}\n")
-            f.write(f"& {formatted_query}\n")
+            f.write(f"& {formatted_query}\n"
+"""
 
 
 def agregar_salas_emergencia():
@@ -76,12 +80,12 @@ def agregar_salas_emergencia():
             cursor.execute(query, (sala[0], sala[1], sala[1]))
         
         conn.commit()
-        print("\n[Base de Datos] 3 salas de emergencia agregadas a la base de datos.")
+        log_message("\n[Base de Datos] 3 salas de emergencia agregadas a la base de datos.")
     except sqlite3.Error as e:
-        print(f"\n[Error] No se pudo agregar las salas de emergencia: {e}")
+        log_message(f"\n[Error] No se pudo agregar las salas de emergencia: {e}")
     finally:
         conn.close()
-
+"""
     # Manejo del historial
     history_dir = os.path.join(os.path.dirname(__file__), '..', 'history')
     os.makedirs(history_dir, exist_ok=True)
@@ -93,4 +97,4 @@ def agregar_salas_emergencia():
             formatted_query = f"INSERT INTO salas_emergencia (nombre, capacidad_total, capacidad_disponible) VALUES ('{sala[0]}', {sala[1]}, {sala[1]})"
             f.write(f"# Agregada sala de emergencia: {sala[0]}, Capacidad Total: {sala[1]}\n")
             f.write(f"& {formatted_query}\n")
-
+"""

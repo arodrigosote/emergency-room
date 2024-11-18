@@ -1,15 +1,20 @@
 import socket
 import threading
 from controllers.nodes import get_network_nodes
+from datetime import datetime
+import os
+from utils.log import log_message
 
 # Diccionario para mantener las conexiones activas
 active_connections = {}
 master_node = None
 
+
+
 def handle_client(client_socket, addr):
     # Maneja la conexión con un cliente
     try:
-        #print(f"[Servidor] Conexión establecida con {addr}")
+        #log_message(f"[Servidor] Conexión establecida con {addr}")
         while True:
             data = client_socket.recv(1024)
             if not data:
@@ -25,15 +30,15 @@ def handle_client(client_socket, addr):
                 enviar_mensaje()
                 continue
             
-            print(f"[Mensaje recibido] De {addr}: {data.decode()}")
+            log_message(f"[Mensaje recibido] De {addr}: {data.decode()}")
             response = f"Servidor recibió: {data.decode()}"
             client_socket.send(response.encode())
     except Exception as e:
-        #print(f"[Error] Cliente {addr}: {e}")
-        print('')
+        #log_message(f"[Error] Cliente {addr}: {e}")
+        log_message('')
     finally:
         client_socket.close()
-        #print(f"[Servidor] Conexión cerrada con {addr}")
+        #log_message(f"[Servidor] Conexión cerrada con {addr}")
 
 def start_server():
     # Inicia el servidor y maneja solicitudes de clientes
@@ -43,14 +48,27 @@ def start_server():
     try:
         server.bind(("0.0.0.0", 9999))
         server.listen(15)
-        print("\n[Servidor] Escuchando en el puerto 9999")
+        
+        # Crear la carpeta 'history' si no existe
+        if not os.path.exists('history'):
+            os.makedirs('history')
+        # Obtener la fecha y hora actual
+        now = datetime.now()
+        timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+        # Mensaje a escribir en el archivo
+        message = f"{timestamp} - [Servidor] Escuchando en el puerto 9999\n"
+         # Escribir el mensaje en el archivo 'server_log.txt' dentro de la carpeta 'history'
+        with open('history/server_log.txt', 'a') as log_file:
+            log_file.write(message)
+
+            
         while True:
             client_socket, addr = server.accept()
             client_handler = threading.Thread(target=handle_client, args=(client_socket, addr), daemon=True)
             client_handler.start()
     except OSError as e:
         if "Address already in use" in str(e):
-            print("[Error] El puerto 9999 ya está en uso. Liberando...")
+            log_message("[Error] El puerto 9999 ya está en uso. Liberando...")
             server.close()
             # Liberar conexiones activas
             for conn in active_connections.values():
@@ -58,9 +76,9 @@ def start_server():
             active_connections.clear()
             start_server()  # Intentar reiniciar el servidor
         else:
-            print(f"[Error] Problema al iniciar el servidor: {e}")
+            log_message(f"[Error] Problema al iniciar el servidor: {e}")
     except Exception as e:
-        print(f"[Error] Error desconocido al iniciar el servidor: {e}")
+        log_message(f"[Error] Error desconocido al iniciar el servidor: {e}")
     finally:
         server.close()
 
@@ -72,12 +90,12 @@ def connect_clients(nodes):
             continue
 
         if node_id in active_connections:
-            print(f"[Info] Nodo {node_id} ya está conectado.")
+            log_message(f"[Info] Nodo {node_id} ya está conectado.")
             continue
 
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            print(f"[Intentando conectar] Nodo ID: {node_id}, IP: {node['ip']}")
+            log_message(f"[Intentando conectar] Nodo ID: {node_id}, IP: {node['ip']}")
             client.connect((node['ip'], 9999))
             active_connections[node_id] = client  # Almacena la conexión activa
 
@@ -86,9 +104,9 @@ def connect_clients(nodes):
             message = f"{instruction_code} Hola, soy un nodo nuevo en el sistema"
             client.send(message.encode())
 
-            print(f"[Conexión exitosa] Nodo {node_id} conectado. Activas: {list(active_connections.keys())}")
+            log_message(f"[Conexión exitosa] Nodo {node_id} conectado. Activas: {list(active_connections.keys())}")
         except Exception as e:
-            print(f"[Error] No se pudo conectar con el nodo {node['ip']}: {e}")
+            log_message(f"[Error] No se pudo conectar con el nodo {node['ip']}: {e}")
         finally:
             if node_id not in active_connections:
                 client.close()  # Asegurarse de cerrar conexiones fallidas
@@ -96,13 +114,13 @@ def connect_clients(nodes):
 
 def mostrar_conexiones():
     # Muestra las conexiones activas
-    print("[Conexiones activas]:")
+    log_message("[Conexiones activas]:")
     for node_id in active_connections.keys():
-        print(f"ID: {node_id}")
+        log_message(f"ID: {node_id}")
 
 def elegir_nodo_maestro(nodes):
     global master_node
     if nodes:
         master_node = max(nodes, key=lambda node: int(node['id']))
-        print(f"[Nodo Maestro] Nodo {master_node['id']} con IP {master_node['ip']} es el nodo maestro.")
+        log_message(f"[Nodo Maestro] Nodo {master_node['id']} con IP {master_node['ip']} es el nodo maestro.")
         return master_node
