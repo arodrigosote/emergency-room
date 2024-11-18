@@ -40,9 +40,9 @@ def agregar_doctores():
         
         cursor.executemany(query, doctores)
         conn.commit()
-        log_message("\n[Base de Datos] 5 doctores agregados a la base de datos.")
+        log_message("[Base de Datos] 5 doctores agregados a la base de datos.")
     except sqlite3.Error as e:
-        log_message(f"\n[Error] No se pudo agregar los doctores: {e}")
+        log_message(f"[Error] No se pudo agregar los doctores: {e}")
     finally:
         conn.close()
 
