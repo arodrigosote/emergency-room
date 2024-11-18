@@ -18,24 +18,37 @@ def init_db():
     conn.close()
     print("\n[Base de Datos] Base de datos inicializada.")
 
+
 def agregar_sala_emergencia(nombre, capacidad_total):
     # Agrega una nueva sala de emergencia en la base de datos
-    conn = sqlite3.connect('nodos.db')
-    cursor = conn.cursor()
-    query = f"INSERT INTO salas_emergencia (nombre, capacidad_total, capacidad_disponible) VALUES ({nombre}, {capacidad_total}, {capacidad_total})"	
-    cursor.execute(query)
-    conn.commit()
-    conn.close()
-    print(f"\n[Base de Datos] Sala de emergencia '{nombre}' agregada con capacidad total de {capacidad_total}.")
+    try:
+        conn = sqlite3.connect('nodos.db')
+        cursor = conn.cursor()
 
+        # Usar parámetros para prevenir inyección SQL
+        query = """
+            INSERT INTO salas_emergencia (nombre, capacidad_total, capacidad_disponible) VALUES (?, ?, ?)
+        """
+        cursor.execute(query, (nombre, capacidad_total, capacidad_total))
+        conn.commit()
+        print(f"\n[Base de Datos] Sala de emergencia '{nombre}' agregada con capacidad total de {capacidad_total}.")
+    except sqlite3.Error as e:
+        print(f"\n[Error] No se pudo agregar la sala de emergencia: {e}")
+    finally:
+        conn.close()
+
+    # Manejo del historial
     history_dir = os.path.join(os.path.dirname(__file__), '..', 'history')
     os.makedirs(history_dir, exist_ok=True)
     history_file = os.path.join(history_dir, 'db_changes.txt')
 
     # Escribir las dos líneas en el archivo
     with open(history_file, 'a') as f:
+        formatted_query = f"INSERT INTO salas_emergencia (nombre, capacidad_total, capacidad_disponible) VALUES ('{nombre}', {capacidad_total}, {capacidad_total})"
         f.write(f"# Agregada sala de emergencia: {nombre}, Capacidad Total: {capacidad_total}\n")
-        f.write(f"& {query.strip()}\n")
+        f.write(f"& {formatted_query}\n")
+
+
 
 
 def listar_salas_emergencia():
