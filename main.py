@@ -15,8 +15,10 @@ def main():
 
     init_db()
 
+    hostname = socket.gethostname()
+    local_ip = socket.gethostbyname(hostname)
     # Agregar una nueva sala de emergencia
-    agregar_sala_emergencia("Sala Principal", 5)
+    agregar_sala_emergencia(f"Sala Emergencia {local_ip}", 5)
 
     try:
         while True:

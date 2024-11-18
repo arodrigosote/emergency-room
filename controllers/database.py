@@ -16,7 +16,7 @@ def init_db():
     
     conn.commit()
     conn.close()
-    print("[Base de Datos] Base de datos inicializada.")
+    print("\n[Base de Datos] Base de datos inicializada.")
 
 def agregar_sala_emergencia(nombre, capacidad_total):
     # Agrega una nueva sala de emergencia en la base de datos
@@ -28,7 +28,7 @@ def agregar_sala_emergencia(nombre, capacidad_total):
     ''', (nombre, capacidad_total, capacidad_total))
     conn.commit()
     conn.close()
-    print(f"[Base de Datos] Sala de emergencia '{nombre}' agregada con capacidad total de {capacidad_total}.")
+    print(f"\n[Base de Datos] Sala de emergencia '{nombre}' agregada con capacidad total de {capacidad_total}.")
 
 def listar_salas_emergencia():
     # Lista todas las salas de emergencia en la base de datos y las muestra en una tabla por consola
