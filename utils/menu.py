@@ -1,6 +1,7 @@
 from models.emergency_room import listar_salas_emergencia
 from models.doctors import listar_doctores
 from controllers.database import mostrar_log_base_datos, mostrar_log_servidor
+from utils.log import log_message
 
 def mostrar_menu():
     print("\n\nMenú:")
@@ -60,11 +61,15 @@ def mostrar_menu_utilidades():
 def realizar_accion_utilidades(opcion):
     if opcion == '1':
         print("\nListando nodos activos con sala de emergencia")
+
+    
     elif opcion == '2':
         print("\nMostrando Log de cambios en la base de datos")
         mostrar_log_base_datos()  # Llamar a la función para mostrar log de base de datos
+        log_message("[Utilidades] Mostrando Log de cambios en la base de datos.")
     elif opcion == '3':
         print("\nMostrando Log de servidor")
         mostrar_log_servidor()  # Llamar a la función para mostrar log de servidor
+        log_message("[Utilidades] Mostrando Log de servidor.")
     else:
         print("Opción no válida, intente de nuevo.")
