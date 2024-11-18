@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS camas (
     id_sala INTEGER NOT NULL,
     numero_cama INTEGER NOT NULL,
     estado VARCHAR(20) DEFAULT 'disponible', -- disponible/ocupada
-    FOREIGN KEY (id_sala) REFERENCES salas_emergencia(id_sala)
+    FOREIGN KEY (id_sala) REFERENCES salas_emergencia(id_sala) ON DELETE SET NULL
 );
 
 -- Tabla de Visitas de Emergencia
@@ -61,11 +61,11 @@ CREATE TABLE IF NOT EXISTS visitas_emergencia (
     id_trabajador_social INTEGER NOT NULL,
     fecha_salida TIMESTAMP,
     estado VARCHAR(20) DEFAULT 'activa', -- activa/cerrada
-    FOREIGN KEY (id_paciente) REFERENCES pacientes(id_paciente),
-    FOREIGN KEY (id_doctor) REFERENCES doctores(id_doctor),
-    FOREIGN KEY (id_sala) REFERENCES salas_emergencia(id_sala),
-    FOREIGN KEY (id_cama) REFERENCES camas(id_cama),
-    FOREIGN KEY (id_trabajador_social) REFERENCES trabajadores_sociales(id_trabajador)
+    FOREIGN KEY (id_paciente) REFERENCES pacientes(id_paciente) ON DELETE SET NULL,
+    FOREIGN KEY (id_doctor) REFERENCES doctores(id_doctor) ON DELETE SET NULL,
+    FOREIGN KEY (id_sala) REFERENCES salas_emergencia(id_sala) ON DELETE SET NULL,
+    FOREIGN KEY (id_cama) REFERENCES camas(id_cama) ON DELETE SET NULL,
+    FOREIGN KEY (id_trabajador_social) REFERENCES trabajadores_sociales(id_trabajador) ON DELETE SET NULL
 );
 
 -- Tabla para el control de distribución de visitas
@@ -122,12 +122,17 @@ END;
 
 -- Trigger para registrar cambios en el log
 CREATE TRIGGER IF NOT EXISTS registrar_cambio_visita
-AFTER INSERT OR UPDATE ON visitas_emergencia
+AFTER INSERT ON visitas_emergencia
 BEGIN
     INSERT INTO log_cambios (tabla_afectada, id_registro, tipo_operacion, nodo_origen)
-    VALUES ('visitas_emergencia', NEW.id_visita, 
-            CASE WHEN OLD.id_visita IS NULL THEN 'INSERT' ELSE 'UPDATE' END,
-            NEW.id_sala);
+    VALUES ('visitas_emergencia', NEW.id_visita, 'INSERT', NEW.id_sala);
+END;
+
+CREATE TRIGGER IF NOT EXISTS actualizar_cambio_visita
+AFTER UPDATE ON visitas_emergencia
+BEGIN
+    INSERT INTO log_cambios (tabla_afectada, id_registro, tipo_operacion, nodo_origen)
+    VALUES ('visitas_emergencia', NEW.id_visita, 'UPDATE', NEW.id_sala);
 END;
 
 COMMIT;
