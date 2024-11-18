@@ -11,10 +11,16 @@ def main():
     server_thread = threading.Thread(target=start_server, daemon=True)
     server_thread.start()
 
-    nodes = get_network_nodes()  # Obtener nodos de la red
+    
     connect_clients(nodes)
 
     while True:
+        nodes = get_network_nodes()  # Obtener nodos de la red
+        # Comparar nodos obtenidos con conexiones activas
+        for node in nodes:
+            if node not in active_connections:
+                connect_clients([node])  # Establecer conexión con el nuevo dispositivo
+                
         mostrar_menu()
         opcion = input("Seleccione una opción: ")
         if opcion == '1':
