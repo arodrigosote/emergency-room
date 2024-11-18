@@ -11,31 +11,40 @@ def main():
     server_thread = threading.Thread(target=start_server, daemon=True)
     server_thread.start()
 
-    while True:
-        nodes = get_network_nodes()  # Obtener nodos de la red
-        # Comparar nodos obtenidos con conexiones activas
-        for node in nodes:
-            if node not in active_connections:
-                connect_clients([node])  # Establecer conexión con el nuevo dispositivo
+    try:
+        while True:
+            nodes = get_network_nodes()  # Obtener nodos de la red
+            for node in nodes:
+                if node not in active_connections:
+                    conn = connect_clients([node])  # Establecer conexión
+                    if conn:  # Si la conexión fue exitosa
+                        active_connections[node] = conn
 
-        mostrar_menu()
-        opcion = input("Seleccione una opción: ")
-        if opcion == '1':
-            print("[Escaneo de red] Buscando nodos disponibles...")
-        elif opcion == '2':
-            enviar_mensaje()
-        elif opcion == '3':
-            mostrar_conexiones()
-        elif opcion == '5':
-            print("Saliendo...")
-            break
-        else:
-            print("Opción no válida, intente de nuevo.")
+            mostrar_menu()
+            try:
+                opcion = input("Seleccione una opción: ")
+            except EOFError:
+                print("Entrada interrumpida. Saliendo...")
+                break
 
-    # Liberar recursos antes de salir
-    for conn in active_connections.values():
-        conn.close()
-    active_connections.clear()
+            if opcion == '1':
+                print("[Escaneo de red] Buscando nodos disponibles...")
+            elif opcion == '2':
+                enviar_mensaje()
+            elif opcion == '3':
+                mostrar_conexiones()
+            elif opcion == '5':
+                print("Saliendo...")
+                break
+            else:
+                print("Opción no válida, intente de nuevo.")
+    finally:
+        # Liberar recursos al salir
+        for conn in active_connections.values():
+            if hasattr(conn, 'close'):
+                conn.close()
+        active_connections.clear()
+
 
 if __name__ == "__main__":
     main()
