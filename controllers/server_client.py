@@ -7,20 +7,25 @@ active_connections = {}
 def handle_client(client_socket, addr):
     # Maneja la conexión con un cliente
     try:
-        #print(f"[Servidor] Conexión establecida con {addr}")
         while True:
             data = client_socket.recv(1024)
             if not data:
                 break
-            print(f"[Mensaje recibido] De {addr}: {data.decode()}")
-            response = f"Servidor recibió: {data.decode()}"
-            client_socket.send(response.encode())
+            mensaje = data.decode()
+            if mensaje == "CHECK_CONNECTION":
+                # Verificar si estamos conectados de vuelta
+                if addr[0] not in active_connections:
+                    client_socket.send("NOT_CONNECTED".encode())
+                else:
+                    client_socket.send("CONNECTED".encode())
+            else:
+                print(f"[Mensaje recibido] De {addr}: {mensaje}")
+                response = f"Servidor recibió: {mensaje}"
+                client_socket.send(response.encode())
     except Exception as e:
-        #print(f"[Error] Cliente {addr}: {e}")
         print('')
     finally:
         client_socket.close()
-        #print(f"[Servidor] Conexión cerrada con {addr}")
 
 def start_server():
     # Inicia el servidor y maneja solicitudes de clientes
@@ -68,11 +73,32 @@ def connect_clients(nodes):
             client.connect((node['ip'], 9999))
             active_connections[node_id] = client  # Almacena la conexión activa
             print(f"[Conexión exitosa] Nodo {node_id} conectado. Activas: {list(active_connections.keys())}")
+
+            # Verificar si el nodo remoto está conectado de vuelta
+            client.send("CHECK_CONNECTION".encode())
+            respuesta = client.recv(1024).decode()
+            if respuesta == "NOT_CONNECTED":
+                print(f"[Conexión inversa] Nodo {node_id} no está conectado de vuelta. Intentando conectar...")
+                connect_back(node['ip'], node_id)
         except Exception as e:
             print(f"[Error] No se pudo conectar con el nodo {node['ip']}: {e}")
         finally:
             if node_id not in active_connections:
                 client.close()  # Asegurarse de cerrar conexiones fallidas
+
+def connect_back(ip, node_id):
+    # Conecta de vuelta al nodo que no está conectado
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        print(f"[Intentando conectar de vuelta] Nodo ID: {node_id}, IP: {ip}")
+        client.connect((ip, 9999))
+        active_connections[node_id] = client  # Almacena la conexión activa
+        print(f"[Conexión inversa exitosa] Nodo {node_id} conectado de vuelta. Activas: {list(active_connections.keys())}")
+    except Exception as e:
+        print(f"[Error] No se pudo conectar de vuelta con el nodo {ip}: {e}")
+    finally:
+        if node_id not in active_connections:
+            client.close()  # Asegurarse de cerrar conexiones fallidas
 
 def enviar_mensaje():
     # Envia un mensaje a un nodo
