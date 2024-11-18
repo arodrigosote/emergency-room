@@ -1,5 +1,5 @@
 
-from main import active_connections
+from controllers.server_client import active_connections
 
 def enviar_mensaje_a_nodo(mensaje, nodo_id):
     """
