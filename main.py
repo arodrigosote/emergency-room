@@ -15,6 +15,11 @@ def main():
 
     init_db()
 
+    # Obtener la IP del nodo que está ejecutando este script
+    hostname = socket.gethostname()
+    local_ip = socket.gethostbyname(hostname)
+    last_ip = local_ip.split('.')[-1]
+
     # Agregar una nueva sala de emergencia
     agregar_sala_emergencia(f"Sala Emergencia {last_ip}", 5)
 

@@ -1,5 +1,12 @@
--- Eliminar la base de datos si ya está creada (descomentar para usar)
-DROP DATABASE IF EXISTS nodos;
+-- Eliminar las tablas si ya están creadas (descomentar para usar)
+ DROP TABLE IF EXISTS log_cambios;
+ DROP TABLE IF EXISTS control_distribucion;
+ DROP TABLE IF EXISTS visitas_emergencia;
+ DROP TABLE IF EXISTS camas;
+ DROP TABLE IF EXISTS pacientes;
+ DROP TABLE IF EXISTS trabajadores_sociales;
+ DROP TABLE IF EXISTS doctores;
+ DROP TABLE IF EXISTS salas_emergencia;
 
 -- Crear la base de datos si no está creada
 PRAGMA foreign_keys = OFF;
