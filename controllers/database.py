@@ -18,7 +18,7 @@ def init_db():
     
     conn.commit()
     conn.close()
-    log_message("\n[Base de Datos] Base de datos inicializada.")
+    log_message("[Base de Datos] Base de datos inicializada.")
 
 
 def agregar_doctores():
@@ -80,9 +80,9 @@ def agregar_salas_emergencia():
             cursor.execute(query, (sala[0], sala[1], sala[1]))
         
         conn.commit()
-        log_message("\n[Base de Datos] 3 salas de emergencia agregadas a la base de datos.")
+        log_message("[Base de Datos] 3 salas de emergencia agregadas a la base de datos.")
     except sqlite3.Error as e:
-        log_message(f"\n[Error] No se pudo agregar las salas de emergencia: {e}")
+        log_message(f"[Error] No se pudo agregar las salas de emergencia: {e}")
     finally:
         conn.close()
 """
