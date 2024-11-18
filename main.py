@@ -15,10 +15,12 @@ def main():
         while True:
             nodes = get_network_nodes()  # Obtener nodos de la red
             for node in nodes:
-                if node not in active_connections:
-                    conn = connect_clients([node])  # Establecer conexión
-                    if conn:  # Si la conexión fue exitosa
-                        active_connections[node] = conn
+                node_id = node.get("id")  # Suponiendo que "id" es único para cada nodo
+                if node_id not in active_connections:
+                    conn = connect_clients([node])
+                    if conn:
+                        active_connections[node_id] = conn
+
 
             mostrar_menu()
             try:
