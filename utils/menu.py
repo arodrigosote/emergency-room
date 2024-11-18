@@ -1,5 +1,5 @@
-from controllers.database import listar_salas_emergencia
-
+from models.emergency_room import listar_salas_emergencia
+from models.doctors import listar_doctores
 
 def mostrar_menu():
     print("Menú:")
@@ -15,6 +15,7 @@ def mostrar_menu_trabajador_social():
     print("\n\nMenú Trabajador Social:")
     print("1. Registrar visita emergencia")
     print("2. Listar Salas de Emergencia")
+    print("3. Listar Doctores")
     print("5. Volver")
 
 def realizar_accion_trabajador_social(opcion):
@@ -23,7 +24,9 @@ def realizar_accion_trabajador_social(opcion):
     elif opcion == '2':
         print("Listando Salas de Emergencia")
         listar_salas_emergencia()  # Llamar a la función para listar salas de emergencia
-
+    elif opcion == '3':
+        print("Listando Doctores")
+        listar_doctores()
     else:
         print("Opción no válida, intente de nuevo.")
 
