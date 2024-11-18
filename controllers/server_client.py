@@ -1,4 +1,3 @@
-
 import socket
 import threading
 
@@ -57,6 +56,10 @@ def connect_clients(nodes):
     for node in nodes:
         node_id = int(node['id'])
         if node_id in [1, 2, 254]:  # Opcional: omitir nodos específicos
+            continue
+
+        if node_id in active_connections:
+            print(f"[Info] Nodo {node_id} ya está conectado.")
             continue
 
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
