@@ -11,7 +11,7 @@ def listar_salas_emergencia():
     conn.close()
 
     # Mostrar las salas en una tabla por consola sin utilizar tabulate
-    headers = ["ID Sala", "Nombre", "Estado", "Es Maestro", "Capacidad Total", "Capacidad Disponible", "IP"]
+    headers = ["ID Sala", "Nombre", "IP", "Estado", "Es Maestro", "Capacidad Total", "Capacidad Disponible" ]
     print(f"{headers[0]:<10} {headers[1]:<20} {headers[2]:<10} {headers[3]:<10} {headers[4]:<15} {headers[5]:<20} {headers[6]:<15}")
     print("-" * 100)
     for sala in salas:
@@ -26,9 +26,9 @@ def agregar_sala_emergencia(nombre, capacidad_total, ip):
 
         # Usar parámetros para prevenir inyección SQL
         query = """
-            INSERT INTO salas_emergencia (nombre, capacidad_total, capacidad_disponible, ip) VALUES (?, ?, ?, ?)
+            INSERT INTO salas_emergencia (nombre, ip, capacidad_total, capacidad_disponible) VALUES (?, ?, ?, ?)
         """
-        cursor.execute(query, (nombre, capacidad_total, capacidad_total, ip))
+        cursor.execute(query, (nombre, ip, capacidad_total, capacidad_total))
         conn.commit()
         print(f"\n[Base de Datos] Sala de emergencia '{nombre}' agregada con capacidad total de {capacidad_total} y IP {ip}.")
     except sqlite3.Error as e:
