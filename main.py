@@ -1,9 +1,10 @@
 import socket
 import threading
 from controllers.nodes import get_network_nodes
-from utils.menu import mostrar_menu
-from controllers.server_client import start_server, connect_clients, enviar_mensaje, mostrar_conexiones
+from utils.menu import mostrar_menu, mostrar_menu_trabajador_social, mostrar_menu_doctor, realizar_accion_trabajador_social, realizar_accion_doctor
+from controllers.server_client import start_server, connect_clients, mostrar_conexiones
 from controllers.messages import enviar_mensaje_a_nodo, enviar_mensaje_a_todos
+from controllers.database import init_db, listar_salas_emergencia  # Importar la función para listar salas de emergencia
 
 # Diccionario para mantener las conexiones activas
 active_connections = {}
@@ -11,6 +12,8 @@ active_connections = {}
 def main():
     server_thread = threading.Thread(target=start_server, daemon=True)
     server_thread.start()
+
+    init_db()
 
     try:
         while True:
@@ -31,15 +34,14 @@ def main():
                 break
 
             if opcion == '1':
-                print("[Escaneo de red] Buscando nodos disponibles...")
+                mostrar_menu_trabajador_social()
+                opcion_ts = input("Seleccione una opción: ")
+                realizar_accion_trabajador_social(opcion_ts)
             elif opcion == '2':
-                nodo_id = input("Ingrese el ID del nodo al que desea enviar el mensaje: ")
-                mensaje = input("Ingrese el mensaje a enviar: ")
-                enviar_mensaje_a_nodo(mensaje, nodo_id)
+                mostrar_menu_doctor()
+                opcion_doc = input("Seleccione una opción: ")
+                realizar_accion_doctor(opcion_doc)
             elif opcion == '3':
-                mensaje = input("Ingrese el mensaje a enviara todos: ")
-                enviar_mensaje_a_todos(mensaje)
-            elif opcion == '5':
                 print("Saliendo...")
                 break
             else:

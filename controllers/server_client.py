@@ -93,27 +93,6 @@ def connect_clients(nodes):
             if node_id not in active_connections:
                 client.close()  # Asegurarse de cerrar conexiones fallidas
 
-def enviar_mensaje():
-    # Envia un mensaje a un nodo
-    print("[Enviar mensaje] Nodos disponibles:")
-    for node_id in active_connections.keys():
-        print(f"ID: {node_id}")
-    destino = input("Ingrese el ID del nodo destino: ")
-    mensaje = input("Escriba el mensaje a enviar: ")
-
-    try:
-        destino = int(destino)
-        if destino in active_connections:
-            client_socket = active_connections[destino]
-            if client_socket.fileno() != -1:  # Verifica que el socket siga activo
-                client_socket.send(mensaje.encode())
-                print(f"[Mensaje enviado] A nodo {destino}: {mensaje}")
-            else:
-                print(f"[Error] La conexión con el nodo {destino} no está activa.")
-        else:
-            print(f"[Error] Nodo {destino} no está conectado.")
-    except Exception as e:
-        print(f"[Error] No se pudo enviar el mensaje: {e}")
 
 def mostrar_conexiones():
     # Muestra las conexiones activas
