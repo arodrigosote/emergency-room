@@ -16,8 +16,16 @@ def main():
 
     init_db()
 
-    # Borrar el log del archivo db_changes
-    open('db_changes.txt', 'w').close()
+    # Ruta completa del archivo a limpiar
+    history_dir = os.path.join(os.path.dirname(__file__), '..', 'history')
+    history_file = os.path.join(history_dir, 'db_changes.txt')
+
+    # Verificar si el archivo existe y limpiarlo
+    if os.path.exists(history_file):
+        open(history_file, 'w').close()
+        print(f"\n[Archivo] El archivo 'db_changes.txt' ha sido limpiado.")
+    else:
+        print(f"\n[Advertencia] El archivo 'db_changes.txt' no existe.")
 
     # Agregar una nueva sala de emergencia
     agregar_sala_emergencia(f"Sala Emergencia", 5)
