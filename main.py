@@ -1,7 +1,7 @@
 import socket
 import threading
 from controllers.nodes import get_network_nodes
-from utils.menu import mostrar_menu, mostrar_menu_trabajador_social, mostrar_menu_doctor, realizar_accion_trabajador_social, realizar_accion_doctor
+from utils.menu import mostrar_menu, mostrar_menu_trabajador_social, mostrar_menu_doctor, realizar_accion_trabajador_social, realizar_accion_doctor, mostrar_menu_utilidades, realizar_accion_utilidades, mostrar_menu_utilidades
 from controllers.server_client import start_server, connect_clients, mostrar_conexiones
 from controllers.messages import enviar_mensaje_a_nodo, enviar_mensaje_a_todos
 from controllers.database import init_db, agregar_doctores, agregar_salas_emergencia
@@ -59,6 +59,10 @@ def main():
                 opcion_doc = input("Seleccione una opción: ")
                 realizar_accion_doctor(opcion_doc)
             elif opcion == '3':
+                mostrar_menu_utilidades()
+                opcion_util = input("Seleccione una opción: ")
+                realizar_accion_utilidades(opcion_util)
+            elif opcion == '4':
                 print("Saliendo...")
                 break
             else:

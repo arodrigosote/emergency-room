@@ -98,3 +98,22 @@ def agregar_salas_emergencia():
             f.write(f"# Agregada sala de emergencia: {sala[0]}, Capacidad Total: {sala[1]}\n")
             f.write(f"& {formatted_query}\n")
 """
+
+
+def mostrar_log_servidor():
+    log_path = os.path.join(os.path.dirname(__file__), '..', 'history', 'server_log.txt')
+    try:
+        with open(log_path, 'r') as f:
+            log_content = f.read()
+        print(log_content)
+    except FileNotFoundError:
+        print("[Error] No se encontró el archivo de log del servidor.")
+
+def mostrar_log_base_datos():
+    log_path = os.path.join(os.path.dirname(__file__), '..', 'history', 'db_changes.txt')
+    try:
+        with open(log_path, 'r') as f:
+            log_content = f.read()
+        print(log_content)
+    except FileNotFoundError:
+        print("[Error] No se encontró el archivo de log de la base de datos.")
