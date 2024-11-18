@@ -14,7 +14,7 @@ master_node = None
 def handle_client(client_socket, addr):
     # Maneja la conexión con un cliente
     try:
-        #log_message(f"[Servidor] Conexión establecida con {addr}")
+        log_message(f"[Servidor] Conexión establecida con {addr}")
         while True:
             data = client_socket.recv(1024)
             if not data:
@@ -34,11 +34,10 @@ def handle_client(client_socket, addr):
             response = f"Servidor recibió: {data.decode()}"
             client_socket.send(response.encode())
     except Exception as e:
-        #log_message(f"[Error] Cliente {addr}: {e}")
-        log_message('')
+        log_message(f"[Error] Cliente {addr}: {e}")
     finally:
         client_socket.close()
-        #log_message(f"[Servidor] Conexión cerrada con {addr}")
+        log_message(f"[Servidor] Conexión cerrada con {addr}")
 
 def start_server():
     # Inicia el servidor y maneja solicitudes de clientes

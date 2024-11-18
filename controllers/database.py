@@ -63,9 +63,9 @@ def agregar_doctores():
 
 def agregar_salas_emergencia():
     salas = [
-        ('Sala 0', 10),
-        ('Sala 1', 15),
-        ('Sala 2', 20)
+        ('Sala 0', '192.168.174.138', 10),
+        ('Sala 1', '192.168.174.139', 15),
+        ('Sala 2', '192.168.174.140', 20)
     ]
     
     try:
@@ -73,11 +73,11 @@ def agregar_salas_emergencia():
         cursor = conn.cursor()
         
         query = """
-            INSERT INTO salas_emergencia (nombre, capacidad_total, capacidad_disponible) VALUES (?, ?, ?)
+            INSERT INTO salas_emergencia (nombre, ip, capacidad_total, capacidad_disponible) VALUES (?, ?, ?, ?)
         """
         
         for sala in salas:
-            cursor.execute(query, (sala[0], sala[1], sala[1]))
+            cursor.execute(query, (sala[0], sala[1], sala[2], sala[2]))
         
         conn.commit()
         log_message("[Base de Datos] 3 salas de emergencia agregadas a la base de datos.")

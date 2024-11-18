@@ -11,14 +11,14 @@ def listar_salas_emergencia():
     conn.close()
 
     # Mostrar las salas en una tabla por consola sin utilizar tabulate
-    headers = ["ID Sala", "Nombre", "Estado", "Es Maestro", "Capacidad Total", "Capacidad Disponible"]
-    print(f"{headers[0]:<10} {headers[1]:<20} {headers[2]:<10} {headers[3]:<10} {headers[4]:<15} {headers[5]:<20}")
-    print("-" * 85)
+    headers = ["ID Sala", "Nombre", "Estado", "Es Maestro", "Capacidad Total", "Capacidad Disponible", "IP"]
+    print(f"{headers[0]:<10} {headers[1]:<20} {headers[2]:<10} {headers[3]:<10} {headers[4]:<15} {headers[5]:<20} {headers[6]:<15}")
+    print("-" * 100)
     for sala in salas:
-        print(f"{sala[0]:<10} {sala[1]:<20} {sala[2]:<10} {sala[3]:<10} {sala[4]:<15} {sala[5]:<20}")
+        print(f"{sala[0]:<10} {sala[1]:<20} {sala[2]:<10} {sala[3]:<10} {sala[4]:<15} {sala[5]:<20} {sala[6]:<15}")
 
 
-def agregar_sala_emergencia(nombre, capacidad_total):
+def agregar_sala_emergencia(nombre, capacidad_total, ip):
     # Agrega una nueva sala de emergencia en la base de datos
     try:
         conn = sqlite3.connect('nodos.db')
@@ -26,11 +26,11 @@ def agregar_sala_emergencia(nombre, capacidad_total):
 
         # Usar parámetros para prevenir inyección SQL
         query = """
-            INSERT INTO salas_emergencia (nombre, capacidad_total, capacidad_disponible) VALUES (?, ?, ?)
+            INSERT INTO salas_emergencia (nombre, capacidad_total, capacidad_disponible, ip) VALUES (?, ?, ?, ?)
         """
-        cursor.execute(query, (nombre, capacidad_total, capacidad_total))
+        cursor.execute(query, (nombre, capacidad_total, capacidad_total, ip))
         conn.commit()
-        print(f"\n[Base de Datos] Sala de emergencia '{nombre}' agregada con capacidad total de {capacidad_total}.")
+        print(f"\n[Base de Datos] Sala de emergencia '{nombre}' agregada con capacidad total de {capacidad_total} y IP {ip}.")
     except sqlite3.Error as e:
         print(f"\n[Error] No se pudo agregar la sala de emergencia: {e}")
     finally:
@@ -43,6 +43,6 @@ def agregar_sala_emergencia(nombre, capacidad_total):
 
     # Escribir las dos líneas en el archivo
     with open(history_file, 'a') as f:
-        formatted_query = f"INSERT INTO salas_emergencia (nombre, capacidad_total, capacidad_disponible) VALUES ('{nombre}', {capacidad_total}, {capacidad_total})"
-        f.write(f"# Agregada sala de emergencia: {nombre}, Capacidad Total: {capacidad_total}\n")
+        formatted_query = f"INSERT INTO salas_emergencia (nombre, capacidad_total, capacidad_disponible, ip) VALUES ('{nombre}', {capacidad_total}, {capacidad_total}, '{ip}')"
+        f.write(f"# Agregada sala de emergencia: {nombre}, Capacidad Total: {capacidad_total}, IP: {ip}\n")
         f.write(f"& {formatted_query}\n")

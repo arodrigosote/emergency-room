@@ -11,8 +11,6 @@ def mostrar_menu():
     print("4. Salir")
 
 
-
-
 # Funciones para mostrar y realizar acciones en los menús
 def mostrar_menu_trabajador_social():
     print("\nMenú Trabajador Social:")
@@ -35,6 +33,11 @@ def realizar_accion_trabajador_social(opcion):
 
 
 
+
+
+
+
+
 # Funciones para mostrar y realizar acciones en los menús
 def mostrar_menu_doctor():
     print("\nMenú Doctor:")
@@ -46,6 +49,11 @@ def realizar_accion_doctor(opcion):
         print("Cerrar visita emergencia")
     else:
         print("Opción no válida, intente de nuevo.")
+
+
+
+
+
 
 
 
