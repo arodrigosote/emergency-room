@@ -62,6 +62,7 @@ def activar_sala(ip):
         
         
         nodo_maestro = elegir_nodo_maestro()
+        print(nodo_maestro)
         if nodo_maestro:
             log_message(f"[Nodo Maestro] Nodo maestro encontrado: {nodo_maestro}")
         else:
