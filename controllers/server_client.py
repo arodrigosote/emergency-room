@@ -6,8 +6,7 @@ import os
 from utils.log import log_message
 from models.master_node import actualizar_nodo_maestro
 from models.database import execute_query
-from models.emergency_room import activar_sala
-from controllers.nodes import get_own_node
+
 
 # Diccionario para mantener las conexiones activas
 active_connections = {}
