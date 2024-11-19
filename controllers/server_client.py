@@ -99,7 +99,7 @@ def handle_client(client_socket, addr):
                             if "#" in linea:
                                 # Separar la fecha y hora de la consulta
                                 partes = linea.split("#", 1)
-                                fecha_hora = partes[0].strip()
+                                fecha_hora = partes[0].strip()[:-2]
                                 consulta = partes[1].strip()
 
                                 # Eliminar el guion antes de la consulta (si existe)
