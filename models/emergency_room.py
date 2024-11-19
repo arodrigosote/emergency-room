@@ -66,7 +66,7 @@ def activar_sala(ip, nodo_maestro):
         if nodo_propio:
             log_message(f"[Nodo Propio] Nodo propio encontrado: {nodo_propio}")
             # Comparar con el nodo maestro
-            if nodo_propio[2] == nodo_maestro['ip']:
+            if nodo_propio[2] == nodo_maestro:
                 log_message("[Nodo] El nodo propio es el nodo maestro.")
                 # Enviar mensaje a todos los nodos
                 codigo = "10"
