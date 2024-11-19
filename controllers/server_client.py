@@ -82,7 +82,7 @@ def handle_client(client_socket, addr):
 
             elif mensaje_completo[:2] == "12":
                 try:
-                    # Crear la carpeta 'database' si no existe
+                # Crear la carpeta 'database' si no existe
                     os.makedirs("database", exist_ok=True)
                     log_message("[Info] Carpeta 'database' creada o ya existente.")
 
@@ -101,6 +101,9 @@ def handle_client(client_socket, addr):
                                 partes = linea.split("#", 1)
                                 fecha_hora = partes[0].strip()
                                 consulta = partes[1].strip()
+
+                                # Eliminar el guion antes de la consulta (si existe)
+                                consulta = consulta.replace(" - ", " ")
 
                                 # Validar formato de fecha y hora (opcional)
                                 try:

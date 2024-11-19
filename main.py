@@ -25,16 +25,16 @@ def main():
     # Verificar si el archivo existe y limpiarlo
     if os.path.exists(db_changes_file):
         open(db_changes_file, 'w').close()
-        log_message(f"\n[Archivo] El archivo 'db_changes.txt' ha sido limpiado.")
+        log_message(f"[Archivo] El archivo 'db_changes.txt' ha sido limpiado.")
     else:
-        log_message(f"\n[Advertencia] El archivo 'db_changes.txt' no existe.")
+        log_message(f"[Advertencia] El archivo 'db_changes.txt' no existe.")
     
         # Verificar si el archivo existe y limpiarlo
     if os.path.exists(server_log_file):
         open(server_log_file, 'w').close()
-        log_message(f"\n[Archivo] El archivo 'db_changes.txt' ha sido limpiado.")
+        log_message(f"[Archivo] El archivo 'db_changes.txt' ha sido limpiado.")
     else:
-        log_message(f"\n[Advertencia] El archivo 'db_changes.txt' no existe.")
+        log_message(f"[Advertencia] El archivo 'db_changes.txt' no existe.")
 
     # Agregar una nueva sala de emergencia
     agregar_salas_emergencia()
