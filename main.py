@@ -51,8 +51,6 @@ def main():
                 node_id = node.get("id")  
                 if node_id not in active_connections:
                     conn = connect_clients([node])
-                    #Eleccion del nodo maestro
-
                     if conn:
                         active_connections[node_id] = conn
 

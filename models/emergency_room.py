@@ -1,7 +1,7 @@
 import sqlite3
 import os
 from utils.log import log_message
-from models.node import enviar_mensaje_a_todos_nodos
+from models.node import enviar_mensaje_a_todos
 
 def listar_salas_emergencia():
     # Lista todas las salas de emergencia en la base de datos y las muestra en una tabla por consola
