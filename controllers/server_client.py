@@ -109,7 +109,7 @@ def handle_client(client_socket, addr):
                                 try:
                                     datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M:%S")
                                     # Escribir en el archivo
-                                    archivo.write(f"{fecha_hora} {consulta}\n")
+                                    archivo.write(f"{fecha_hora}#{consulta}\n")
                                     log_message(f"[Info] Consulta guardada: {fecha_hora} {consulta}")
                                 except ValueError:
                                     log_message(f"[Error] Formato de fecha y hora no válido: {fecha_hora}")

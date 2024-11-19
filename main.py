@@ -54,11 +54,10 @@ def main():
     master_node_ip = active_connections[master_node_id].getpeername()[0]
     master_node = {'id': master_node_id, 'ip': master_node_ip}
 
-
-    ejecutar_dbchanges()
-
     own_node = get_own_node()
     activar_sala(own_node['ip'], master_node_ip)
+
+    ejecutar_dbchanges()
 
     try:
         while True:
