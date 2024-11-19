@@ -59,11 +59,6 @@ def activar_sala(ip, nodo_maestro):
         conn.commit()
         log_database(f"UPDATE salas_emergencia SET estado = 'activado' WHERE ip = {ip}")
         log_message(f"[Sala] Estado de la sala con IP {ip} cambiado a activado.")
-
-        if nodo_maestro:
-            log_message(f"[Nodo Maestro] Nodo maestro encontrado: {nodo_maestro}")
-        else:
-            log_message("[Nodo Maestro] No se encontró un nodo maestro.")
         
         # Obtener el nodo propio
         cursor.execute("SELECT * FROM salas_emergencia WHERE ip = ?", (ip,))
