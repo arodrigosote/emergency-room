@@ -49,14 +49,11 @@ def main():
             if conn:
                 active_connections[node_id] = conn
 
+    print("Conexiones activas:")
+    print(active_connections)
+    
+    #own_node = get_own_node()
 
-    nodo = max(active_connections.keys())
-
-    if nodo:
-        log_message(f"[Nodo Maestro] Nodo maestro encontrado: {nodo}")
-        own = get_own_node()
-        log_message(f"[Nodo Propio] Nodo propio encontrado: {own}")
-        activar_sala(own['ip'], nodo)
 
     try:
         while True:
