@@ -41,6 +41,8 @@ def main():
     agregar_salas_emergencia()
     agregar_doctores()
 
+    
+
     try:
         while True:
             nodes = get_network_nodes()  # Obtener nodos de la red

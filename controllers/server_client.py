@@ -120,7 +120,8 @@ def start_server():
         from models.emergency_room import activar_sala
 
         own_node = get_own_node()
-        activar_sala(own_node['ip'], nodo_maestro)
+        if own_node:
+            activar_sala(own_node['ip'], nodo_maestro)
 
         while True:
             client_socket, addr = server.accept()
