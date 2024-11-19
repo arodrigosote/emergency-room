@@ -61,7 +61,9 @@ def activar_sala(ip, nodo_maestro):
         log_message(f"[Sala] Estado de la sala con IP {ip} cambiado a activado.")
         
         # Importar aquí para evitar importación circular
-        #from controllers.server_client import elegir_nodo_maestro
+        from controllers.server_client import elegir_nodo_maestro
+
+        nodo_maestro = elegir_nodo_maestro()
 
         if nodo_maestro:
             log_message(f"[Nodo Maestro] Nodo maestro encontrado: {nodo_maestro}")

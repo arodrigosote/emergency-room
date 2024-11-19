@@ -116,11 +116,7 @@ def start_server():
         
         nodo_maestro = elegir_nodo_maestro()
 
-        # Importar aquí para evitar importación circular
-        from models.emergency_room import activar_sala
-
-
-
+    
         while True:
             client_socket, addr = server.accept()
             client_handler = threading.Thread(target=handle_client, args=(client_socket, addr), daemon=True)
