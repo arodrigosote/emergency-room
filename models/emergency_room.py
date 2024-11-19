@@ -1,6 +1,6 @@
 import sqlite3
 import os
-from utils.log import log_message
+from utils.log import log_message, log_database
 from models.node import enviar_mensaje_a_todos, enviar_mensaje_a_maestro
 
 def listar_salas_emergencia():
@@ -56,30 +56,31 @@ def activar_sala(ip):
         query = "UPDATE salas_emergencia SET estado = 'activado' WHERE ip = ?"
         cursor.execute(query, (ip,))
         conn.commit()
-        log_message(f"\n[Sala] Estado de la sala con IP {ip} cambiado a activado.")
+        log_database(f"UPDATE salas_emergencia SET estado = 'activado' WHERE ip = {ip}")
+        log_message(f"[Sala] Estado de la sala con IP {ip} cambiado a activado.")
         
         # Obtener el nodo maestro
         cursor.execute("SELECT * FROM salas_emergencia WHERE es_maestro = 1")
         nodo_maestro = cursor.fetchone()
         if nodo_maestro:
-            log_message(f"\n[Nodo Maestro] Nodo maestro encontrado: {nodo_maestro}")
+            log_message(f"[Nodo Maestro] Nodo maestro encontrado: {nodo_maestro}")
         else:
-            log_message("\n[Nodo Maestro] No se encontró un nodo maestro.")
+            log_message("[Nodo Maestro] No se encontró un nodo maestro.")
         
         # Obtener el nodo propio
         cursor.execute("SELECT * FROM salas_emergencia WHERE ip = ?", (ip,))
         nodo_propio = cursor.fetchone()
         if nodo_propio:
-            log_message(f"\n[Nodo Propio] Nodo propio encontrado: {nodo_propio}")
+            log_message(f"[Nodo Propio] Nodo propio encontrado: {nodo_propio}")
             # Comparar con el nodo maestro
             if nodo_propio[0] == nodo_maestro[0]:
-                log_message("\n[Nodo] El nodo propio es el nodo maestro.")
+                log_message("[Nodo] El nodo propio es el nodo maestro.")
                 # Enviar mensaje a todos los nodos
                 codigo = "10"
                 mensaje = f"UPDATE salas_emergencia SET estado = 'activado' WHERE ip = '{ip}'"
                 enviar_mensaje_a_todos(codigo, mensaje)
             else:
-                log_message("\n[Nodo] El nodo propio no es el nodo maestro.")
+                log_message("[Nodo] El nodo propio no es el nodo maestro.")
                 codigo = "11"
                 mensaje = f"UPDATE salas_emergencia SET estado = 'activado' WHERE ip = '{ip}'"
                 enviar_mensaje_a_maestro(nodo_maestro[2], codigo, mensaje)
