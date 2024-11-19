@@ -115,6 +115,8 @@ def handle_client(client_socket, addr):
                                     log_message(f"[Error] Formato de fecha y hora no válido: {fecha_hora}")
                 except Exception as e:
                     log_message(f"[Error] No se pudo procesar el mensaje '12': {e}")
+                
+                continue
 
             elif data.decode()[:2] == "ms":
                 enviar_mensaje()
