@@ -214,10 +214,10 @@ def connect_clients_send_dbchanges(nodes):
             log_message(f"[Intentando conectar] Nodo ID: {node_id}, IP: {node['ip']}")
             client.connect((node['ip'], 9999))
             active_connections[node_id] = client  # Almacena la conexión activa
-
+            elegir_nodo_maestro()
             # Leer el contenido del archivo db_changes
             try:
-                with open('history/db_changes', 'r') as file:
+                with open('history/db_changes.txt', 'r') as file:
                     db_changes = file.read()
                 # Enviar los cambios de la base de datos con código de instrucción "12"
                 instruction_code = "12"
