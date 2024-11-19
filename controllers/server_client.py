@@ -113,16 +113,7 @@ def start_server():
         with open('history/server_log.txt', 'a') as log_file:
             log_file.write(message)
 
-        elegir_nodo_maestro()
-        nodo = max(active_connections.keys())
-
-        from models.emergency_room import activar_sala
-        if nodo:
-            log_message(f"[Nodo Maestro] Nodo maestro encontrado: {nodo}")
-            own = get_own_node()
-            log_message(f"[Nodo Propio] Nodo propio encontrado: {own}")
-            activar_sala(own['ip'], nodo)
-    
+        elegir_nodo_maestro() 
 
         while True:
             client_socket, addr = server.accept()

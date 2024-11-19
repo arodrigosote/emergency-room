@@ -41,7 +41,14 @@ def main():
     agregar_salas_emergencia()
     agregar_doctores()
 
+    nodo = max(active_connections.keys())
 
+    from models.emergency_room import activar_sala
+    if nodo:
+        log_message(f"[Nodo Maestro] Nodo maestro encontrado: {nodo}")
+        own = get_own_node()
+        log_message(f"[Nodo Propio] Nodo propio encontrado: {own}")
+        activar_sala(own['ip'], nodo)
 
     try:
         while True:
