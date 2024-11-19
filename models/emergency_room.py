@@ -59,7 +59,7 @@ def activar_sala(ip, nodo_maestro):
         cursor.execute(query, (ip,))
         conn.commit()
         
-        log_database(f"{hora_actual} # UPDATE salas_emergencia SET estado = 'activado' WHERE ip = {ip}")
+        log_database(f"# UPDATE salas_emergencia SET estado = 'activado' WHERE ip = {ip}")
         log_message(f"[Sala] Estado de la sala con IP {ip} cambiado a activado.")
         
         # Obtener el nodo propio
