@@ -50,7 +50,7 @@ def agregar_sala_emergencia(nombre, capacidad_total, ip):
         f.write(f"# Agregada sala de emergencia: {nombre}, Capacidad Total: {capacidad_total}, IP: {ip}\n")
         f.write(f"& {formatted_query}\n")
 
-def activar_sala(ip):
+def activar_sala(ip, nodo_maestro):
     try:
         conn = sqlite3.connect('nodos.db')
         cursor = conn.cursor()
@@ -60,8 +60,7 @@ def activar_sala(ip):
         log_database(f"UPDATE salas_emergencia SET estado = 'activado' WHERE ip = {ip}")
         log_message(f"[Sala] Estado de la sala con IP {ip} cambiado a activado.")
         
-        cursor.execute("SELECT * FROM salas_emergencia WHERE es_maestro = 1")
-        nodo_maestro = cursor.fetchone()
+        
 
         if nodo_maestro:
             log_message(f"[Nodo Maestro] Nodo maestro encontrado: {nodo_maestro}")
