@@ -50,7 +50,7 @@ def agregar_sala_emergencia(nombre, capacidad_total, ip):
         f.write(f"# Agregada sala de emergencia: {nombre}, Capacidad Total: {capacidad_total}, IP: {ip}\n")
         f.write(f"& {formatted_query}\n")
 
-def activar_sala(ip, nodo_maestro):
+def activar_sala(ip):
     try:
         conn = sqlite3.connect('nodos.db')
         cursor = conn.cursor()
