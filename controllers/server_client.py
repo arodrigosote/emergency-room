@@ -1,11 +1,12 @@
 import socket
 import threading
-from controllers.nodes import get_network_nodes
-from datetime import datetime
 import os
+from datetime import datetime
 from utils.log import log_message
 from models.master_node import actualizar_nodo_maestro
 from models.database import execute_query
+from models.emergency_room import activar_sala
+from controllers.nodes import get_network_nodes, get_own_node
 
 
 # Diccionario para mantener las conexiones activas
@@ -115,7 +116,8 @@ def start_server():
         
         elegir_nodo_maestro()
 
-        
+        own_node = get_own_node()
+        activar_sala(own_node['ip'])
 
         while True:
             client_socket, addr = server.accept()
