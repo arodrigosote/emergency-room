@@ -43,6 +43,39 @@ def handle_client(client_socket, addr):
                 client_socket.send(response.encode())
                 
                 continue
+            elif mensaje_completo[:2] == "11":
+                codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
+                mensaje_nuevo = f"10|{hora_actual}|{query}"
+                respuestas = []
+                for destino, client_socket in active_connections.items():
+                    try:
+                        if client_socket.fileno() != -1:  # Verifica que el socket siga activo
+                            client_socket.send(mensaje_nuevo.encode())
+                            log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
+                            
+                            # Analizar la respuesta del servidor
+                            respuesta = client_socket.recv(1024).decode()  # Tamaño del buffer ajustable
+                            log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
+                            respuestas.append(respuesta)
+                            
+                        else:
+                            log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
+                    except Exception as e:
+                        log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
+
+                # Verificar si todas las respuestas son "OK"
+                if all(respuesta == "OK" for respuesta in respuestas):
+                    log_message("[Consenso] Todos los nodos respondieron OK")
+                    response = f"OK"
+                    log_message(f"[Query] Ejecutada: {hora_ejecucion} Estatus: {response} - {query}")
+                else:
+                    log_message("[Sin consenso] No todos los nodos respondieron OK")
+                    response = f"Error"
+                    log_message(f"[Query] Recibido: {hora_ejecucion} Estatus: {response} - {query}")
+                
+                client_socket.send(response.encode())              
+                
+                continue
             elif data.decode()[:2] == "ms":
                 enviar_mensaje()
                 continue
@@ -145,3 +178,9 @@ def elegir_nodo_maestro():
         log_message(f"[Nodo Maestro] Nodo {master_node['id']} con IP {master_node['ip']} es el nodo maestro.")
         actualizar_nodo_maestro(master_node_ip)
         return master_node
+
+def get_client_socket_by_ip(ip):
+    for node_id, client_socket in active_connections.items():
+        if client_socket.getpeername()[0] == ip:
+            return client_socket
+    return None

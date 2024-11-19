@@ -1,7 +1,7 @@
 import sqlite3
 import os
 from utils.log import log_message
-from models.node import enviar_mensaje_a_todos
+from models.node import enviar_mensaje_a_todos, enviar_mensaje_a_maestro
 
 def listar_salas_emergencia():
     # Lista todas las salas de emergencia en la base de datos y las muestra en una tabla por consola
@@ -75,11 +75,14 @@ def activar_sala(ip):
             if nodo_propio[0] == nodo_maestro[0]:
                 log_message("\n[Nodo] El nodo propio es el nodo maestro.")
                 # Enviar mensaje a todos los nodos
-                codigo = "ACTIVAR_SALA"
+                codigo = "10"
                 mensaje = f"UPDATE salas_emergencia SET estado = 'activado' WHERE ip = '{ip}'"
-                enviar_mensaje_a_todos_nodos(codigo, mensaje)
+                enviar_mensaje_a_todos(codigo, mensaje)
             else:
                 log_message("\n[Nodo] El nodo propio no es el nodo maestro.")
+                codigo = "11"
+                mensaje = f"UPDATE salas_emergencia SET estado = 'activado' WHERE ip = '{ip}'"
+                enviar_mensaje_a_maestro(nodo_maestro[2], codigo, mensaje)
         else:
             log_message("\n[Nodo Propio] No se encontró el nodo propio.")
     except sqlite3.Error as e:

@@ -34,3 +34,4 @@ def obtener_nodo_maestro():
     except sqlite3.Error as e:
         print(f"[Error] No se pudo obtener el nodo maestro de la base de datos: {e}")
         return None
+    
