@@ -42,7 +42,7 @@ def main():
     agregar_doctores()
 
     own_node = get_own_node()# Cambiar el estado de la sala a activado
-    activar_sala(own_node.get("id"))
+    activar_sala(own_node.get("ip"))
 
     try:
         while True:
