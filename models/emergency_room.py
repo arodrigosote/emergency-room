@@ -60,10 +60,8 @@ def activar_sala(ip):
         log_database(f"UPDATE salas_emergencia SET estado = 'activado' WHERE ip = {ip}")
         log_message(f"[Sala] Estado de la sala con IP {ip} cambiado a activado.")
         
-        # Importar aquí para evitar importación circular
-        from controllers.server_client import elegir_nodo_maestro
-
-        nodo_maestro = elegir_nodo_maestro()
+        cursor.execute("SELECT * FROM salas_emergencia WHERE es_maestro = 1")
+        nodo_maestro = cursor.fetchone()
 
         if nodo_maestro:
             log_message(f"[Nodo Maestro] Nodo maestro encontrado: {nodo_maestro}")
