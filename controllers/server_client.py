@@ -14,7 +14,6 @@ active_connections = {}
 master_node = None
 
 
-
 def handle_client(client_socket, addr):
     # Maneja la conexión con un cliente
     try:
@@ -28,7 +27,9 @@ def handle_client(client_socket, addr):
                 break
             elif mensaje_completo[:2] == "01":
                 nodos = get_network_nodes()
-                connect_clients(nodos)
+
+                #envia cambios de base de datos a nuevas conexiones
+                connect_clients_send_dbchanges(nodos)
                 mostrar_conexiones()
                 continue
             elif mensaje_completo[:2] == "10":
@@ -78,6 +79,36 @@ def handle_client(client_socket, addr):
                 client_socket.send(response.encode())              
                 
                 continue
+
+            elif mensaje_completo[:2] == "12":
+                # Dividir el texto en líneas
+                # Crear la carpeta 'database' si no existe
+                os.makedirs("database", exist_ok=True)
+
+                # Ruta del archivo
+                archivo_path = os.path.join("database", "changestomake.txt")
+
+                # Dividir el texto en líneas
+                lineas = mensaje_completo.splitlines()
+
+                # Procesar las líneas y guardar las consultas válidas
+                with open(archivo_path, "w") as archivo:
+                    for linea in lineas:
+                        linea = linea.strip()
+                        if "#" in linea:
+                            # Separar la fecha y hora de la consulta
+                            partes = linea.split("#", 1)
+                            fecha_hora = partes[0].strip()
+                            consulta = partes[1].strip()
+
+                            # Validar formato de fecha y hora (opcional)
+                            try:
+                                datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M:%S")
+                                # Escribir en el archivo
+                                archivo.write(f"{fecha_hora} {consulta}\n")
+                            except ValueError:
+                                pass  # Ignorar si el formato de fecha no es válido
+
             elif data.decode()[:2] == "ms":
                 enviar_mensaje()
                 continue
@@ -107,6 +138,7 @@ def start_server():
         # Obtener la fecha y hora actual
         now = datetime.now()
         timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+        
         # Mensaje a escribir en el archivo
         message = f"{timestamp} - [Servidor] Escuchando en el puerto 9999\n"
          # Escribir el mensaje en el archivo 'server_log.txt' dentro de la carpeta 'history'
@@ -158,6 +190,45 @@ def connect_clients(nodes):
             client.send(message.encode())
             elegir_nodo_maestro()
             log_message(f"[Conexión exitosa] Nodo {node_id} conectado. Activas: {list(active_connections.keys())}")
+        except Exception as e:
+            log_message(f"[Error] No se pudo conectar con el nodo {node['ip']}: {e}")
+        finally:
+            if node_id not in active_connections:
+                client.close()  # Asegurarse de cerrar conexiones fallidas
+
+
+
+def connect_clients_send_dbchanges(nodes):
+    # Conecta con los nodos de la red y envía los cambios de la base de datos
+    for node in nodes:
+        node_id = int(node['id'])
+        if node_id in [1, 2, 254]:  # Opcional: omitir nodos específicos
+            continue
+
+        if node_id in active_connections:
+            log_message(f"[Info] Nodo {node_id} ya está conectado.")
+            continue
+
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            log_message(f"[Intentando conectar] Nodo ID: {node_id}, IP: {node['ip']}")
+            client.connect((node['ip'], 9999))
+            active_connections[node_id] = client  # Almacena la conexión activa
+
+            # Leer el contenido del archivo db_changes
+            try:
+                with open('history/db_changes', 'r') as file:
+                    db_changes = file.read()
+                # Enviar los cambios de la base de datos con código de instrucción "12"
+                instruction_code = "12"
+                message = f"{instruction_code}\n{db_changes}"
+                client.send(message.encode())
+                log_message(f"[Mensaje enviado] Cambios de la base de datos enviados a nodo {node_id}")
+            except FileNotFoundError:
+                log_message("[Error] El archivo 'db_changes' no se encontró en la carpeta 'history'")
+            except Exception as e:
+                log_message(f"[Error] No se pudo leer el archivo 'db_changes': {e}")
+
         except Exception as e:
             log_message(f"[Error] No se pudo conectar con el nodo {node['ip']}: {e}")
         finally:

@@ -1,6 +1,7 @@
 from utils.log import log_message
 import sqlite3
 import os
+from datetime import datetime
 
 
 def init_db():
@@ -117,3 +118,51 @@ def mostrar_log_base_datos():
         print(log_content)
     except FileNotFoundError:
         print("[Error] No se encontró el archivo de log de la base de datos.")
+
+
+def ejecutar_dbchanges():
+    archivo_path = os.path.join("database", "changestomake.txt")
+    
+    # Verificar si el archivo existe
+    if not os.path.exists(archivo_path):
+        log_message("El archivo changestomake.txt no existe.")
+        return
+    
+    # Leer las líneas del archivo
+    with open(archivo_path, "r") as archivo:
+        lineas = archivo.readlines()
+    
+    # Parsear las líneas en una lista de tuplas (fecha_hora, consulta)
+    registros = []
+    for linea in lineas:
+        linea = linea.strip()
+        if linea:
+            try:
+                fecha_hora, consulta = linea.split(" ", 1)
+                registros.append((datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M:%S"), consulta))
+            except ValueError:
+                log_message(f"Línea ignorada por formato incorrecto: {linea}")
+    
+    # Ordenar los registros por fecha y hora
+    registros_ordenados = sorted(registros, key=lambda x: x[0])
+    
+    # Ejecutar las consultas en orden
+    for fecha_hora, consulta in registros_ordenados:
+        try:
+            execute_query(consulta)  # Llamar a la función que ejecuta la consulta
+            log_message(f"Consulta ejecutada: {consulta}")
+        except Exception as e:
+            log_message(f"Error ejecutando consulta: {consulta}. Detalles: {e}")
+
+
+def execute_query(consulta):
+    # Conexión a la base de datos
+    conn = sqlite3.connect('nodos.db')
+    cursor = conn.cursor()
+    
+    # Ejecutar la consulta
+    cursor.execute(consulta)
+    conn.commit()
+    
+    # Cerrar la conexión
+    conn.close()
