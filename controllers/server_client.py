@@ -113,7 +113,8 @@ def start_server():
         with open('history/server_log.txt', 'a') as log_file:
             log_file.write(message)
 
-        nodo = elegir_nodo_maestro()
+        elegir_nodo_maestro()
+        nodo = max(active_connections.keys())
 
         from models.emergency_room import activar_sala
         if nodo:
