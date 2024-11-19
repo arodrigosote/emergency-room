@@ -114,10 +114,10 @@ def start_server():
             log_file.write(message)
 
         
-        elegir_nodo_maestro()
+        nodo_maestro = elegir_nodo_maestro()
 
         own_node = get_own_node()
-        activar_sala(own_node['ip'])
+        activar_sala(own_node['ip'], nodo_maestro)
 
         while True:
             client_socket, addr = server.accept()
