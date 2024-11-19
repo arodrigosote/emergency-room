@@ -41,7 +41,6 @@ def main():
     agregar_salas_emergencia()
     agregar_doctores()
 
-    
 
 
     try:
