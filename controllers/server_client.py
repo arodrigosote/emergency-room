@@ -5,7 +5,7 @@ from datetime import datetime
 from utils.log import log_message
 from models.master_node import actualizar_nodo_maestro
 from models.database import execute_query
-from models.emergency_room import activar_sala
+# from models.emergency_room import activar_sala  # Mover esta importación dentro de la función
 from controllers.nodes import get_network_nodes, get_own_node
 
 
@@ -115,6 +115,9 @@ def start_server():
 
         
         nodo_maestro = elegir_nodo_maestro()
+
+        # Importar aquí para evitar importación circular
+        from models.emergency_room import activar_sala
 
         own_node = get_own_node()
         activar_sala(own_node['ip'], nodo_maestro)
