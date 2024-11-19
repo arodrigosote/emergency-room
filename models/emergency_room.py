@@ -3,7 +3,6 @@ import os
 from utils.log import log_message, log_database
 from models.node import enviar_mensaje_a_todos, enviar_mensaje_a_maestro
 # from controllers.server_client import elegir_nodo_maestro  # Mover esta importación dentro de la función
-from controllers.server_client import active_connections
 
 def listar_salas_emergencia():
     # Lista todas las salas de emergencia en la base de datos y las muestra en una tabla por consola
@@ -60,8 +59,6 @@ def activar_sala(ip, nodo_maestro):
         conn.commit()
         log_database(f"UPDATE salas_emergencia SET estado = 'activado' WHERE ip = {ip}")
         log_message(f"[Sala] Estado de la sala con IP {ip} cambiado a activado.")
-        
-        nodo_maestro = max(active_connections.keys())
 
         if nodo_maestro:
             log_message(f"[Nodo Maestro] Nodo maestro encontrado: {nodo_maestro}")

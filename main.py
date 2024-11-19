@@ -41,9 +41,17 @@ def main():
     agregar_salas_emergencia()
     agregar_doctores()
 
+    nodes = get_network_nodes()  # Obtener nodos de la red
+    for node in nodes:
+        node_id = node.get("id")  
+        if node_id not in active_connections:
+            conn = connect_clients([node])
+            if conn:
+                active_connections[node_id] = conn
+
+
     nodo = max(active_connections.keys())
 
-    from models.emergency_room import activar_sala
     if nodo:
         log_message(f"[Nodo Maestro] Nodo maestro encontrado: {nodo}")
         own = get_own_node()
@@ -52,14 +60,7 @@ def main():
 
     try:
         while True:
-            nodes = get_network_nodes()  # Obtener nodos de la red
-            for node in nodes:
-                node_id = node.get("id")  
-                if node_id not in active_connections:
-                    conn = connect_clients([node])
-                    if conn:
-                        active_connections[node_id] = conn
-
+            
             mostrar_menu()
 
             try:
