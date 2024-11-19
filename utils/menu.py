@@ -3,6 +3,7 @@ from models.doctors import listar_doctores
 from models.master_node import obtener_nodo_maestro
 from controllers.database import mostrar_log_base_datos, mostrar_log_servidor
 from utils.log import log_message
+from controllers.nodes import get_network_nodes
 
 def mostrar_menu():
     print("\n\nMenú:")
@@ -70,8 +71,10 @@ def mostrar_menu_utilidades():
 def realizar_accion_utilidades(opcion):
     if opcion == '1':
         print("\nListando nodos activos con sala de emergencia")
-
-    
+        nodes = get_network_nodes()  # Obtener nodos de la red
+        for node in nodes:
+            print(f"IP del nodo: {node['ip']}")
+        log_message("[Utilidades] Listando nodos activos con sala de emergencia.")
     elif opcion == '2':
         print("\nMostrando Log de cambios en la base de datos")
         mostrar_log_base_datos()  # Llamar a la función para mostrar log de base de datos

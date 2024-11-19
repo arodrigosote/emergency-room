@@ -5,6 +5,7 @@ from datetime import datetime
 import os
 from utils.log import log_message
 from models.master_node import actualizar_nodo_maestro
+from models.database import execute_query
 
 # Diccionario para mantener las conexiones activas
 active_connections = {}
@@ -18,14 +19,29 @@ def handle_client(client_socket, addr):
         log_message(f"[Servidor] Conexión establecida con {addr}")
         while True:
             data = client_socket.recv(1024)
+            mensaje_completo = data.decode()
             if not data:
                 break
-            if data.decode()[:2] == "ex":
+            if mensaje_completo[:2] == "ex":
                 break
-            elif data.decode()[:2] == "01":
+            elif mensaje_completo[:2] == "01":
                 nodos = get_network_nodes()
                 connect_clients(nodos)
                 mostrar_conexiones()
+                continue
+            elif mensaje_completo[:2] == "10":
+                codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
+                log_message(f"[Query] Recibido: {hora_actual} - {query}")
+                resultado = execute_query(query)
+                hora_ejecucion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                if resultado:
+                    response = f"OK"
+                    log_message(f"[Query] Ejecutada: {hora_ejecucion} Estatus: {response} - {query}")
+                else:
+                    response = f"Error"
+                    log_message(f"[Query] Recibido: {hora_ejecucion} Estatus: {response} - {query}")
+                client_socket.send(response.encode())
+                
                 continue
             elif data.decode()[:2] == "ms":
                 enviar_mensaje()

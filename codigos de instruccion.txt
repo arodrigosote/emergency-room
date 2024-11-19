@@ -1,1 +1,3 @@
 01 - Cliente solicita a servidor que el servidor se conecte al cliente como cliente. 
+
+10 - Ejecutar query en todos los nodos y obtener consenso 
