@@ -81,33 +81,37 @@ def handle_client(client_socket, addr):
                 continue
 
             elif mensaje_completo[:2] == "12":
-                # Dividir el texto en líneas
-                # Crear la carpeta 'database' si no existe
-                os.makedirs("database", exist_ok=True)
+                try:
+                    # Crear la carpeta 'database' si no existe
+                    os.makedirs("database", exist_ok=True)
+                    log_message("[Info] Carpeta 'database' creada o ya existente.")
 
-                # Ruta del archivo
-                archivo_path = os.path.join("database", "changestomake.txt")
+                    # Ruta del archivo
+                    archivo_path = os.path.join("database", "changestomake.txt")
 
-                # Dividir el texto en líneas
-                lineas = mensaje_completo.splitlines()
+                    # Dividir el texto en líneas
+                    lineas = mensaje_completo.splitlines()
 
-                # Procesar las líneas y guardar las consultas válidas
-                with open(archivo_path, "w") as archivo:
-                    for linea in lineas:
-                        linea = linea.strip()
-                        if "#" in linea:
-                            # Separar la fecha y hora de la consulta
-                            partes = linea.split("#", 1)
-                            fecha_hora = partes[0].strip()
-                            consulta = partes[1].strip()
+                    # Procesar las líneas y guardar las consultas válidas
+                    with open(archivo_path, "w") as archivo:
+                        for linea in lineas:
+                            linea = linea.strip()
+                            if "#" in linea:
+                                # Separar la fecha y hora de la consulta
+                                partes = linea.split("#", 1)
+                                fecha_hora = partes[0].strip()
+                                consulta = partes[1].strip()
 
-                            # Validar formato de fecha y hora (opcional)
-                            try:
-                                datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M:%S")
-                                # Escribir en el archivo
-                                archivo.write(f"{fecha_hora} {consulta}\n")
-                            except ValueError:
-                                pass  # Ignorar si el formato de fecha no es válido
+                                # Validar formato de fecha y hora (opcional)
+                                try:
+                                    datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M:%S")
+                                    # Escribir en el archivo
+                                    archivo.write(f"{fecha_hora} {consulta}\n")
+                                    log_message(f"[Info] Consulta guardada: {fecha_hora} {consulta}")
+                                except ValueError:
+                                    log_message(f"[Error] Formato de fecha y hora no válido: {fecha_hora}")
+                except Exception as e:
+                    log_message(f"[Error] No se pudo procesar el mensaje '12': {e}")
 
             elif data.decode()[:2] == "ms":
                 enviar_mensaje()
