@@ -41,9 +41,6 @@ def main():
     agregar_salas_emergencia()
     agregar_doctores()
 
-    own_node = get_own_node()# Cambiar el estado de la sala a activado
-    activar_sala(own_node.get("ip"))
-
     try:
         while True:
             nodes = get_network_nodes()  # Obtener nodos de la red

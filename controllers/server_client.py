@@ -6,6 +6,8 @@ import os
 from utils.log import log_message
 from models.master_node import actualizar_nodo_maestro
 from models.database import execute_query
+from models.emergency_room import activar_sala
+from controllers.nodes import get_own_node
 
 # Diccionario para mantener las conexiones activas
 active_connections = {}
@@ -113,6 +115,10 @@ def start_server():
 
         
         elegir_nodo_maestro()
+
+        own_node = get_own_node()# Cambiar el estado de la sala a activado
+        activar_sala(own_node.get("ip"))
+        
         while True:
             client_socket, addr = server.accept()
             client_handler = threading.Thread(target=handle_client, args=(client_socket, addr), daemon=True)
