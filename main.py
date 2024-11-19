@@ -42,6 +42,8 @@ def main():
     agregar_doctores()
 
     nodes = get_network_nodes()  # Obtener nodos de la red
+    print("Nodos de la red:")
+    print(nodes)
     for node in nodes:
         node_id = node.get("id")  
         if node_id not in active_connections:
