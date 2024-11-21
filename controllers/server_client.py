@@ -54,10 +54,14 @@ def handle_client(client_socket, addr):
                 if resultado:
                     response = f"OK"
                     log_message(f"[Query] Ejecutada: {hora_ejecucion} Estatus: {response} - {query}")
+                    elegir_nodo_maestro()
+                    log_message(f"[Nodo Maestro] Eleccion terminada OK")
                     
                 else:
                     response = f"Error"
                     log_message(f"[Query] Recibido: {hora_ejecucion} Estatus: {response} - {query}")
+                    elegir_nodo_maestro()
+                    log_message(f"[Nodo Maestro] Eleccion terminada OK")
                 
                 elegir_nodo_maestro()
                 log_message(f"[Nodo Maestro] Eleccion terminada OK")
