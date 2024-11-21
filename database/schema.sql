@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS camas (
 -- Tabla de Visitas de Emergencia
 CREATE TABLE IF NOT EXISTS visitas_emergencia (
     id_visita INTEGER PRIMARY KEY,
-    folio VARCHAR(50) UNIQUE NOT NULL,
+    folio VARCHAR(50) UNIQUE,
     motivo VARCHAR(200),
     id_paciente INTEGER NOT NULL,
     id_doctor INTEGER NOT NULL,
