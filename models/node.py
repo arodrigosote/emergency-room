@@ -79,13 +79,24 @@ def obtener_sala_y_cama():
     conn = sqlite3.connect('nodos.db')
     cursor = conn.cursor()
     
-    # Obtener la sala con más camas disponibles
+    # Obtener la sala con mayor disponibilidad relativa
     cursor.execute("""
-        SELECT se.id_sala, se.capacidad_disponible
-        FROM salas_emergencia se
-        WHERE se.capacidad_disponible > 0
-        ORDER BY se.capacidad_disponible DESC
-        LIMIT 1
+        SELECT 
+            salas_emergencia.id_sala 
+        FROM 
+            salas_emergencia
+        LEFT JOIN 
+            camas 
+        ON 
+            salas_emergencia.id_sala = camas.id_sala
+        WHERE 
+            salas_emergencia.estado = 'activo' 
+            AND camas.estado = 'disponible'
+        GROUP BY 
+            salas_emergencia.id_sala
+        ORDER BY 
+            (CAST(COUNT(camas.id_cama) AS FLOAT) / salas_emergencia.capacidad_total) DESC
+        LIMIT 1;
     """)
     sala = cursor.fetchone()
     
@@ -96,6 +107,7 @@ def obtener_sala_y_cama():
         return sala[0], cama[0] if cama else None
     else:
         return None, None
+
 
 def enviar_mensaje_a_todos(codigo_instruccion, mensaje):
     hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -128,7 +140,6 @@ def enviar_mensaje_a_maestro(ip_nodo_maestro, codigo, mensaje):
     hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     mensaje_completo = f"{codigo}|{hora_actual}|{mensaje}"
     nodo_maestro = get_client_socket_by_ip(ip_nodo_maestro)  # Obtener el socket del nodo maestro usando su IP
-    print(f"[Debug] Socket del nodo maestro: {nodo_maestro}")
     try:
         if nodo_maestro.fileno() != -1:  # Verifica que el socket siga activo
             nodo_maestro.send(mensaje_completo.encode())

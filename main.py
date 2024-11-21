@@ -67,7 +67,6 @@ def main():
     master_node_id = max(active_connections.keys())
     master_node_ip = active_connections[master_node_id].getpeername()[0]
     master_node = {'id': master_node_id, 'ip': master_node_ip}
-    print(f"[Nodo Maestro] Nodo maestro seleccionado: {master_node}")
 
     own_node = get_own_node()
     
