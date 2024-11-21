@@ -73,6 +73,7 @@ def enviar_mensaje_a_maestro(ip_nodo_maestro, codigo, mensaje):
     nodo_maestro = None
     while nodo_maestro == None:
         nodo_maestro = get_client_socket_by_ip(ip_nodo_maestro)  # Obtener el socket del nodo maestro usando su IP
+        print(nodo_maestro)
     
     try:
         if nodo_maestro.fileno() != -1:  # Verifica que el socket siga activo
