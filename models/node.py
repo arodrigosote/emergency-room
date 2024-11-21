@@ -90,7 +90,7 @@ def obtener_sala_y_cama():
         ON 
             salas_emergencia.id_sala = camas.id_sala
         WHERE 
-            salas_emergencia.estado = 'activo' 
+            salas_emergencia.estado = 'activado' 
             AND camas.estado = 'disponible'
         GROUP BY 
             salas_emergencia.id_sala
