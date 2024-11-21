@@ -262,7 +262,10 @@ def elegir_nodo_maestro():
         return master_node
 
 def get_client_socket_by_ip(ip):
+    print(active_connections)
+
     for node_id, client_socket in active_connections.items():
         if client_socket.getpeername()[0] == ip:
+            print(client_socket.getpeername()[0])
             return client_socket
     return None
