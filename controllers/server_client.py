@@ -39,11 +39,13 @@ def handle_client(client_socket, addr):
                 hora_ejecucion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 if resultado:
                     response = f"OK"
+                    print('nodos responden a maestro OK')
                     log_message(f"[Query] Ejecutada: {hora_ejecucion} Estatus: {response} - {query}")
                 else:
                     response = f"Error"
                     log_message(f"[Query] Recibido: {hora_ejecucion} Estatus: {response} - {query}")
                 client_socket.send(response.encode())
+                print('enviando respuesta a nodo maestro')
                 
                 continue
             elif mensaje_completo[:2] == "11":
@@ -265,8 +267,6 @@ def get_client_socket_by_ip(ip):
     # ...existing code...
     id = ip.split('.')[-1]
     for node_id, client_socket in active_connections.items():
-        print(node_id, client_socket)
-        print(int(node_id) == int(id))
         if int(node_id) == int(id):
             return client_socket
     return None
