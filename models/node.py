@@ -81,28 +81,19 @@ def obtener_sala_y_cama():
     
     # Obtener la sala con mayor disponibilidad relativa
     cursor.execute("""
-        SELECT 
-            salas_emergencia.id_sala 
-        FROM 
-            salas_emergencia
-        LEFT JOIN 
-            camas 
-        ON 
-            salas_emergencia.id_sala = camas.id_sala
-        WHERE 
-            salas_emergencia.estado = 'activo' 
-            AND camas.estado = 'disponible'
-        GROUP BY 
-            salas_emergencia.id_sala
-        ORDER BY 
-            (CAST(COUNT(camas.id_cama) AS FLOAT) / salas_emergencia.capacidad_total) DESC
-        LIMIT 1;
-    """)
+        SELECT id_sala, nombre, capacidad_disponible
+        FROM salas_emergencia
+        ORDER BY capacidad_disponible DESC
+        LIMIT 1
+        """)
     sala = cursor.fetchone()
     
     if sala:
         # Obtener una cama disponible en la sala seleccionada
-        cursor.execute("SELECT id_cama FROM camas WHERE id_sala = ? AND estado = 'disponible' LIMIT 1", (sala[0],))
+        cursor.execute("""
+                       SELECT id_cama 
+                       FROM camas 
+                       WHERE id_sala = ? AND estado = 'disponible' LIMIT 1""", (sala[0],))
         cama = cursor.fetchone()
         return sala[0], cama[0] if cama else None
     else:
