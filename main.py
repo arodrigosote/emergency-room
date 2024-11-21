@@ -43,14 +43,14 @@ def main():
     agregar_camas()
 
     nodes = get_network_nodes()  # Obtener nodos de la red
-
+    print(nodes)
     for node in nodes:
         node_id = node.get("id")  
         if node_id not in active_connections:
             conn = connect_clients([node])
             if conn:
                 active_connections[node_id] = conn
-        
+    print("Conexiones activas: ", active_connections)    
 
     master_node_id = max(active_connections.keys())
     master_node_ip = active_connections[master_node_id].getpeername()[0]
