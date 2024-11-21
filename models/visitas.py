@@ -44,6 +44,16 @@ def agregar_visita(id_trabajador):
                 alergias = 'None'
 
 
+            # Insertar los datos del paciente
+            cursor.execute("""
+                INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) 
+                VALUES (?, ?, ?, ?)
+            """, (nombre, genero, tipo_sangre, alergias))
+            
+            # Obtener el ID del nuevo paciente
+            paciente_id = cursor.lastrowid  # Obtiene el id del último registro insertado
+
+
             mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
             enviar_consulta_sencilla(mensaje)
 
