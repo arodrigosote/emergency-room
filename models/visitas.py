@@ -4,6 +4,7 @@ from utils.log import log_message, log_database
 from datetime import datetime
 from models.node import enviar_mensaje_a_todos, enviar_mensaje_a_maestro
 from controllers.server_client import obtener_nodo_maestro
+from controllers.nodes import get_own_node
 
 def listar_visitas():
     # Lista todas las visitas en la base de datos y las muestra en una tabla por consola
@@ -53,10 +54,18 @@ def agregar_visita():
             # """
             # cursor.execute(query_paciente, (nombre, genero, tipo_sangre, alergias))
             # conn.commit()
-            mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
-            log_database(f"{mensaje}")
-            enviar_mensaje_a_maestro(nodo_maestro['ip'], '11', mensaje)
-            log_message("[Base de Datos] Nuevo paciente registrado en la base de datos.")
+
+            own_node = get_own_node()
+            if own_node['id'] == nodo_maestro['id']:
+                mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
+                log_database(f"{mensaje}")
+                enviar_mensaje_a_todos('11', mensaje)
+                log_message("[Base de Datos] Nuevo paciente registrado en la base de datos.")
+            else:
+                mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
+                log_database(f"{mensaje}")
+                enviar_mensaje_a_maestro(nodo_maestro['ip'], '11', mensaje)
+                log_message("[Base de Datos] Nuevo paciente registrado en la base de datos.")
 
         # # Conectar a la base de datos
         # conn = sqlite3.connect('nodos.db')
