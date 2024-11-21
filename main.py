@@ -58,7 +58,7 @@ def main():
 
     own_node = get_own_node()
     print(f"Conectado al nodo maestro {master_node_ip}")
-    activar_sala(own_node['ip'], master_node_ip)
+    activar_sala(own_node['ip'])
 
     ejecutar_dbchanges()
 
