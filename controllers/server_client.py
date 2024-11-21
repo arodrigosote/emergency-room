@@ -36,6 +36,7 @@ def handle_client(client_socket, addr):
             
             # Código de instrucción 10: Ejecuta consulta en nodo, retorna OK para consenso
             elif mensaje_completo[:2] == "10":
+                print("Ejecutando consulta en final...")
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 log_message(f"[Query] Recibido: {hora_actual} - {query}")
                 print(f"[Query] Recibido: {hora_actual} - {query}")
@@ -56,6 +57,7 @@ def handle_client(client_socket, addr):
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 mensaje_nuevo = f"10|{hora_actual}|{query}"
                 respuestas = []
+                print(active_connections)
                 for destino, client_socket in active_connections.items():
                     try:
                         if client_socket.fileno() != -1:  # Verifica que el socket siga activo
@@ -164,7 +166,7 @@ def start_server():
 
         elegir_nodo_maestro() 
 
-        
+
 
         while True:
             print("[Servidor] Esperando conexiones...")
