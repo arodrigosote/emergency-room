@@ -3,6 +3,7 @@ import os
 from utils.log import log_message, log_database
 from models.node import enviar_mensaje_a_todos, enviar_mensaje_a_maestro
 from datetime import datetime
+from controllers.server_client import elegir_nodo_maestro
 
 def listar_salas_emergencia():
     # Lista todas las salas de emergencia en la base de datos y las muestra en una tabla por consola
@@ -84,4 +85,41 @@ def activar_sala(ip, nodo_maestro):
     except sqlite3.Error as e:
         log_message(f"\n[Error] No se pudo activar la sala de emergencia: {e}")
     finally:
+        conn.close()
+
+def desactivar_sala(ip, nodo_maestro):
+    hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    try:
+        conn = sqlite3.connect('nodos.db')
+        cursor = conn.cursor()
+        query = "UPDATE salas_emergencia SET estado = 'desactivado' WHERE ip = ?"
+        cursor.execute(query, (ip,))
+        conn.commit()
+        
+        log_database(f"# UPDATE salas_emergencia SET estado = 'desactivado' WHERE ip = '{ip}'")
+        log_message(f"[Sala] Estado de la sala con IP {ip} cambiado a desactivado.")
+        
+        # Obtener el nodo propio
+        cursor.execute("SELECT * FROM salas_emergencia WHERE ip = ?", (ip,))
+        nodo_propio = cursor.fetchone()
+        if nodo_propio:
+            log_message(f"[Nodo Propio] Nodo propio encontrado: {nodo_propio}")
+            # Comparar con el nodo maestro
+            if nodo_propio[2] == nodo_maestro:
+                log_message("[Nodo] El nodo propio es el nodo maestro.")
+                # Enviar mensaje a todos los nodos
+                codigo = "10"
+                mensaje = f"UPDATE salas_emergencia SET estado = 'desactivado' WHERE ip = '{ip}'"
+                enviar_mensaje_a_todos(codigo, mensaje)
+            else:
+                log_message("[Nodo] El nodo propio no es el nodo maestro.")
+                codigo = "11"
+                mensaje = f"UPDATE salas_emergencia SET estado = 'desactivado' WHERE ip = '{ip}'"
+                enviar_mensaje_a_maestro(nodo_maestro[2], codigo, mensaje)
+        else:
+            log_message("\n[Nodo Propio] No se encontró el nodo propio.")
+    except sqlite3.Error as e:
+        log_message(f"\n[Error] No se pudo desactivar la sala de emergencia: {e}")
+    finally:
+        elegir_nodo_maestro()
         conn.close()

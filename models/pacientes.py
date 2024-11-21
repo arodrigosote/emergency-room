@@ -10,8 +10,8 @@ def listar_pacientes():
     conn.close()
 
     # Mostrar los pacientes en una tabla por consola sin utilizar tabulate
-    headers = ["ID Paciente", "Nombre", "Edad", "Diagnóstico"]
-    print(f"{headers[0]:<12} {headers[1]:<20} {headers[2]:<5} {headers[3]:<30}")
-    print("-" * 70)
+    headers = ["ID Paciente", "Nombre", "Género", "Tipo de Sangre", "Alergias", "Fecha de Registro"]
+    print(f"{headers[0]:<12} {headers[1]:<20} {headers[2]:<7} {headers[3]:<15} {headers[4]:<30} {headers[5]:<20}")
+    print("-" * 110)
     for paciente in pacientes:
-        print(f"{paciente[0]:<12} {paciente[1]:<20} {paciente[2]:<5} {paciente[3]:<30}")
+        print(f"{paciente[0]:<12} {paciente[1]:<20} {paciente[2]:<7} {paciente[3]:<15} {paciente[4]:<30} {paciente[5]:<20}")

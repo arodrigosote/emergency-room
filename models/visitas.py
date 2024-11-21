@@ -42,17 +42,9 @@ def agregar_visita():
             alergias = input("Ingrese las alergias (opcional): ")
             if not alergias:
                 alergias = 'None'
-
-            # Insertar el nuevo paciente en la base de datos
-            query_paciente = """
-            INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) 
-            VALUES (?, ?, ?, ?)
-            """
-            cursor.execute(query_paciente, (nombre, genero, tipo_sangre, alergias))
-            conn.commit()
-            mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
+        
+            mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}',  {genero}, '{tipo_sangre}', '{alergias}')"
             enviar_consulta_sencilla(mensaje)
-
             
             log_message("[Base de Datos] Nuevo paciente registrado en la base de datos.")
         else:
