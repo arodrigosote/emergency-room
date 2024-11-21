@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS pacientes (
     id_paciente INTEGER PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     genero CHAR(1),
-    tipo_sangre VARCHAR(15),
+    tipo_sangre VARCHAR(5),
     alergias TEXT,
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

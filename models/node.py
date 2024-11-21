@@ -68,6 +68,8 @@ def enviar_mensaje_a_maestro(ip_nodo_maestro, codigo, mensaje):
             nodo_maestro.send(mensaje_completo.encode())
             log_message(f"[Mensaje enviado] A nodo maestro: {mensaje_completo}")
             
+
+
             # Analizar la respuesta del servidor
             respuesta = nodo_maestro.recv(1024).decode()  # Tamaño del buffer ajustable
             log_message(f"[Respuesta recibida] De nodo maestro: {respuesta}")

@@ -27,6 +27,7 @@ def handle_client(client_socket, addr):
                 break
             elif mensaje_completo[:2] == "01":
                 nodos = get_network_nodes()
+
                 #envia cambios de base de datos a nuevas conexiones
                 connect_clients_send_dbchanges(nodos)
                 mostrar_conexiones()
@@ -265,6 +266,3 @@ def get_client_socket_by_ip(ip):
         if client_socket.getpeername()[0] == ip:
             return client_socket
     return None
-
-def obtener_nodo_maestro():
-    return master_node
