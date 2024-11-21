@@ -22,44 +22,6 @@ def init_db():
     log_message("[Base de Datos] Base de datos inicializada.")
 
 
-def agregar_doctores():
-    doctores = [
-        ('Dr. Juan Pérez', 'Cardiología'),
-        ('Dra. Ana Gómez', 'Neurología'),
-        ('Dr. Luis Martínez', 'Pediatría'),
-        ('Dra. María Rodríguez', 'Dermatología'),
-        ('Dr. Carlos Sánchez', 'Gastroenterología')
-    ]
-    
-    try:
-        conn = sqlite3.connect('nodos.db')
-        cursor = conn.cursor()
-        
-        query = """
-            INSERT INTO doctores (nombre, especialidad) VALUES (?, ?)
-        """
-        
-        cursor.executemany(query, doctores)
-        conn.commit()
-        log_message("[Base de Datos] 5 doctores agregados a la base de datos.")
-    except sqlite3.Error as e:
-        log_message(f"[Error] No se pudo agregar los doctores: {e}")
-    finally:
-        conn.close()
-
-"""
-    # Manejo del historial
-    history_dir = os.path.join(os.path.dirname(__file__), '..', 'history')
-    os.makedirs(history_dir, exist_ok=True)
-    history_file = os.path.join(history_dir, 'db_changes.txt')
-
-    # Escribir las líneas en el archivo
-    with open(history_file, 'a') as f:
-        for doctor in doctores:
-            formatted_query = f"INSERT INTO doctores (nombre, especialidad) VALUES ('{doctor[0]}', '{doctor[1]}')"
-            f.write(f"# Agregado doctor: {doctor[0]}, Especialidad: {doctor[1]}\n")
-            f.write(f"& {formatted_query}\n"
-"""
 
 
 def agregar_salas_emergencia():

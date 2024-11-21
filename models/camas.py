@@ -25,7 +25,7 @@ def agregar_camas():
         cursor = conn.cursor()
         
         query = """
-            INSERT INTO camas (sala_id, numero, estado) VALUES (?, ?, ?)
+            INSERT INTO camas (id_sala, numero_cama, estado) VALUES (?, ?, ?)
         """
         
         cursor.executemany(query, camas)

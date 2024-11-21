@@ -4,6 +4,7 @@ from models.camas import listar_camas
 from models.pacientes import listar_pacientes
 from models.visitas import listar_visitas, agregar_visita
 from models.master_node import obtener_nodo_maestro
+from models.trabajadores import listar_trabajadores_sociales
 from controllers.database import mostrar_log_base_datos, mostrar_log_servidor
 from utils.log import log_message
 from controllers.nodes import get_network_nodes
@@ -116,7 +117,8 @@ def mostrar_menu_tablas():
     print("3. Mostrar tabla Camas")
     print("4. Mostrar tabla Pacientes")
     print("5. Mostrar tabla Visitas")
-    print("6. Volver")
+    print("7. Mostrar tabla Trabajadores")
+    print("8. Volver")
 
 def realizar_accion_tablas(opcion):
     if opcion == '1':
@@ -139,7 +141,11 @@ def realizar_accion_tablas(opcion):
         print("\nMostrando tabla Visitas")
         listar_visitas()
         log_message("[Tablas] Mostrando tabla de Visitas.")
-    elif opcion == '6':
+    elif opcion == '7':
+        print("\nMostrando tabla Trabajadores")
+        listar_trabajadores_sociales()
+        log_message("[Tablas] Mostrando tabla de Trabajadores.")
+    elif opcion == '8':
         print("Regresando al menú principal...")
     else:
         print("Opción no válida, intente de nuevo.")

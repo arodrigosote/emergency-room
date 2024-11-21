@@ -1,5 +1,31 @@
 import sqlite3
 import os
+from utils.log import log_message
+
+def agregar_doctores():
+    doctores = [
+        ('Dr. Juan Pérez', 'Cardiología'),
+        ('Dra. Ana Gómez', 'Neurología'),
+        ('Dr. Luis Martínez', 'Pediatría'),
+        ('Dra. María Rodríguez', 'Dermatología'),
+        ('Dr. Carlos Sánchez', 'Gastroenterología')
+    ]
+    
+    try:
+        conn = sqlite3.connect('nodos.db')
+        cursor = conn.cursor()
+        
+        query = """
+            INSERT INTO doctores (nombre, especialidad) VALUES (?, ?)
+        """
+        
+        cursor.executemany(query, doctores)
+        conn.commit()
+        log_message("[Base de Datos] 5 doctores agregados a la base de datos.")
+    except sqlite3.Error as e:
+        log_message(f"[Error] No se pudo agregar los doctores: {e}")
+    finally:
+        conn.close()
 
 def listar_doctores():
     # Lista todos los doctores en la base de datos y los muestra en una tabla por consola

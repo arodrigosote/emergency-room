@@ -55,9 +55,9 @@ def activar_sala(ip, nodo_maestro):
     try:
         conn = sqlite3.connect('nodos.db')
         cursor = conn.cursor()
-        query = "UPDATE salas_emergencia SET estado = 'activado' WHERE ip = ?"
-        cursor.execute(query, (ip,))
-        conn.commit()
+        # query = "UPDATE salas_emergencia SET estado = 'activado' WHERE ip = ?"
+        # cursor.execute(query, (ip,))
+        # conn.commit()
         
         log_database(f"# UPDATE salas_emergencia SET estado = 'activado' WHERE ip = '{ip}'")
         log_message(f"[Sala] Estado de la sala con IP {ip} cambiado a activado.")
