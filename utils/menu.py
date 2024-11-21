@@ -1,5 +1,8 @@
 from models.emergency_room import listar_salas_emergencia
 from models.doctors import listar_doctores
+from models.camas import listar_camas
+from models.pacientes import listar_pacientes
+from models.visitas import listar_visitas, agregar_visita
 from models.master_node import obtener_nodo_maestro
 from controllers.database import mostrar_log_base_datos, mostrar_log_servidor
 from utils.log import log_message
@@ -10,26 +13,30 @@ def mostrar_menu():
     print("1. Trabajador Social")
     print("2. Doctor")
     print("3. Utilidades")
-    print("4. Salir")
+    print("4. Tablas")
+    print("5. Salir")
 
 
 # Funciones para mostrar y realizar acciones en los menús
 def mostrar_menu_trabajador_social():
     print("\nMenú Trabajador Social:")
     print("1. Registrar visita emergencia")
-    print("2. Listar Salas de Emergencia")
-    print("3. Listar Doctores")
+    print("2. Registrar doctor")
+    print("3. Registrar paciente")
     print("5. Volver")
 
 def realizar_accion_trabajador_social(opcion):
     if opcion == '1':
         print("\nRegistrar visita emergencia")
+        agregar_visita()
     elif opcion == '2':
-        print("\nListando Salas de Emergencia")
-        listar_salas_emergencia()  # Llamar a la función para listar salas de emergencia
+        print("\nRegistrar doctor")
+
     elif opcion == '3':
-        print("\nListando Doctores")
-        listar_doctores()
+        print("\nRegistrar paciente")
+
+    elif opcion == '5':
+        print("Regresando al menú principal...")
     else:
         print("Opción no válida, intente de nuevo.")
 
@@ -43,7 +50,7 @@ def realizar_accion_trabajador_social(opcion):
 # Funciones para mostrar y realizar acciones en los menús
 def mostrar_menu_doctor():
     print("\nMenú Doctor:")
-    print("1. Cerrar visita emergencia")
+    print("1. Cerrar visita de emergencia")
     print("5. Volver")
 
 def realizar_accion_doctor(opcion):
@@ -87,5 +94,52 @@ def realizar_accion_utilidades(opcion):
         print("\nMostrando Nodo Maestro")
         obtener_nodo_maestro() # Llamar a la función para mostrar nodo maestro
         log_message("[Utilidades] Mostrando Nodo Maestro.")
+    else:
+        print("Opción no válida, intente de nuevo.")
+
+
+
+
+
+
+    
+
+
+
+
+
+# Funciones para mostrar y realizar acciones en los menús
+def mostrar_menu_tablas():
+    print("\nMenú Tablas:")
+    print("1. Mostrar tabla Salas de Emergencia")
+    print("2. Mostrar tabla Doctores")
+    print("3. Mostrar tabla Camas")
+    print("4. Mostrar tabla Pacientes")
+    print("5. Mostrar tabla Visitas")
+    print("6. Volver")
+
+def realizar_accion_tablas(opcion):
+    if opcion == '1':
+        print("\nMostrando tabla Salas de Emergencia")
+        listar_salas_emergencia()
+        log_message("[Tablas] Mostrando tabla de Salas de Emergencias.")
+    elif opcion == '2':
+        print("\nMostrando tabla Doctores")
+        listar_doctores()
+        log_message("[Tablas] Mostrando tabla de Doctores.")
+    elif opcion == '3':
+        print("\nMostrando tabla Camas")
+        listar_camas()
+        log_message("[Tablas] Mostrando tabla de Camas.")
+    elif opcion == '4':
+        print("\nMostrando tabla Pacientes")
+        listar_pacientes()
+        log_message("[Tablas] Mostrando tabla de Pacientes.")
+    elif opcion == '5':
+        print("\nMostrando tabla Visitas")
+        listar_visitas()
+        log_message("[Tablas] Mostrando tabla de Visitas.")
+    elif opcion == '6':
+        print("Regresando al menú principal...")
     else:
         print("Opción no válida, intente de nuevo.")

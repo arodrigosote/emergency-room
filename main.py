@@ -1,12 +1,13 @@
 import socket
 import threading
 from controllers.nodes import get_network_nodes, get_own_node
-from utils.menu import mostrar_menu, mostrar_menu_trabajador_social, mostrar_menu_doctor, realizar_accion_trabajador_social, realizar_accion_doctor, mostrar_menu_utilidades, realizar_accion_utilidades, mostrar_menu_utilidades
+from utils.menu import mostrar_menu, mostrar_menu_trabajador_social, mostrar_menu_doctor, realizar_accion_trabajador_social, realizar_accion_doctor, mostrar_menu_utilidades, realizar_accion_utilidades, mostrar_menu_utilidades, mostrar_menu_tablas, realizar_accion_tablas
 from utils.log import log_message
 from controllers.server_client import start_server, connect_clients, mostrar_conexiones, active_connections
 from controllers.messages import enviar_mensaje_a_nodo, enviar_mensaje_a_todos
 from controllers.database import init_db, agregar_doctores, agregar_salas_emergencia, ejecutar_dbchanges
 from models.emergency_room import agregar_sala_emergencia, listar_salas_emergencia, activar_sala
+from models.camas import agregar_camas
 import os
 
 # Diccionario para mantener las conexiones activas
@@ -39,6 +40,7 @@ def main():
     # Agregar una nueva sala de emergencia
     agregar_salas_emergencia()
     agregar_doctores()
+    agregar_camas()
 
     nodes = get_network_nodes()  # Obtener nodos de la red
 
@@ -83,6 +85,10 @@ def main():
                 opcion_util = input("Seleccione una opción: ")
                 realizar_accion_utilidades(opcion_util)
             elif opcion == '4':
+                mostrar_menu_tablas()
+                opcion_tablas = input("Seleccione una opción: ")
+                realizar_accion_tablas(opcion_tablas)
+            elif opcion == '5':
                 print("Saliendo...")
                 break
             else:
