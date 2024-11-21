@@ -312,14 +312,11 @@ def elegir_nodo_maestro():
     global master_node
     if active_connections:
         master_node_id = max(active_connections.keys())
-        if active_connections[master_node_id].fileno() != -1:  # Verificamos que el socket siga abierto
-            master_node_ip = active_connections[master_node_id].getpeername()[0]
-            master_node = {'id': master_node_id, 'ip': master_node_ip}
-            log_message(f"[Nodo Maestro] Nodo {master_node['id']} con IP {master_node['ip']} es el nodo maestro.")
-            actualizar_nodo_maestro(master_node_ip)
-            return master_node
-        else:
-            log_message(f"[Error] El socket del nodo {master_node_id} está cerrado.")
+        master_node_ip = active_connections[master_node_id].getpeername()[0]
+        master_node = {'id': master_node_id, 'ip': master_node_ip}
+        log_message(f"[Nodo Maestro] Nodo {master_node['id']} con IP {master_node['ip']} es el nodo maestro.")
+        actualizar_nodo_maestro(master_node_ip)
+        return master_node
 
 def get_client_socket_by_ip(ip):
     for node_id, client_socket in active_connections.items():
