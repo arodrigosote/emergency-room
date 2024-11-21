@@ -25,13 +25,16 @@ def handle_client(client_socket, addr):
                 break
             if mensaje_completo[:2] == "ex":
                 break
+            
+            # Código de instrucción 01: Nuevo nodo en la red
             elif mensaje_completo[:2] == "01":
                 nodos = get_network_nodes()
-
                 #envia cambios de base de datos a nuevas conexiones
                 connect_clients_send_dbchanges(nodos)
                 mostrar_conexiones()
                 continue
+            
+            # Código de instrucción 10: Ejecuta consulta en nodo, retorna OK para consenso
             elif mensaje_completo[:2] == "10":
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 log_message(f"[Query] Recibido: {hora_actual} - {query}")
@@ -46,32 +49,11 @@ def handle_client(client_socket, addr):
                 client_socket.send(response.encode())
                 
                 continue
-            elif mensaje_completo[:2] == "100":
-                codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
-                log_message(f"[Query] Recibido: {hora_actual} - {query}")
-                resultado = execute_query(query)
-                hora_ejecucion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                if resultado:
-                    response = f"OK"
-                    log_message(f"[Query] Ejecutada: {hora_ejecucion} Estatus: {response} - {query}")
-                    elegir_nodo_maestro()
-                    log_message(f"[Nodo Maestro] Eleccion terminada OK")
-                    
-                else:
-                    response = f"Error"
-                    log_message(f"[Query] Recibido: {hora_ejecucion} Estatus: {response} - {query}")
-                    elegir_nodo_maestro()
-                    log_message(f"[Nodo Maestro] Eleccion terminada OK")
-                
-                elegir_nodo_maestro()
-                log_message(f"[Nodo Maestro] Eleccion terminada OK")
-                client_socket.send(response.encode())
-                
-                
-                continue
+
+            # Código de instrucción 11: Enviar consulta a todos los nodos y esperar consenso
             elif mensaje_completo[:2] == "11":
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
-                mensaje_nuevo = f"100|{hora_actual}|{query}"
+                mensaje_nuevo = f"10|{hora_actual}|{query}"
                 respuestas = []
                 for destino, client_socket in active_connections.items():
                     try:
@@ -103,40 +85,7 @@ def handle_client(client_socket, addr):
                 
                 continue
 
-            elif mensaje_completo[:2] == "110":
-                codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
-                mensaje_nuevo = f"100|{hora_actual}|{query}"
-                respuestas = []
-                for destino, client_socket in active_connections.items():
-                    try:
-                        if client_socket.fileno() != -1:  # Verifica que el socket siga activo
-                            client_socket.send(mensaje_nuevo.encode())
-                            log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
-                            
-                            # Analizar la respuesta del servidor
-                            respuesta = client_socket.recv(1024).decode()  # Tamaño del buffer ajustable
-                            log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
-                            respuestas.append(respuesta)
-                            
-                        else:
-                            log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
-                    except Exception as e:
-                        log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
-
-                # Verificar si todas las respuestas son "OK"
-                if all(respuesta == "OK" for respuesta in respuestas):
-                    log_message("[Consenso] Todos los nodos respondieron OK")
-                    response = f"OK"
-                    log_message(f"[Query] Ejecutada: {hora_ejecucion} Estatus: {response} - {query}")
-                else:
-                    log_message("[Sin consenso] No todos los nodos respondieron OK")
-                    response = f"Error"
-                    log_message(f"[Query] Recibido: {hora_ejecucion} Estatus: {response} - {query}")
-                
-                client_socket.send(response.encode())              
-                
-                continue
-
+            # Código de instrucción 12: Guardar cambios de la base de datos en un archivo
             elif mensaje_completo[:2] == "12":
                 try:
                 # Crear la carpeta 'database' si no existe

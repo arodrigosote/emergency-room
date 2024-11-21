@@ -98,7 +98,6 @@ def main():
             #Sacar de active connections la ip de la sala de emergencia que entra como parametro
         for conn in active_connections.values():
             if hasattr(conn, 'close'):
-                desactivar_sala(own_node['ip'], master_node_ip)
                 conn.close()
         active_connections.clear()
 
