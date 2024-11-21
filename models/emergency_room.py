@@ -89,9 +89,7 @@ def activar_sala(ip, nodo_maestro):
 
 def desactivar_sala(ip, nodo_maestro):
     hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    #Sacar de active connections la ip de la sala de emergencia que entra como parametro
-    if ip in active_connections:
-        active_connections.remove(ip)
+
     try:
         conn = sqlite3.connect('nodos.db')
         cursor = conn.cursor()
