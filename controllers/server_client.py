@@ -264,8 +264,10 @@ def elegir_nodo_maestro():
 def get_client_socket_by_ip(ip):
     # ...existing code...\
     print(ip)
-    id = ip[3:]
-    print(ip)
+    
+    id = ip.split('.')[-1]
+    
+    print(id)
     print(active_connections)
     for node_id, client_socket in active_connections.items():
         if node_id == id:
