@@ -58,9 +58,11 @@ def handle_client(client_socket, addr):
                 else:
                     response = f"Error"
                     log_message(f"[Query] Recibido: {hora_ejecucion} Estatus: {response} - {query}")
-                client_socket.send(response.encode())
+                
                 elegir_nodo_maestro()
                 log_message(f"[Nodo Maestro] Eleccion terminada OK")
+                client_socket.send(response.encode())
+                
                 
                 continue
             elif mensaje_completo[:2] == "11":
