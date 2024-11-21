@@ -1,35 +1,43 @@
 import sqlite3
-from controllers.server_client import active_connections
 from datetime import datetime
 from utils.log import log_message
-from controllers.server_client import get_client_socket_by_ip  # Asegúrate de tener una función para obtener el socket del cliente
-from controllers.server_client import active_connections  # Asegúrate de tener un diccionario para mantener las conexiones activas
+from controllers.server_client import get_client_socket_by_ip, active_connections  # Asegúrate de tener una función para obtener el socket del cliente
+from controllers.nodes import get_network_nodes, get_own_node
+
+def enviar_consulta(consulta):
+    pass
+
 
 def enviar_consulta_sencilla(consulta):
-    hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    mensaje = f"13|{hora_actual}|{consulta}"
-    respuestas = []
-    for destino, client_socket in active_connections.items():
-        try:
-            if client_socket.fileno() != -1:  # Verifica que el socket siga activo
-                client_socket.send(mensaje.encode())
-                log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje}")
-                
-                # Analizar la respuesta del servidor
-                respuesta = client_socket.recv(1024).decode()  # Tamaño del buffer ajustable
-                log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
-                respuestas.append(respuesta)
-                
-            else:
-                log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
-        except Exception as e:
-            log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
-    
-    # Verificar si todas las respuestas son "OK"
-    if all(respuesta == "OK" for respuesta in respuestas):
-        log_message("[Consenso] Todos los nodos respondieron OK")
+
+    # Obteniendo nodo maestro de conexiones activas
+    master_node_id = max(active_connections.keys())
+    master_node_ip = active_connections[master_node_id].getpeername()[0]
+    own_node = get_own_node()
+
+    # Conexion con la base de datos
+    conn = sqlite3.connect('nodos.db')
+    cursor = conn.cursor()
+
+    # Obtener el nodo propio
+    cursor.execute("SELECT * FROM salas_emergencia WHERE ip = ?", (own_node['ip'],))
+    nodo_propio = cursor.fetchone()
+
+    # Comprobar si el nodo propio es el maestro o no.
+    if nodo_propio:
+        # Comparar con el nodo maestro
+        if nodo_propio[2] == master_node_ip:
+            log_message("[Nodo] El nodo propio es el nodo maestro.")
+            # Enviar mensaje a todos los nodos
+            codigo = "10"
+            enviar_mensaje_a_todos(codigo, consulta)
+        else:
+            log_message("[Nodo] El nodo propio no es el nodo maestro.")
+            codigo = "11"
+            enviar_mensaje_a_maestro(master_node_ip, codigo, consulta)
     else:
-        log_message("[Sin consenso] No todos los nodos respondieron OK")
+        log_message("\n[Nodo Propio] No se encontró el nodo propio.")
+
 
 
 def enviar_mensaje_a_todos(codigo_instruccion, mensaje):
