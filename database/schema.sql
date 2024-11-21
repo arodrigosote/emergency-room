@@ -143,20 +143,5 @@ BEGIN
     INSERT INTO log_cambios (tabla_afectada, id_registro, tipo_operacion, nodo_origen)
     VALUES ('visitas_emergencia', NEW.id_visita, 'UPDATE', NEW.id_sala);
 END;
-
--- Función para listar trabajadores sociales
-CREATE FUNCTION listar_trabajadores_sociales()
-RETURNS TABLE (
-    id_trabajador INTEGER,
-    nombre VARCHAR(100)
-)
-AS $$
-BEGIN
-    RETURN QUERY
-    SELECT id_trabajador, nombre
-    FROM trabajadores_sociales;
-END;
-$$ LANGUAGE plpgsql;
-
 COMMIT;
 PRAGMA foreign_keys = ON;
