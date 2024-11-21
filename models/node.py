@@ -83,6 +83,7 @@ def obtener_sala_y_cama():
     cursor.execute("""
         SELECT id_sala, nombre, capacidad_disponible
         FROM salas_emergencia
+        WHERE estado = 'activo'
         ORDER BY capacidad_disponible DESC
         LIMIT 1
         """)
@@ -95,7 +96,8 @@ def obtener_sala_y_cama():
                        SELECT id_cama 
                        FROM camas 
                        WHERE id_sala = ? AND estado = 'disponible' 
-                       LIMIT 1""", (sala[0],))
+                       LIMIT 1
+                       """, (sala[0],))
         cama = cursor.fetchone()
         print(cama)
         return sala[0], cama[0] if cama else None
