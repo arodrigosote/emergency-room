@@ -266,3 +266,6 @@ def get_client_socket_by_ip(ip):
         if client_socket.getpeername()[0] == ip:
             return client_socket
     return None
+
+def obtener_nodo_maestro():
+    return master_node
