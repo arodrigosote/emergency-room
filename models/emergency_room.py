@@ -78,6 +78,7 @@ def activar_sala(ip, nodo_maestro):
                 log_message("[Nodo] El nodo propio no es el nodo maestro.")
                 codigo = "11"
                 mensaje = f"UPDATE salas_emergencia SET estado = 'activado' WHERE ip = '{ip}'"
+                print(f"enviando a maestro Mensaje: {mensaje}")
                 enviar_mensaje_a_maestro(nodo_maestro, codigo, mensaje)
         else:
             log_message("\n[Nodo Propio] No se encontró el nodo propio.")

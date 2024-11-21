@@ -61,7 +61,7 @@ def main():
             conn = connect_clients([node])
             if conn:
                 active_connections[node_id] = conn
-    elegir_nodo_maestro()
+    
 
     master_node_id = max(active_connections.keys())
     master_node_ip = active_connections[master_node_id].getpeername()[0]
@@ -70,7 +70,7 @@ def main():
 
     own_node = get_own_node()
     
-    activar_sala(own_node['ip'], master_node_ip)
+    activar_sala(own_node['ip'], master_node['ip'])
 
     ejecutar_dbchanges()
 
