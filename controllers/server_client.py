@@ -262,15 +262,11 @@ def elegir_nodo_maestro():
         return master_node
 
 def get_client_socket_by_ip(ip):
-    # ...existing code...\
-    print(ip)
-    
+    # ...existing code...
     id = ip.split('.')[-1]
-    
-    print(id)
-    print(active_connections)
-    for node_id, client_socket in active_connections:
+    for node_id, client_socket in active_connections.items():
+        print(node_id, client_socket)
+        print(int(node_id) == int(id))
         if int(node_id) == int(id):
-            print(client_socket)
             return client_socket
-        return None
+    return None
