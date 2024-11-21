@@ -63,30 +63,6 @@ def agregar_salas_emergencia():
 """
 
 
-def agregar_trabajadores_sociales():
-    trabajadores = [
-        ('Trabajador 1'),
-        ('Trabajador 2'),
-        ('Trabajador 3'),
-        ('Trabajador 4'),
-        ('Trabajador 5')
-    ]
-    
-    try:
-        conn = sqlite3.connect('nodos.db')
-        cursor = conn.cursor()
-        
-        query = """
-            INSERT INTO trabajadores_sociales (nombre) VALUES (?)
-        """
-        
-        cursor.executemany(query, [(trabajador,) for trabajador in trabajadores])
-        conn.commit()
-        log_message("[Base de Datos] 5 trabajadores sociales agregados a la base de datos.")
-    except sqlite3.Error as e:
-        log_message(f"[Error] No se pudo agregar los trabajadores sociales: {e}")
-    finally:
-        conn.close()
 
 
 def mostrar_log_servidor():
@@ -134,7 +110,7 @@ def ejecutar_dbchanges():
     
     # Ordenar los registros por fecha y hora
     registros_ordenados = sorted(registros, key=lambda x: x[0])
-    
+    log_message(f"Registros ordenados: {registros_ordenados}")
     # Ejecutar las consultas en orden
     for fecha_hora, consulta in registros_ordenados:
         try:
