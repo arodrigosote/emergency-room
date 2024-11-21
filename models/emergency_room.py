@@ -3,7 +3,7 @@ import os
 from utils.log import log_message, log_database
 from models.node import enviar_mensaje_a_todos, enviar_mensaje_a_maestro
 from datetime import datetime
-from controllers.server_client import elegir_nodo_maestro, active_connections, master_node
+from controllers.server_client import elegir_nodo_maestro, active_connections, master_node,obtener_nodo_maestro
 
 def listar_salas_emergencia():
     # Lista todas las salas de emergencia en la base de datos y las muestra en una tabla por consola
@@ -65,7 +65,7 @@ def activar_sala(ip):
         
         codigo = "11"
         mensaje = f"UPDATE salas_emergencia SET estado = 'activado' WHERE ip = '{ip}'"
-        nodo_maestro = master_node
+        nodo_maestro = obtener_nodo_maestro()
         enviar_mensaje_a_maestro(nodo_maestro['ip'], codigo, mensaje)
     except sqlite3.Error as e:
         log_message(f"\n[Error] No se pudo activar la sala de emergencia: {e}")
