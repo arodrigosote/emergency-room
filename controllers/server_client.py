@@ -46,9 +46,24 @@ def handle_client(client_socket, addr):
                 client_socket.send(response.encode())
                 
                 continue
+            elif mensaje_completo[:2] == "100":
+                codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
+                log_message(f"[Query] Recibido: {hora_actual} - {query}")
+                resultado = execute_query(query)
+                hora_ejecucion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                elegir_nodo_maestro()
+                if resultado:
+                    response = f"OK"
+                    log_message(f"[Query] Ejecutada: {hora_ejecucion} Estatus: {response} - {query}")
+                else:
+                    response = f"Error"
+                    log_message(f"[Query] Recibido: {hora_ejecucion} Estatus: {response} - {query}")
+                client_socket.send(response.encode())
+                
+                continue
             elif mensaje_completo[:2] == "11":
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
-                mensaje_nuevo = f"10|{hora_actual}|{query}"
+                mensaje_nuevo = f"100|{hora_actual}|{query}"
                 respuestas = []
                 for destino, client_socket in active_connections.items():
                     try:

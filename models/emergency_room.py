@@ -109,16 +109,14 @@ def desactivar_sala(ip, nodo_maestro):
             if nodo_propio[2] == nodo_maestro:
                 log_message("[Nodo] El nodo propio es el nodo maestro.")
                 # Enviar mensaje a todos los nodos
-                codigo = "10"
+                codigo = "100"
                 mensaje = f"UPDATE salas_emergencia SET estado = 'inactivo' WHERE ip = '{ip}'"
                 enviar_mensaje_a_todos(codigo, mensaje)
-                elegir_nodo_maestro()
             else:
                 log_message("[Nodo] El nodo propio no es el nodo maestro.")
-                codigo = "11"
+                codigo = "110"
                 mensaje = f"UPDATE salas_emergencia SET estado = 'inactivo' WHERE ip = '{ip}'"
                 enviar_mensaje_a_maestro(nodo_maestro[2], codigo, mensaje)
-                elegir_nodo_maestro()
         else:
             log_message("\n[Nodo Propio] No se encontró el nodo propio.")
     except sqlite3.Error as e:
