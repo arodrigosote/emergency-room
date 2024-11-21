@@ -66,7 +66,7 @@ def activar_sala(ip):
         codigo = "11"
         mensaje = f"UPDATE salas_emergencia SET estado = 'activado' WHERE ip = '{ip}'"
         nodo_maestro = master_node
-        enviar_mensaje_a_maestro(master_node['ip'], codigo, mensaje)
+        enviar_mensaje_a_maestro(nodo_maestro['ip'], codigo, mensaje)
     except sqlite3.Error as e:
         log_message(f"\n[Error] No se pudo activar la sala de emergencia: {e}")
     finally:
