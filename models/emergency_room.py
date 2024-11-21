@@ -3,7 +3,10 @@ import os
 from utils.log import log_message, log_database
 from models.node import enviar_mensaje_a_todos, enviar_mensaje_a_maestro
 from datetime import datetime
+<<<<<<< HEAD
 from controllers.server_client import elegir_nodo_maestro, active_connections, master_node,obtener_nodo_maestro
+=======
+>>>>>>> parent of 5e1ad4e (update conexion cerrada)
 
 def listar_salas_emergencia():
     # Lista todas las salas de emergencia en la base de datos y las muestra en una tabla por consola
@@ -70,6 +73,7 @@ def activar_sala(ip):
     except sqlite3.Error as e:
         log_message(f"\n[Error] No se pudo activar la sala de emergencia: {e}")
     finally:
+<<<<<<< HEAD
         conn.close()
 
 def desactivar_sala(ip, nodo_maestro):
@@ -91,4 +95,6 @@ def desactivar_sala(ip, nodo_maestro):
     except sqlite3.Error as e:
         log_message(f"\n[Error] No se pudo desactivar la sala de emergencia: {e}")
     finally:
+=======
+>>>>>>> parent of 5e1ad4e (update conexion cerrada)
         conn.close()
