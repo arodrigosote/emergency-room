@@ -270,7 +270,7 @@ def get_client_socket_by_ip(ip):
     print(id)
     print(active_connections)
     for node_id, client_socket in active_connections.items():
-        if node_id == id:
+        if int(node_id) == int(id):
             print(client_socket)
             return client_socket
         return None
