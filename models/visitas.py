@@ -45,7 +45,7 @@ def agregar_visita():
 
             # Insertar el nuevo paciente en la base de datos
             query_paciente = """
-            INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias, fecha_registro) 
+            INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) 
             VALUES (?, ?, ?, ?)
             """
             cursor.execute(query_paciente, (nombre, genero, tipo_sangre, alergias))
