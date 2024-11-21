@@ -18,6 +18,7 @@ def handle_client(client_socket, addr):
     # Maneja la conexión con un cliente
     try:
         log_message(f"[Servidor] Conexión establecida con {addr}")
+        
         while True:
             data = client_socket.recv(1024)
             mensaje_completo = data.decode()
@@ -283,3 +284,10 @@ def get_client_socket_by_ip(ip):
 
 def obtener_nodo_maestro():
     return master_node
+
+def activar_sala(ip):
+    # Importar aquí para evitar dependencias circulares
+    from models.node import enviar_consulta_sencilla
+    consulta = f"UPDATE salas_emergencia SET activa = 1 WHERE ip = '{ip}'"
+    enviar_consulta_sencilla(consulta)
+    log_message(f"[Sala Activada] Sala con IP {ip} activada.")
