@@ -22,8 +22,10 @@ def main():
 
     # Ruta completa del archivo a limpiar
     history_dir = os.path.join(os.path.dirname(__file__), 'history')
+    database_dir = os.path.join(os.path.dirname(__file__), 'database')
     db_changes_file = os.path.join(history_dir, 'db_changes.txt')
     server_log_file = os.path.join(history_dir, 'server_log.txt')
+    dbchangestomake_file = os.path.join(database_dir, 'changestomake.txt')
 
     # Verificar si el archivo existe y limpiarlo
     if os.path.exists(db_changes_file):
@@ -35,9 +37,15 @@ def main():
         # Verificar si el archivo existe y limpiarlo
     if os.path.exists(server_log_file):
         open(server_log_file, 'w').close()
-        log_message(f"[Archivo] El archivo 'db_changes.txt' ha sido limpiado.")
+        log_message(f"[Archivo] El archivo 'server_log.txt' ha sido limpiado.")
     else:
-        log_message(f"[Advertencia] El archivo 'db_changes.txt' no existe.")
+        log_message(f"[Advertencia] El archivo 'server_log.txt' no existe.")
+    
+    if os.path.exists(dbchangestomake_file):
+        open(dbchangestomake_file, 'w').close()
+        log_message(f"[Archivo] El archivo 'changestomake.txt' ha sido limpiado.")
+    else:
+        log_message(f"[Advertencia] El archivo 'changestomake.txt' no existe.")
 
     # Agregar una nueva sala de emergencia
     agregar_salas_emergencia()
