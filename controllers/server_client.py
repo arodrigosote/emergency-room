@@ -38,6 +38,7 @@ def handle_client(client_socket, addr):
             elif mensaje_completo[:2] == "10":
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 log_message(f"[Query] Recibido: {hora_actual} - {query}")
+                print(f"[Query] Recibido: {hora_actual} - {query}")
                 resultado = execute_query(query)
                 hora_ejecucion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 if resultado:
@@ -59,6 +60,7 @@ def handle_client(client_socket, addr):
                     try:
                         if client_socket.fileno() != -1:  # Verifica que el socket siga activo
                             client_socket.send(mensaje_nuevo.encode())
+                            print(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
                             log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
                             
                             # Analizar la respuesta del servidor
