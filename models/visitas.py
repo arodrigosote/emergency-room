@@ -35,8 +35,8 @@ def agregar_visita():
             # Si el paciente no está registrado, pedir los datos para registrarlo
             print("El paciente no está registrado. Por favor, ingrese los datos del paciente.")
             nombre = input("Ingrese el nombre del paciente: ")
-            genero = int(input("0. Hombre\n1.Mujer\nSeleccione una opción: "))
-            if genero != 0 or genero != 1:
+            genero = int(input("0. Hombre\n1. Mujer\nSeleccione una opción: "))
+            if genero != 0 and genero != 1:
                 print("Opción inválida.")
                 return
             tipo_sangre = input("Ingrese el tipo de sangre: ")
