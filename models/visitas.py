@@ -50,9 +50,10 @@ def agregar_visita():
             """
             cursor.execute(query_paciente, (nombre, genero, tipo_sangre, alergias))
             conn.commit()
-            mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) 
-            VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
+            mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
             enviar_consulta_sencilla(mensaje)
+
+            
             log_message("[Base de Datos] Nuevo paciente registrado en la base de datos.")
         else:
             log_message("[Base de Datos] Paciente ya registrado en la base de datos.")
