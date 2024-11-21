@@ -55,17 +55,24 @@ def agregar_visita():
             # cursor.execute(query_paciente, (nombre, genero, tipo_sangre, alergias))
             # conn.commit()
 
+            # Obtener el nodo propio
             own_node = get_own_node()
-            if own_node['id'] == nodo_maestro['id']:
-                mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
-                log_database(f"{mensaje}")
-                enviar_mensaje_a_todos('11', mensaje)
-                log_message("[Base de Datos] Nuevo paciente registrado en la base de datos.")
-            else:
-                mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
-                log_database(f"{mensaje}")
-                enviar_mensaje_a_maestro(nodo_maestro['ip'], '11', mensaje)
-                log_message("[Base de Datos] Nuevo paciente registrado en la base de datos.")
+            if own_node:
+                log_message(f"[Nodo Propio] Nodo propio encontrado: {own_node}")
+                # Comparar con el nodo maestro
+                if own_node['id'] == nodo_maestro['id']:
+                    log_message("[Nodo] El nodo propio es el nodo maestro.")
+                    # Enviar mensaje a todos los nodos
+                    codigo = "10"
+                    mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
+                    log_database(f"# {mensaje}")
+                    enviar_mensaje_a_todos(codigo, mensaje)
+                else:
+                    log_message("[Nodo] El nodo propio no es el nodo maestro.")
+                    codigo = "11"
+                    mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
+                    log_database(f"# {mensaje}")
+                    enviar_mensaje_a_maestro(nodo_maestro['id'], codigo, mensaje)
 
         # # Conectar a la base de datos
         # conn = sqlite3.connect('nodos.db')
