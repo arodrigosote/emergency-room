@@ -87,6 +87,7 @@ def obtener_sala_y_cama():
         LIMIT 1
         """)
     sala = cursor.fetchone()
+    print(sala)
     
     if sala:
         # Obtener una cama disponible en la sala seleccionada
@@ -95,6 +96,7 @@ def obtener_sala_y_cama():
                        FROM camas 
                        WHERE id_sala = ? AND estado = 'disponible' LIMIT 1""", (sala[0],))
         cama = cursor.fetchone()
+        print(cama)
         return sala[0], cama[0] if cama else None
     else:
         return None, None
