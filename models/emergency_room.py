@@ -110,12 +110,12 @@ def desactivar_sala(ip, nodo_maestro):
                 log_message("[Nodo] El nodo propio es el nodo maestro.")
                 # Enviar mensaje a todos los nodos
                 codigo = "10"
-                mensaje = f"UPDATE salas_emergencia SET estado = 'desactivado' WHERE ip = '{ip}'"
+                mensaje = f"UPDATE salas_emergencia SET estado = 'inactivo' WHERE ip = '{ip}'"
                 enviar_mensaje_a_todos(codigo, mensaje)
             else:
                 log_message("[Nodo] El nodo propio no es el nodo maestro.")
                 codigo = "11"
-                mensaje = f"UPDATE salas_emergencia SET estado = 'desactivado' WHERE ip = '{ip}'"
+                mensaje = f"UPDATE salas_emergencia SET estado = 'inactivo' WHERE ip = '{ip}'"
                 enviar_mensaje_a_maestro(nodo_maestro[2], codigo, mensaje)
         else:
             log_message("\n[Nodo Propio] No se encontró el nodo propio.")

@@ -45,7 +45,7 @@ def agregar_visita():
         
             mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}',  {genero}, '{tipo_sangre}', '{alergias}')"
             enviar_consulta_sencilla(mensaje)
-            log_database(f"{mensaje}")
+            log_database(f"# {mensaje}")
             log_message("[Base de Datos] Nuevo paciente registrado en la base de datos.")
         else:
             log_message("[Base de Datos] Paciente ya registrado en la base de datos.")
