@@ -52,12 +52,15 @@ def handle_client(client_socket, addr):
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 mensaje_nuevo = f"10|{hora_actual}|{query}"
                 respuestas = []
+                print('nodo maestro recibe mensaje')
                 for destino, client_socket in active_connections.items():
                     try:
                         if client_socket.fileno() != -1:  # Verifica que el socket siga activo
                             client_socket.send(mensaje_nuevo.encode())
                             log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
-                            
+
+                            print('nodo maestro envia mensaje a nodos')
+
                             # Analizar la respuesta del servidor
                             respuesta = client_socket.recv(1024).decode()  # Tamaño del buffer ajustable
                             log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
