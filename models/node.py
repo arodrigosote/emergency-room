@@ -81,28 +81,45 @@ def obtener_sala_y_cama():
     
     # Obtener la sala con mayor disponibilidad relativa
     cursor.execute("""
-        SELECT id_sala, nombre, capacidad_disponible
-        FROM salas_emergencia
-        WHERE estado = 'activo'
-        ORDER BY capacidad_disponible DESC
-        LIMIT 1
-        """)
+        SELECT 
+            salas_emergencia.id_sala 
+        FROM 
+            salas_emergencia
+        LEFT JOIN 
+            camas 
+        ON 
+            salas_emergencia.id_sala = camas.id_sala
+        WHERE 
+            salas_emergencia.estado = 'activo' 
+            AND camas.estado = 'disponible'
+        GROUP BY 
+            salas_emergencia.id_sala
+        ORDER BY 
+            (CAST(COUNT(camas.id_cama) AS FLOAT) / salas_emergencia.capacidad_total) DESC
+        LIMIT 1;
+    """)
     sala = cursor.fetchone()
-    print(sala)
-    print(sala[0])
+    
     if sala:
         # Obtener una cama disponible en la sala seleccionada
         cursor.execute("""
-                       SELECT id_cama 
-                       FROM camas 
-                       WHERE id_sala = ? AND estado = 'disponible' 
-                       LIMIT 1
-                       """, (sala[0],))
+            SELECT id_cama 
+            FROM camas 
+            WHERE id_sala = ? AND estado = 'disponible' 
+            LIMIT 1
+        """, (sala[0],))
         cama = cursor.fetchone()
-        print(cama)
-        return sala[0], cama[0] if cama else None
+        
+        if cama:
+            print(f"Cama disponible: {cama[0]}")
+            return sala[0], cama[0]
+        else:
+            print("No hay camas disponibles en esta sala.")
+            return sala[0], None
     else:
+        print("No hay salas activas con camas disponibles.")
         return None, None
+
 
 
 def enviar_mensaje_a_todos(codigo_instruccion, mensaje):

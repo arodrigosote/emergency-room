@@ -3,21 +3,21 @@ from utils.log import log_message
 
 def agregar_camas():
     camas = [
-        (0, 1, 'Disponible'),
-        (0, 2, 'Disponible'),
-        (0, 3, 'Disponible'),
-        (0, 4, 'Disponible'),
-        (0, 5, 'Disponible'),
-        (1, 1, 'Disponible'),
-        (1, 2, 'Disponible'),
-        (1, 3, 'Disponible'),
-        (1, 4, 'Disponible'),
-        (1, 5, 'Disponible'),
-        (2, 1, 'Disponible'),
-        (2, 2, 'Disponible'),
-        (2, 3, 'Disponible'),
-        (2, 4, 'Disponible'),
-        (2, 5, 'Disponible')
+        (0, 1, 'disponible'),
+        (0, 2, 'disponible'),
+        (0, 3, 'disponible'),
+        (0, 4, 'disponible'),
+        (0, 5, 'disponible'),
+        (1, 1, 'disponible'),
+        (1, 2, 'disponible'),
+        (1, 3, 'disponible'),
+        (1, 4, 'disponible'),
+        (1, 5, 'disponible'),
+        (2, 1, 'disponible'),
+        (2, 2, 'disponible'),
+        (2, 3, 'disponible'),
+        (2, 4, 'disponible'),
+        (2, 5, 'disponible')
     ]
     
     try:
