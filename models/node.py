@@ -70,10 +70,8 @@ def enviar_mensaje_a_todos(codigo_instruccion, mensaje):
 def enviar_mensaje_a_maestro(ip_nodo_maestro, codigo, mensaje):
     hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     mensaje_completo = f"{codigo}|{hora_actual}|{mensaje}"
-    nodo_maestro = None
-    while nodo_maestro == None:
-        nodo_maestro = get_client_socket_by_ip(ip_nodo_maestro)  # Obtener el socket del nodo maestro usando su IP
-        print(nodo_maestro)
+    nodo_maestro = get_client_socket_by_ip(ip_nodo_maestro)  # Obtener el socket del nodo maestro usando su IP
+
     
     try:
         if nodo_maestro.fileno() != -1:  # Verifica que el socket siga activo
