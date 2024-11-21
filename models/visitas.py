@@ -52,6 +52,7 @@ def agregar_visita(id_trabajador):
             
             # Obtener el ID del nuevo paciente
             paciente_id = cursor.lastrowid  # Obtiene el id del último registro insertado
+            conn.commit()
 
 
             mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
