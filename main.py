@@ -8,6 +8,7 @@ from controllers.messages import enviar_mensaje_a_nodo, enviar_mensaje_a_todos
 from controllers.database import init_db, agregar_doctores, agregar_salas_emergencia, ejecutar_dbchanges
 from models.emergency_room import agregar_sala_emergencia, listar_salas_emergencia, activar_sala
 from models.camas import agregar_camas
+from models.trabajadores import listar_trabajadores_sociales
 import os
 
 # Diccionario para mantener las conexiones activas
@@ -73,9 +74,11 @@ def main():
                 break
 
             if opcion == '1':
+                listar_trabajadores_sociales()
+                id_trabajador = input("¿Quién realizará acciones? (Ingrese el ID del trabajador social): ")
                 mostrar_menu_trabajador_social()
                 opcion_ts = input("Seleccione una opción: ")
-                realizar_accion_trabajador_social(opcion_ts)
+                realizar_accion_trabajador_social(id_trabajador,opcion_ts)
             elif opcion == '2':
                 mostrar_menu_doctor()
                 opcion_doc = input("Seleccione una opción: ")

@@ -25,10 +25,10 @@ def mostrar_menu_trabajador_social():
     print("3. Registrar paciente")
     print("5. Volver")
 
-def realizar_accion_trabajador_social(opcion):
+def realizar_accion_trabajador_social(id_trabajador,opcion):
     if opcion == '1':
         print("\nRegistrar visita emergencia")
-        agregar_visita()
+        agregar_visita(id_trabajador)
     elif opcion == '2':
         print("\nRegistrar doctor")
 

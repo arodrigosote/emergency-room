@@ -2,7 +2,7 @@ import sqlite3
 import os
 from utils.log import log_message
 from datetime import datetime
-from models.node import enviar_mensaje_a_todos, enviar_consulta_sencilla
+from models.node import enviar_mensaje_a_todos, enviar_consulta_sencilla, enviar_consulta_compleja
 
 def listar_visitas():
     # Lista todas las visitas en la base de datos y las muestra en una tabla por consola
@@ -19,7 +19,7 @@ def listar_visitas():
     for visita in visitas:
         print(f"{visita[0]:<10} {visita[1]:<12} {visita[2]:<15} {visita[3]:<30}")
 
-def agregar_visita():
+def agregar_visita(id_trabajador):
     try:
         # Obtener datos del paciente
         paciente_id = input("Ingrese el ID del paciente: ")
@@ -43,13 +43,7 @@ def agregar_visita():
             if not alergias:
                 alergias = 'None'
 
-            # Insertar el nuevo paciente en la base de datos
-            query_paciente = """
-            INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) 
-            VALUES (?, ?, ?, ?)
-            """
-            cursor.execute(query_paciente, (nombre, genero, tipo_sangre, alergias))
-            conn.commit()
+
             mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
             enviar_consulta_sencilla(mensaje)
 
@@ -59,36 +53,25 @@ def agregar_visita():
             log_message("[Base de Datos] Paciente ya registrado en la base de datos.")
 
     
-        # # Obtener doctores disponibles
-        # cursor.execute("SELECT id_doctor, nombre FROM doctores WHERE estado = 'disponible'")
-        # doctores_disponibles = cursor.fetchall()
-        # if not doctores_disponibles:
-        #     print("No hay doctores disponibles en este momento.")
-        #     return
+        # Obtener doctores disponibles
+        cursor.execute("SELECT id_doctor, nombre FROM doctores WHERE estado = 'disponible'")
+        doctores_disponibles = cursor.fetchall()
+        if not doctores_disponibles:
+            print("\nNo hay doctores disponibles en este momento.")
+            return
 
-        # # Mostrar doctores disponibles y seleccionar uno
-        # print("Doctores disponibles:")
-        # for doctor in doctores_disponibles:
-        #     print(f"ID: {doctor[0]}, Nombre: {doctor[1]}")
-        # id_doctor = input("Seleccione el ID del doctor: ")
+        # Mostrar doctores disponibles y seleccionar uno
+        print("\nDoctores disponibles:")
+        for doctor in doctores_disponibles:
+            print(f"ID: {doctor[0]}, Nombre: {doctor[1]}")
+        id_doctor = input("Seleccione el ID del doctor: ")
 
-        # # Recibir el atributo del trabajador social
-        # id_trabajador_social = input("Ingrese el ID del trabajador social: ")
+        # Generar timestamp para la fecha de salida
+        fecha_salida = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        # # Generar timestamp para la fecha de salida
-        # fecha_salida = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-        # # Datos de la visita
-        # visita = (paciente_id, motivo, id_doctor, id_trabajador_social, fecha_salida)
-
-        # # Insertar la visita en la base de datos
-        # query = """
-        #     INSERT INTO visitas_emergencia (id_paciente, motivo, id_doctor, id_trabajador_social, fecha_salida) 
-        #     VALUES (?, ?, ?, ?, ?)
-        # """
-        # cursor.execute(query, visita)
-        # conn.commit()
-        # log_message("[Base de Datos] Visita de emergencia agregada a la base de datos.")
+        consulta = f"INSERT INTO visitas_emergencia (id_paciente, motivo, id_sala, id_cama, id_doctor, id_trabajador_social, fecha_salida) VALUES ({paciente_id}, '{motivo}', 00, 01, {id_doctor}, {id_trabajador}, '{fecha_salida}')"
+        enviar_consulta_compleja(consulta)
+        log_message("[Base de Datos] Visita de emergencia agregada a la base de datos.")
     except sqlite3.Error as e:
         log_message(f"[Error] No se pudo agregar la visita de emergencia: {e}")
     finally:
