@@ -1,6 +1,6 @@
 import sqlite3
 import os
-from utils.log import log_message
+from utils.log import log_message, log_database
 from datetime import datetime
 from models.node import enviar_mensaje_a_todos, enviar_mensaje_a_maestro
 from controllers.server_client import obtener_nodo_maestro
@@ -54,6 +54,7 @@ def agregar_visita():
             # cursor.execute(query_paciente, (nombre, genero, tipo_sangre, alergias))
             # conn.commit()
             mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
+            log_database(f"{mensaje}")
             enviar_mensaje_a_maestro(nodo_maestro['ip'], '11', mensaje)
             log_message("[Base de Datos] Nuevo paciente registrado en la base de datos.")
 
