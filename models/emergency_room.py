@@ -78,7 +78,10 @@ def activar_sala(ip):
 
 def desactivar_sala(ip, nodo_maestro):
     hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 6a7ba55 (Update emergency_room.py)
     try:
         conn = sqlite3.connect('nodos.db')
         cursor = conn.cursor()
