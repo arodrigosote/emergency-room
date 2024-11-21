@@ -128,7 +128,7 @@ def enviar_mensaje_a_maestro(ip_nodo_maestro, codigo, mensaje):
     hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     mensaje_completo = f"{codigo}|{hora_actual}|{mensaje}"
     nodo_maestro = get_client_socket_by_ip(ip_nodo_maestro)  # Obtener el socket del nodo maestro usando su IP
-    print(nodo_maestro)
+    print(f"[Debug] Socket del nodo maestro: {nodo_maestro}")
     try:
         if nodo_maestro.fileno() != -1:  # Verifica que el socket siga activo
             nodo_maestro.send(mensaje_completo.encode())
@@ -146,7 +146,10 @@ def enviar_mensaje_a_maestro(ip_nodo_maestro, codigo, mensaje):
         else:
             log_message(f"[Error] La conexión con el nodo maestro no está activa.")
     except Exception as e:
-        log_message(f"[Error] No se pudo enviar el mensaje al nodo maestro: {e}")
+        print(f"[Error] No se pudo enviar el mensaje al nodo maestro: {e}")
+        print(f"[Debug] Detalles del error: {str(e)}")
+        import traceback
+        print(f"[Debug] Traceback: {traceback.format_exc()}")
 
 
 def enviar_mensaje_a_maestro_calculo_sala(ip_nodo_maestro, codigo, mensaje):

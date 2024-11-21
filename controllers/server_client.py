@@ -265,5 +265,6 @@ def get_client_socket_by_ip(ip):
     # ...existing code...
     for node_id, client_socket in active_connections.items():
         if client_socket:
+            print(client_socket)
             return client_socket
         return None
