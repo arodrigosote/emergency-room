@@ -3,7 +3,7 @@ import os
 from utils.log import log_message, log_database
 from models.node import enviar_mensaje_a_todos, enviar_mensaje_a_maestro
 from datetime import datetime
-from controllers.server_client import elegir_nodo_maestro
+from controllers.server_client import elegir_nodo_maestro, active_connections
 
 def listar_salas_emergencia():
     # Lista todas las salas de emergencia en la base de datos y las muestra en una tabla por consola
@@ -92,11 +92,11 @@ def desactivar_sala(ip, nodo_maestro):
     try:
         conn = sqlite3.connect('nodos.db')
         cursor = conn.cursor()
-        query = "UPDATE salas_emergencia SET estado = 'desactivado' WHERE ip = ?"
+        query = "UPDATE salas_emergencia SET estado = 'inactivo' WHERE ip = ?"
         cursor.execute(query, (ip,))
         conn.commit()
         
-        log_database(f"# UPDATE salas_emergencia SET estado = 'desactivado' WHERE ip = '{ip}'")
+        log_database(f"# UPDATE salas_emergencia SET estado = 'inactivo' WHERE ip = '{ip}'")
         log_message(f"[Sala] Estado de la sala con IP {ip} cambiado a desactivado.")
         
         # Obtener el nodo propio
