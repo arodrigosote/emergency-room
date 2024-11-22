@@ -27,6 +27,7 @@ def handle_client(client_socket, addr):
             if mensaje_completo[:2] == "ex":
                 break
             elif mensaje_completo[:2] == "01":
+                print('Codigo 01 recibido') 
                 nodos = get_network_nodes()
 
                 #envia cambios de base de datos a nuevas conexiones
@@ -88,6 +89,7 @@ def handle_client(client_socket, addr):
                 continue
 
             elif mensaje_completo[:2] == "12":
+                print('Codigo 12 ejecutando cambios cliente')
                 try:
                 # Crear la carpeta 'database' si no existe
                     os.makedirs("database", exist_ok=True)
@@ -240,6 +242,7 @@ def connect_clients_send_dbchanges(nodes):
                 # Enviar los cambios de la base de datos con código de instrucción "12"
                 instruction_code = "12"
                 message = f"{instruction_code}\n{db_changes}"
+                print('enviando cambios de base de datos')
                 client.send(message.encode())
                 log_message(f"[Mensaje enviado dbchanges] Cambios de la base de datos enviados a nodo {node_id}")
             except FileNotFoundError:
