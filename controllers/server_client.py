@@ -55,9 +55,8 @@ def handle_client(client_socket, addr):
             elif mensaje_completo[:2] == "11":
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 mensaje_nuevo = f"10|{hora_actual}|{query}"
-                print('Codigo 11')
-                print(mensaje_completo)
                 respuestas = []
+                nodo_emisor = client_socket
                 print('nodo maestro recibe mensaje')
                 for destino, client_socket in active_connections.items():
                     try:
@@ -85,7 +84,7 @@ def handle_client(client_socket, addr):
                     log_message("[Sin consenso] No todos los nodos respondieron OK")
                     response = f"Error"
                     log_message(f"[Query] Recibido: Estatus: {response} - {query}")           
-                
+                nodo_emisor.send(response.encode())
                 continue
 
             elif mensaje_completo[:2] == "12":
