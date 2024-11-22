@@ -1,7 +1,7 @@
 import sqlite3
 import os
 from utils.log import log_message, log_database
-from models.node import enviar_mensaje_a_todos, enviar_mensaje_a_maestro, enviar_mensaje_a_todos_incluyendo_propio
+from models.node import enviar_mensaje_a_todos, enviar_mensaje_a_maestro
 from datetime import datetime
 
 def listar_salas_emergencia():
@@ -55,9 +55,9 @@ def activar_sala(ip, nodo_maestro):
     try:
         conn = sqlite3.connect('nodos.db')
         cursor = conn.cursor()
-        # query = "UPDATE salas_emergencia SET estado = 'activado' WHERE ip = ?"
-        # cursor.execute(query, (ip,))
-        # conn.commit()
+        query = "UPDATE salas_emergencia SET estado = 'activado' WHERE ip = ?"
+        cursor.execute(query, (ip,))
+        conn.commit()
         
         log_database(f"# UPDATE salas_emergencia SET estado = 'activado' WHERE ip = '{ip}'")
         log_message(f"[Consulta] Consulta Guardada de activacion de sala de emergencia: UPDATE salas_emergencia SET estado = 'activado' WHERE ip = '{ip}'")
@@ -78,7 +78,7 @@ def activar_sala(ip, nodo_maestro):
                 log_message("[Nodo] El nodo propio no es el nodo maestro.")
                 codigo = "11"
                 mensaje = f"UPDATE salas_emergencia SET estado = 'activado' WHERE ip = '{ip}'"
-                enviar_mensaje_a_todos_incluyendo_propio(nodo_maestro, codigo, mensaje)
+                enviar_mensaje_a_maestro(nodo_maestro, codigo, mensaje)
         else:
             log_message("\n[Nodo Propio] No se encontró el nodo propio.")
     except sqlite3.Error as e:

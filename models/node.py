@@ -161,10 +161,7 @@ def enviar_mensaje_a_todos_incluyendo_propio(codigo_instruccion, mensaje):
     own_node = get_own_node()
     
     for destino, client_socket in active_connections.items():
-        try:
-            # Obtener la IP del nodo destino
-            destino_ip = client_socket.getpeername()[0]
-            
+        try:            
             # Verificar que el nodo destino no sea el nodo propio
             if client_socket.fileno() != -1:  # Verifica que el socket siga activo
                 client_socket.send(mensaje_completo.encode())
