@@ -34,10 +34,10 @@ def handle_client(client_socket, addr):
                 continue
             
             elif mensaje_completo[:2] == "10":
+                hora_ejecucion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 log_message(f"[Query] Recibido: {hora_actual} - {query}")
                 resultado = execute_query(query)
-                hora_ejecucion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 if resultado:
                     response = f"OK"
                     print('nodos responden a maestro OK')
