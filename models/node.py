@@ -120,8 +120,6 @@ def obtener_sala_y_cama():
         print("No hay salas activas con camas disponibles.")
         return None, None
 
-
-
 def enviar_mensaje_a_todos(codigo_instruccion, mensaje):
     hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     mensaje_completo = f"{codigo_instruccion}|{hora_actual}|{mensaje}"
@@ -186,7 +184,6 @@ def enviar_mensaje_a_todos_incluyendo_propio(codigo_instruccion, mensaje):
         log_message("[Consenso] Todos los nodos respondieron OK")
     else:
         log_message("[Sin consenso] No todos los nodos respondieron OK")
-
 
 def enviar_mensaje_a_maestro(ip_nodo_maestro, codigo, mensaje):
     hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

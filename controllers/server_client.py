@@ -59,7 +59,6 @@ def handle_client(client_socket, addr):
                         if client_socket.fileno() != -1:  # Verifica que el socket siga activo
                             client_socket.send(mensaje_nuevo.encode())
                             log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
-
                             print('nodo maestro envia mensaje a nodos')
 
                             # Analizar la respuesta del servidor
