@@ -53,6 +53,8 @@ def main():
     agregar_camas()
     agregar_trabajadores_sociales()
 
+    ejecutar_dbchanges()
+
     nodes = get_network_nodes()  # Obtener nodos de la red
 
     for node in nodes:
@@ -72,7 +74,7 @@ def main():
     
     activar_sala(own_node['ip'], master_node['ip'])
 
-    ejecutar_dbchanges()
+    
 
     try:
         while True:
