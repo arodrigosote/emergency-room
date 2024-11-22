@@ -129,6 +129,24 @@ BEGIN
     WHERE id_sala = NEW.id_sala;
 END;
 
+-- Trigger para cambiar el estado de la cama a ocupada
+CREATE TRIGGER IF NOT EXISTS actualizar_estado_cama
+AFTER INSERT ON visitas_emergencia
+BEGIN
+    UPDATE camas 
+    SET estado = 'ocupada'
+    WHERE id_cama = NEW.id_cama;
+END;
+
+-- Trigger para cambiar el estado del doctor a ocupado
+CREATE TRIGGER IF NOT EXISTS actualizar_estado_doctor
+AFTER INSERT ON visitas_emergencia
+BEGIN
+    UPDATE doctores 
+    SET estado = 'ocupado'
+    WHERE id_doctor = NEW.id_doctor;
+END;
+
 -- Trigger para registrar cambios en el log
 CREATE TRIGGER IF NOT EXISTS registrar_cambio_visita
 AFTER INSERT ON visitas_emergencia
