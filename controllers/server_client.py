@@ -75,11 +75,11 @@ def handle_client(client_socket, addr):
                 if all(respuesta == "OK" for respuesta in respuestas):
                     log_message("[Consenso] Todos los nodos respondieron OK")
                     response = f"OK"
-                    log_message(f"[Query] Ejecutada: {hora_ejecucion} Estatus: {response} - {query}")
+                    log_message(f"[Query] Ejecutada: Estatus: {response} - {query}")
                 else:
                     log_message("[Sin consenso] No todos los nodos respondieron OK")
                     response = f"Error"
-                    log_message(f"[Query] Recibido: {hora_ejecucion} Estatus: {response} - {query}")
+                    log_message(f"[Query] Recibido: Estatus: {response} - {query}")
                 
                 client_socket.send(response.encode())              
                 
