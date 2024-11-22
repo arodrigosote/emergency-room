@@ -15,8 +15,6 @@ master_node = None
 
 
 def handle_client(client_socket, addr):
-    hora_ejecucion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print('hora de ejecucion:',hora_ejecucion)
     # Maneja la conexión con un cliente
     try:
         log_message(f"[Servidor] Conexión establecida con {addr}")
@@ -36,16 +34,17 @@ def handle_client(client_socket, addr):
                 continue
             
             elif mensaje_completo[:2] == "10":
+                #hora_ejecucion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 log_message(f"[Query] Recibido: {hora_actual} - {query}")
                 resultado = execute_query(query)
                 if resultado:
                     response = f"OK"
                     print('nodos responden a maestro OK')
-                    log_message(f"[Query] Ejecutada: {hora_ejecucion} Estatus: {response} - {query}")
+                    log_message(f"[Query] Ejecutada - Estatus: {response} - {query}")
                 else:
                     response = f"Error"
-                    log_message(f"[Query] Recibido: {hora_ejecucion} Estatus: {response} - {query}")
+                    log_message(f"[Query] Recibido - Estatus: {response} - {query}")
                 client_socket.send(response.encode())
                 print('enviando respuesta a nodo maestro')
                 
