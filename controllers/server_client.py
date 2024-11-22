@@ -32,6 +32,7 @@ def handle_client(client_socket, addr):
                 connect_clients_send_dbchanges(nodos)
                 mostrar_conexiones()
                 continue
+            
             elif mensaje_completo[:2] == "10":
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 log_message(f"[Query] Recibido: {hora_actual} - {query}")

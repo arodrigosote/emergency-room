@@ -34,7 +34,7 @@ def agregar_visita(id_trabajador):
             # Si el paciente no está registrado, pedir los datos para registrarlo
             print("El paciente no está registrado. Por favor, ingrese los datos del paciente.")
             nombre = input("Ingrese el nombre del paciente: ")
-            genero = int(input("0. Hombre\n1.Mujer\nSeleccione una opción: "))
+            genero = int(input("0. Hombre\n1. Mujer\nSeleccione una opción: "))
             if genero != 0 and genero != 1:
                 print("Opción inválida.")
                 return
@@ -81,6 +81,7 @@ def agregar_visita(id_trabajador):
         fecha_salida = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
         consulta = f"INSERT INTO visitas_emergencia (id_paciente, motivo, id_sala, id_cama, id_doctor, id_trabajador_social, fecha_salida) VALUES ({paciente_id}, '{motivo}', 00, 01, {id_doctor}, {id_trabajador}, '{fecha_salida}')"
+        
         enviar_consulta_compleja(consulta)
         log_message("[Base de Datos] Visita de emergencia agregada a la base de datos.")
     except sqlite3.Error as e:
