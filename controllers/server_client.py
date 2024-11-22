@@ -40,13 +40,13 @@ def handle_client(client_socket, addr):
                 resultado = execute_query(query)
                 if resultado:
                     response = f"OK"
-                    print('nodos responden a maestro OK')
+                    #print('nodos responden a maestro OK')
                     log_message(f"[Query] Ejecutada - Estatus: {response} - {query}")
                 else:
                     response = f"Error"
                     log_message(f"[Query] Recibido - Estatus: {response} - {query}")
                 client_socket.send(response.encode())
-                print('enviando respuesta a nodo maestro')
+                #print('enviando respuesta a nodo maestro')
                 
                 continue
             elif mensaje_completo[:2] == "11":
@@ -59,7 +59,7 @@ def handle_client(client_socket, addr):
                         if client_socket.fileno() != -1:  # Verifica que el socket siga activo
                             client_socket.send(mensaje_nuevo.encode())
                             log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
-                            print('nodo maestro envia mensaje a nodos')
+                            #print('nodo maestro envia mensaje a nodos')
 
                             # Analizar la respuesta del servidor
                             respuesta = client_socket.recv(1024).decode()  # Tamaño del buffer ajustable
@@ -122,14 +122,13 @@ def handle_client(client_socket, addr):
                     log_message(f"[Error] No se pudo procesar el mensaje '12': {e}")
                 
                 continue
-
-            elif data.decode()[:2] == "ms":
-                enviar_mensaje()
-                continue
+            else:
+                log_message("No se encontró el código de instrucción")
+                break
             
-            log_message(f"[Mensaje recibido] De {addr}: {data.decode()}")
-            response = f"Servidor recibió: {data.decode()}"
-            client_socket.send(response.encode())
+            # log_message(f"[Mensaje recibido] De {addr}: {data.decode()}")
+            # response = f"Servidor recibió: {data.decode()}"
+            # client_socket.send(response.encode())
     except Exception as e:
         log_message(f"[Error] Cliente {addr}: {e}")
     finally:
