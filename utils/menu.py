@@ -99,16 +99,6 @@ def realizar_accion_utilidades(opcion):
         print("Opción no válida, intente de nuevo.")
 
 
-
-
-
-
-    
-
-
-
-
-
 # Funciones para mostrar y realizar acciones en los menús
 def mostrar_menu_tablas():
     print("\nMenú Tablas:")
