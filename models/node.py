@@ -126,19 +126,27 @@ def enviar_mensaje_a_todos(codigo_instruccion, mensaje):
     hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     mensaje_completo = f"{codigo_instruccion}|{hora_actual}|{mensaje}"
     respuestas = []
+    own_node = get_own_node()
+    
     for destino, client_socket in active_connections.items():
         try:
-            if client_socket.fileno() != -1:  # Verifica que el socket siga activo
-                client_socket.send(mensaje_completo.encode())
-                log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_completo}")
-                
-                # Analizar la respuesta del servidor
-                respuesta = client_socket.recv(1024).decode()  # Tamaño del buffer ajustable
-                log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
-                respuestas.append(respuesta)
-                
+            # Obtener la IP del nodo destino
+            destino_ip = client_socket.getpeername()[0]
+            
+            # Verificar que el nodo destino no sea el nodo propio
+            if destino_ip != own_node['ip']:
+                if client_socket.fileno() != -1:  # Verifica que el socket siga activo
+                    client_socket.send(mensaje_completo.encode())
+                    log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_completo}")
+                    
+                    # Analizar la respuesta del servidor
+                    respuesta = client_socket.recv(1024).decode()  # Tamaño del buffer ajustable
+                    log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
+                    respuestas.append(respuesta)
+                else:
+                    log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
             else:
-                log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
+                log_message(f"[Nodo Propio] No se envía mensaje al nodo propio.")
         except Exception as e:
             log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
     
