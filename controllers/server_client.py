@@ -31,7 +31,7 @@ def handle_client(client_socket, addr):
 
                 #envia cambios de base de datos a nuevas conexiones
                 connect_clients_send_dbchanges(nodos)
-                mostrar_conexiones()
+                #mostrar_conexiones()
                 continue
             
             elif mensaje_completo[:2] == "10":
@@ -229,7 +229,7 @@ def connect_clients_send_dbchanges(nodes):
 
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            log_message(f"[Intentando conectar] Nodo ID: {node_id}, IP: {node['ip']}")
+            log_message(f"[Intentando conectar dbchanges] Nodo ID: {node_id}, IP: {node['ip']}")
             client.connect((node['ip'], 9999))
             active_connections[node_id] = client  # Almacena la conexión activa
             elegir_nodo_maestro()
@@ -241,7 +241,7 @@ def connect_clients_send_dbchanges(nodes):
                 instruction_code = "12"
                 message = f"{instruction_code}\n{db_changes}"
                 client.send(message.encode())
-                log_message(f"[Mensaje enviado] Cambios de la base de datos enviados a nodo {node_id}")
+                log_message(f"[Mensaje enviado dbchanges] Cambios de la base de datos enviados a nodo {node_id}")
             except FileNotFoundError:
                 log_message("[Error] El archivo 'db_changes' no se encontró en la carpeta 'history'")
             except Exception as e:
