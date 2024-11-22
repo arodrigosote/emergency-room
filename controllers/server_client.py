@@ -21,6 +21,7 @@ def handle_client(client_socket, addr):
         while True:
             data = client_socket.recv(1024)
             mensaje_completo = data.decode()
+            
             if not data:
                 break
             if mensaje_completo[:2] == "ex":
@@ -37,6 +38,7 @@ def handle_client(client_socket, addr):
                 #hora_ejecucion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 log_message(f"[Query] Recibido: {hora_actual} - {query}")
+                print(mensaje_completo)
                 resultado = execute_query(query)
                 if resultado:
                     response = f"OK"
@@ -52,6 +54,7 @@ def handle_client(client_socket, addr):
             elif mensaje_completo[:2] == "11":
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 mensaje_nuevo = f"10|{hora_actual}|{query}"
+                print(mensaje_nuevo)
                 respuestas = []
                 print('nodo maestro recibe mensaje')
                 for destino, client_socket in active_connections.items():
