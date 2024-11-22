@@ -8,16 +8,16 @@ def listar_visitas():
     # Lista todas las visitas en la base de datos y las muestra en una tabla por consola
     conn = sqlite3.connect('nodos.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM visitas_emergencia')
+    cursor.execute('SELECT id_visita, folio, motivo, id_paciente, id_doctor, id_sala, id_cama, id_trabajador_social, fecha_salida, estado FROM visitas_emergencia')
     visitas = cursor.fetchall()
     conn.close()
 
     # Mostrar las visitas en una tabla por consola sin utilizar tabulate
-    headers = ["ID Visita", "ID Paciente", "Fecha", "Motivo"]
-    print(f"{headers[0]:<10} {headers[1]:<12} {headers[2]:<15} {headers[3]:<30}")
-    print("-" * 70)
+    headers = ["ID Visita", "Folio", "Motivo", "ID Paciente", "ID Doctor", "ID Sala", "ID Cama", "ID Trabajador Social", "Fecha Salida", "Estado"]
+    print(f"{headers[0]:<10} {headers[1]:<15} {headers[2]:<30} {headers[3]:<12} {headers[4]:<10} {headers[5]:<8} {headers[6]:<8} {headers[7]:<20} {headers[8]:<20} {headers[9]:<10}")
+    print("-" * 160)
     for visita in visitas:
-        print(f"{visita[0]:<10} {visita[1]:<12} {visita[2]:<15} {visita[3]:<30}")
+        print(f"{visita[0]:<10} {visita[1]:<15} {visita[2]:<30} {visita[3]:<12} {visita[4]:<10} {visita[5]:<8} {visita[6]:<8} {visita[7]:<20} {visita[8]:<20} {visita[9]:<10}")
 
 def agregar_visita(id_trabajador):
     try:
