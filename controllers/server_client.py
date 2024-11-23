@@ -136,9 +136,9 @@ def handle_client(client_socket, addr):
             # client_socket.send(response.encode())
     except Exception as e:
         log_message(f"[Error] Cliente {addr}: {e}")
-    finally:
-        client_socket.close()
-        log_message(f"[Servidor] Conexión cerrada con {addr}")
+    # finally:
+    #     client_socket.close()
+    #     log_message(f"[Servidor] Conexión cerrada con {addr}")
 
 def start_server():
     
