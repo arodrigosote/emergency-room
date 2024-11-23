@@ -91,8 +91,10 @@ def handle_client(client_socket, addr):
 
                 elif mensaje_completo[:2] == "12":
                     try:
-                    # Crear la carpeta 'database' si no existe
+                        log_message(f"[Infor] A punto de crear carpeta database")
+                        # Crear la carpeta 'database' si no existe
                         os.makedirs("database", exist_ok=True)
+                        log_message(f"[Infor] Carpeta creada")
                         log_message("[Info] Carpeta 'database' creada o ya existente.")
 
                         # Ruta del archivo
