@@ -60,7 +60,6 @@ def main():
         if node_id not in active_connections:
             conn = connect_clients([node])
             if conn:
-                print(f"[Conexión] Conectado a nodo {node_id} en {node.get('ip')}")
                 active_connections[node_id] = conn
     
 

@@ -83,6 +83,15 @@ def mostrar_log_base_datos():
     except FileNotFoundError:
         print("[Error] No se encontró el archivo de log de la base de datos.")
 
+def mostrar_log_changestomake():
+    log_path = os.path.join(os.path.dirname(__file__), '..', 'database', 'changestomake.txt')
+    try:
+        with open(log_path, 'r') as f:
+            log_content = f.read()
+        print(log_content)
+    except FileNotFoundError:
+        print("[Error] No se encontró el archivo de log de la base de datos.")
+
 
 def ejecutar_dbchanges():
     archivo_path = os.path.join("database", "changestomake.txt")

@@ -38,8 +38,7 @@ def handle_client(client_socket, addr):
                 #hora_ejecucion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 log_message(f"[Query] Recibido: {hora_actual} - {query}")
-                print('Codigo 10')
-                print(mensaje_completo)
+
                 resultado = execute_query(query)
                 if resultado:
                     response = f"OK"
@@ -49,7 +48,6 @@ def handle_client(client_socket, addr):
                     response = f"Error"
                     log_message(f"[Query] Recibido - Estatus: {response} - {query}")
                 client_socket.send(response.encode())
-                #print('enviando respuesta a nodo maestro')
                 
                 continue
             elif mensaje_completo[:2] == "11":
@@ -63,10 +61,9 @@ def handle_client(client_socket, addr):
                         if client_socket.fileno() != -1:  # Verifica que el socket siga activo
                             client_socket.send(mensaje_nuevo.encode())
                             log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
-                            #print('nodo maestro envia mensaje a nodos')
 
                             # Analizar la respuesta del servidor
-                            respuesta = client_socket.recv(1024).decode()  # Tamaño del buffer ajustable
+                            respuesta = client_socket.recv(1024).decode()  
                             log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
                             respuestas.append(respuesta)
                             
@@ -89,7 +86,7 @@ def handle_client(client_socket, addr):
 
             elif mensaje_completo[:2] == "12":
                 try:
-                # Crear la carpeta 'database' si no existe
+                    # Crear la carpeta 'database' si no existe
                     os.makedirs("database", exist_ok=True)
                     log_message("[Info] Carpeta 'database' creada o ya existente.")
 

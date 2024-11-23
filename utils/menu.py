@@ -5,7 +5,7 @@ from models.pacientes import listar_pacientes
 from models.visitas import listar_visitas, agregar_visita
 from models.master_node import obtener_nodo_maestro
 from models.trabajadores import listar_trabajadores_sociales
-from controllers.database import mostrar_log_base_datos, mostrar_log_servidor
+from controllers.database import mostrar_log_base_datos, mostrar_log_servidor, mostrar_log_changestomake
 from utils.log import log_message
 from controllers.nodes import get_network_nodes
 
@@ -74,7 +74,8 @@ def mostrar_menu_utilidades():
     print("2. Mostrar Log de cambios en la base de datos")
     print("3. Mostrar log de servidor")
     print("4. Mostrar Nodo Maestro")
-    print("5. Volver")
+    print("5. Mostrar changstomake")
+    print("6. Volver")
 
 def realizar_accion_utilidades(opcion):
     if opcion == '1':
@@ -95,6 +96,10 @@ def realizar_accion_utilidades(opcion):
         print("\nMostrando Nodo Maestro")
         obtener_nodo_maestro() # Llamar a la función para mostrar nodo maestro
         log_message("[Utilidades] Mostrando Nodo Maestro.")
+    elif opcion == '5':
+        print("\nMostrando changetomake")
+        mostrar_log_changestomake()  # Llamar a la función para mostrar log de base de datos
+        log_message("[Utilidades] Mostrando Log de cambios en la base de datos.")
     else:
         print("Opción no válida, intente de nuevo.")
 
