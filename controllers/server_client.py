@@ -210,8 +210,6 @@ def connect_clients(nodes):
             instruction_code = "01"
             message = f"{instruction_code}"
             client.send(message.encode())
-            response = client.recv(1024).decode()
-            log_message(f"[Mensaje recibido] De nodo {node_id}: {response}")
             elegir_nodo_maestro()
             log_message(f"[Conexión exitosa] Nodo {node_id} conectado. Activas: {list(active_connections.keys())}")
         except Exception as e:
