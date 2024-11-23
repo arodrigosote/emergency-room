@@ -24,35 +24,34 @@ def handle_client(client_socket, addr):
             
             if not data:
                 break
-            if mensaje_completo[:2] == "ex":
-                break
+            if mensaje_completo[:2] == "00":
+                log_message(f"[Mensaje recibido] De {addr}: {mensaje_completo}")
+                response = f"[Respuesta] Conexion hecha"
+                client_socket.send(response.encode())
+                continue
             elif mensaje_completo[:2] == "01":
-                print('Codigo 01 recibido') 
-                nodos = get_network_nodes()
-
-                #envia cambios de base de datos a nuevas conexiones
-                connect_clients_send_dbchanges(nodos)
-                #mostrar_conexiones()
+                connect_clients_send_dbchanges(client_socket)
+                nodes = get_network_nodes()  # Obtener nodos de la red
+                connect_clients_only(nodes)
                 continue
             
+            # Query de envio a todos nodos y obtener consenso siendo nodo maestro
             elif mensaje_completo[:2] == "10":
-                #hora_ejecucion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 log_message(f"[Query] Recibido: {hora_actual} - {query}")
-                print('Codigo 10')
-                print(mensaje_completo)
                 resultado = execute_query(query)
+                
                 if resultado:
                     response = f"OK"
-                    #print('nodos responden a maestro OK')
                     log_message(f"[Query] Ejecutada - Estatus: {response} - {query}")
                 else:
                     response = f"Error"
                     log_message(f"[Query] Recibido - Estatus: {response} - {query}")
-                client_socket.send(response.encode())
-                #print('enviando respuesta a nodo maestro')
                 
+                client_socket.send(response.encode())
                 continue
+
+            # Query de envio a nodo maestro para mandar a los demas nodos
             elif mensaje_completo[:2] == "11":
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 mensaje_nuevo = f"10|{hora_actual}|{query}"
@@ -64,10 +63,9 @@ def handle_client(client_socket, addr):
                         if client_socket.fileno() != -1:  # Verifica que el socket siga activo
                             client_socket.send(mensaje_nuevo.encode())
                             log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
-                            #print('nodo maestro envia mensaje a nodos')
 
                             # Analizar la respuesta del servidor
-                            respuesta = client_socket.recv(1024).decode()  # Tamaño del buffer ajustable
+                            respuesta = client_socket.recv(1024).decode()  
                             log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
                             respuestas.append(respuesta)
                             
@@ -206,8 +204,10 @@ def connect_clients(nodes):
 
             # Enviar mensaje de conexión con código de instrucción
             instruction_code = "01"
-            message = f"{instruction_code} Hola, soy un nodo nuevo en el sistema"
+            message = f"{instruction_code}"
             client.send(message.encode())
+            response = client.recv(1024).decode()
+            log_message(f"[Mensaje recibido] De nodo {node_id}: {response}")
             elegir_nodo_maestro()
             log_message(f"[Conexión exitosa] Nodo {node_id} conectado. Activas: {list(active_connections.keys())}")
         except Exception as e:
@@ -216,10 +216,8 @@ def connect_clients(nodes):
             if node_id not in active_connections:
                 client.close()  # Asegurarse de cerrar conexiones fallidas
 
-
-
-def connect_clients_send_dbchanges(nodes):
-    # Conecta con los nodos de la red y envía los cambios de la base de datos
+def connect_clients_only(nodes):
+    # Conecta con los nodos de la red
     for node in nodes:
         node_id = int(node['id'])
         if node_id in [1, 2, 254]:  # Opcional: omitir nodos específicos
@@ -231,31 +229,42 @@ def connect_clients_send_dbchanges(nodes):
 
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            log_message(f"[Intentando conectar dbchanges] Nodo ID: {node_id}, IP: {node['ip']}")
+            log_message(f"[Intentando conectar] Nodo ID: {node_id}, IP: {node['ip']}")
             client.connect((node['ip'], 9999))
             active_connections[node_id] = client  # Almacena la conexión activa
-            elegir_nodo_maestro()
-            # Leer el contenido del archivo db_changes
-            try:
-                with open('history/db_changes.txt', 'r') as file:
-                    db_changes = file.read()
-                # Enviar los cambios de la base de datos con código de instrucción "12"
-                instruction_code = "12"
-                message = f"{instruction_code}\n{db_changes}"
-                print('enviando cambios de base de datos')
-                client.send(message.encode())
-                log_message(f"[Mensaje enviado dbchanges] Cambios de la base de datos enviados a nodo {node_id}")
-            except FileNotFoundError:
-                log_message("[Error] El archivo 'db_changes' no se encontró en la carpeta 'history'")
-            except Exception as e:
-                log_message(f"[Error] No se pudo leer el archivo 'db_changes': {e}")
 
+            # Enviar mensaje de conexión con código de instrucción
+            instruction_code = "00"
+            message = f"{instruction_code}"
+            client.send(message.encode())
+            elegir_nodo_maestro()
+            log_message(f"[Conexión exitosa] Nodo {node_id} conectado. Activas: {list(active_connections.keys())}")
         except Exception as e:
             log_message(f"[Error] No se pudo conectar con el nodo {node['ip']}: {e}")
         finally:
             if node_id not in active_connections:
                 client.close()  # Asegurarse de cerrar conexiones fallidas
 
+def connect_clients_send_dbchanges(client_socket):
+    # Conecta con los nodos de la red y envía los cambios de la base de datos
+    try:
+        # Leer el contenido del archivo db_changes
+        try:
+            with open('history/db_changes.txt', 'r') as file:
+                db_changes = file.read()
+                # Enviar los cambios de la base de datos con código de instrucción "12"
+                instruction_code = "12"
+                message = f"{instruction_code}\n{db_changes}"
+                client_socket.send(message.encode())
+                log_message(f"[Mensaje enviado dbchanges] Cambios de la base de datos enviados al cliente")
+        except FileNotFoundError:
+            log_message("[Error] El archivo 'db_changes' no se encontró en la carpeta 'history'")
+        except Exception as e:
+            log_message(f"[Error] No se pudo leer el archivo 'db_changes': {e}")
+    except Exception as e:
+        log_message(f"[Error] No se pudo enviar el mensaje al cliente: {e}")
+    finally:
+        client_socket.close()  # Asegurarse de cerrar la conexión
 
 def mostrar_conexiones():
     # Muestra las conexiones activas

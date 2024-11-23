@@ -53,17 +53,19 @@ def main():
     agregar_camas()
     agregar_trabajadores_sociales()
 
-    ejecutar_dbchanges()
+    
 
     nodes = get_network_nodes()  # Obtener nodos de la red
 
-    for node in nodes:
-        node_id = node.get("id")  
-        if node_id not in active_connections:
-            conn = connect_clients([node])
-            if conn:
-                print(f"[Conexión] Conectado a nodo {node_id} en {node.get('ip')}")
-                active_connections[node_id] = conn
+    # Conectar con los nodos de la red
+    connect_clients(nodes)
+
+    # for node in nodes:
+    #     node_id = node.get("id")  
+    #     if node_id not in active_connections:
+    #         conn = connect_clients([node])
+    #         if conn:
+    #             active_connections[node_id] = conn
     
 
     master_node_id = max(active_connections.keys())
@@ -74,7 +76,7 @@ def main():
     
     activar_sala(own_node['ip'], master_node['ip'])
 
-    
+    ejecutar_dbchanges()
 
     try:
         while True:
