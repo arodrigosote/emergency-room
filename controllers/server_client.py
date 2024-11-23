@@ -90,6 +90,7 @@ def handle_client(client_socket, addr):
                     continue
 
                 elif mensaje_completo[:2] == "12":
+
                     try:
                         log_message(f"[Infor] A punto de crear carpeta database")
                         # Crear la carpeta 'database' si no existe
@@ -216,7 +217,10 @@ def connect_clients(nodes):
             log_message(f"[Error] No se pudo conectar con el nodo {node['ip']}: {e}")
         finally:
             if node_id not in active_connections:
-                client.close()  # Asegurarse de cerrar conexiones fallidas
+                try:
+                    client.close()  # Asegurarse de cerrar conexiones fallidas
+                except Exception as e:
+                    log_message(f"[Error] No se pudo cerrar el socket: {e}")
 
 def connect_clients_only(nodes):
     # Conecta con los nodos de la red
@@ -266,7 +270,14 @@ def connect_clients_send_dbchanges(client_socket):
     except Exception as e:
         log_message(f"[Error] No se pudo enviar el mensaje al cliente: {e}")
     finally:
-        client_socket.close()  # Asegurarse de cerrar la conexión
+        client_ip = client_socket.getpeername()[0]
+        if client_ip not in active_connections.values():
+            try:
+                client_socket.close()  # Asegurarse de cerrar conexiones fallidas
+                log_message(f"[Info] Conexión cerrada para IP: {client_ip}")
+            except Exception as e:
+                log_message(f"[Error] No se pudo cerrar el socket para IP: {client_ip}: {e}")
+
 
 def mostrar_conexiones():
     # Muestra las conexiones activas
