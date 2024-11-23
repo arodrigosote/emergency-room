@@ -86,6 +86,8 @@ def handle_client(client_socket, addr):
 
             elif mensaje_completo[:2] == "12":
                 try:
+                    print('Recibiendo query')
+
                     # Crear la carpeta 'database' si no existe
                     os.makedirs("database", exist_ok=True)
                     log_message("[Info] Carpeta 'database' creada o ya existente.")
@@ -96,7 +98,7 @@ def handle_client(client_socket, addr):
                     # Dividir el texto en líneas
                     lineas = mensaje_completo.splitlines()
 
-                    print('\nlineas')
+                    print('\n Codigo 12, mostrando lineas')
                     print(lineas)
 
                     # Procesar las líneas y guardar las consultas válidas
@@ -114,7 +116,7 @@ def handle_client(client_socket, addr):
 
                                 # Validar formato de fecha y hora (opcional)
                                 try:
-                                    datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M:%S")
+                                    # datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M:%S")
                                     # Escribir en el archivo
                                     archivo.write(f"{fecha_hora}#{consulta}\n")
                                     log_message(f"[Info] Consulta guardada: {fecha_hora} {consulta}")
@@ -232,13 +234,11 @@ def connect_clients_send_dbchanges(nodes):
             elegir_nodo_maestro()
             # Leer el contenido del archivo db_changes
             try:
-                print('intentando abrir archivo db_changes')
                 with open('history/db_changes.txt', 'r') as file:
                     db_changes = file.read()
                 # Enviar los cambios de la base de datos con código de instrucción "12"
-                print(db_changes)
                 instruction_code = "12"
-                message = f"{instruction_code}#{db_changes}"
+                message = f"{instruction_code}\n{db_changes}"
                 print(message)
                 client.send(message.encode())
                 log_message(f"[Mensaje enviado] Cambios de la base de datos enviados a nodo {node_id}")
