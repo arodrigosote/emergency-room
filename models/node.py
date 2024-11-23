@@ -208,7 +208,6 @@ def enviar_mensaje_a_maestro(ip_nodo_maestro, codigo, mensaje):
         import traceback
         print(f"[Debug] Traceback: {traceback.format_exc()}")
 
-
 def enviar_mensaje_a_maestro_calculo_sala(ip_nodo_maestro, codigo, mensaje):
     hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     sala, cama = obtener_sala_y_cama()
