@@ -41,13 +41,14 @@ def handle_client(client_socket, addr):
                 print(query)
                 resultado = execute_query(query)
                 if resultado:
-                    response = f"OK"
+                    response = "OK"
                     #print('nodos responden a maestro OK')
                     log_message(f"[Query] Ejecutada - Estatus: {response} - {query}")
                 else:
-                    response = f"Error"
+                    response = "Error"
                     log_message(f"[Query] Recibido - Estatus: {response} - {query}")
                 client_socket.send(response.encode())
+                log_message(f"[Respuesta] Enviada: {response}")
                 
                 continue
             elif mensaje_completo[:2] == "11":
