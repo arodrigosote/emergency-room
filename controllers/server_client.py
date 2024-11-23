@@ -28,7 +28,6 @@ def handle_client(client_socket, addr):
                 if not data:
                     break
                 if mensaje_completo[:2] == "00":
-                    log_message(f"[Mensaje recibido] De {addr}: {mensaje_completo}")
                     response = f"[Respuesta] Conexion hecha"
                     client_socket.send(response.encode())
                     continue
