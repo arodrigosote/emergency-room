@@ -13,136 +13,132 @@ from controllers.nodes import get_network_nodes, get_own_node
 active_connections = {}
 master_node = None
 
-lock = threading.Lock()
-
 
 def handle_client(client_socket, addr):
-    with lock:
-        # Maneja la conexión con un cliente
-        try:
-            log_message(f"[Servidor] Conexión establecida con {addr}")
-            while True:
-                data = client_socket.recv(1024)
-                mensaje_completo = data.decode()
-                
-                if not data:
-                    break
-                if mensaje_completo[:2] == "00":
-                    response = f"[Respuesta] Conexion hecha"
-                    client_socket.send(response.encode())
-                    continue
-                elif mensaje_completo[:2] == "01":
-                    connect_clients_send_dbchanges(client_socket)
-                    nodes = get_network_nodes()  # Obtener nodos de la red
-                    connect_clients_only(nodes)
-                    continue
-                
-                # Query de envio a todos nodos y obtener consenso siendo nodo maestro
-                elif mensaje_completo[:2] == "10":
-                    codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
-                    log_message(f"[Query] Recibido: {hora_actual} - {query}")
-                    resultado = execute_query(query)
-                    
-                    if resultado:
-                        response = f"OK"
-                        log_message(f"[Query] Ejecutada - Estatus: {response} - {query}")
-                    else:
-                        response = f"Error"
-                        log_message(f"[Query] Recibido - Estatus: {response} - {query}")
-                    
-                    client_socket.send(response.encode())
-                    continue
+    # Maneja la conexión con un cliente
+    try:
+        log_message(f"[Servidor] Conexión establecida con {addr}")
+        while True:
+            data = client_socket.recv(1024)
+            mensaje_completo = data.decode()
+            
+            if not data:
+                break
+            if mensaje_completo[:2] == "ex":
+                break
+            elif mensaje_completo[:2] == "01":
+                nodos = get_network_nodes()
 
-                # Query de envio a nodo maestro para mandar a los demas nodos
-                elif mensaje_completo[:2] == "11":
-                    codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
-                    mensaje_nuevo = f"10|{hora_actual}|{query}"
-                    respuestas = []
-                    nodo_emisor = client_socket
-                    print('nodo maestro recibe mensaje')
-                    for destino, client_socket in active_connections.items():
-                        try:
-                            if client_socket.fileno() != -1:  # Verifica que el socket siga activo
-                                client_socket.send(mensaje_nuevo.encode())
-                                log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
-
-                                # Analizar la respuesta del servidor
-                                respuesta = client_socket.recv(1024).decode()  
-                                log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
-                                respuestas.append(respuesta)
-                                
-                            else:
-                                log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
-                        except Exception as e:
-                            log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
-
-                    # Verificar si todas las respuestas son "OK"
-                    if all(respuesta == "OK" for respuesta in respuestas):
-                        log_message("[Consenso] Todos los nodos respondieron OK")
-                        response = f"OK"
-                        log_message(f"[Query] Ejecutada: Estatus: {response} - {query}")
-                    else:
-                        log_message("[Sin consenso] No todos los nodos respondieron OK")
-                        response = f"Error"
-                        log_message(f"[Query] Recibido: Estatus: {response} - {query}")           
-                    nodo_emisor.send(response.encode())
-                    continue
-
-                elif mensaje_completo[:2] == "12":
-
-                    try:
-                        log_message(f"[Infor] A punto de crear carpeta database")
-                        # Crear la carpeta 'database' si no existe
-                        os.makedirs("database", exist_ok=True)
-                        log_message(f"[Infor] Carpeta creada")
-                        log_message("[Info] Carpeta 'database' creada o ya existente.")
-
-                        # Ruta del archivo
-                        archivo_path = os.path.join("database", "changestomake.txt")
-
-                        # Dividir el texto en líneas
-                        lineas = mensaje_completo.splitlines()
-
-                        # Procesar las líneas y guardar las consultas válidas
-                        with open(archivo_path, "w") as archivo:
-                            for linea in lineas:
-                                linea = linea.strip()
-                                if "#" in linea:
-                                    # Separar la fecha y hora de la consulta
-                                    partes = linea.split("#", 1)
-                                    fecha_hora = partes[0].strip()[:-2]
-                                    consulta = partes[1].strip()
-
-                                    # Eliminar el guion antes de la consulta (si existe)
-                                    consulta = consulta.replace(" - ", " ")
-
-                                    # Validar formato de fecha y hora (opcional)
-                                    try:
-                                        datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M:%S")
-                                        # Escribir en el archivo
-                                        archivo.write(f"{fecha_hora}#{consulta}\n")
-                                        log_message(f"[Info] Consulta guardada: {fecha_hora} {consulta}")
-                                    except ValueError:
-                                        log_message(f"[Error] Formato de fecha y hora no válido: {fecha_hora}")
-                    except Exception as e:
-                        log_message(f"[Error] No se pudo procesar el mensaje '12': {e}")
-                    
-                    continue
+                #envia cambios de base de datos a nuevas conexiones
+                connect_clients_send_dbchanges(nodos)
+                mostrar_conexiones()
+                continue
+            
+            elif mensaje_completo[:2] == "10":
+                #hora_ejecucion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
+                log_message(f"[Query] Recibido: {hora_actual} - {query}")
+                print('Codigo 10')
+                print(mensaje_completo)
+                resultado = execute_query(query)
+                if resultado:
+                    response = f"OK"
+                    #print('nodos responden a maestro OK')
+                    log_message(f"[Query] Ejecutada - Estatus: {response} - {query}")
                 else:
-                    
-                    log_message("No se encontró el código de instrucción")
-                    print('\nNo se encontró el código de instrucción')
-                    print(mensaje_completo)
-                    break
+                    response = f"Error"
+                    log_message(f"[Query] Recibido - Estatus: {response} - {query}")
+                client_socket.send(response.encode())
+                #print('enviando respuesta a nodo maestro')
                 
-                # log_message(f"[Mensaje recibido] De {addr}: {data.decode()}")
-                # response = f"Servidor recibió: {data.decode()}"
-                # client_socket.send(response.encode())
-        except Exception as e:
-            log_message(f"[Error] Cliente {addr}: {e}")
-        finally:
-            client_socket.close()
-            log_message(f"[Servidor] Conexión cerrada con {addr}")
+                continue
+            elif mensaje_completo[:2] == "11":
+                codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
+                mensaje_nuevo = f"10|{hora_actual}|{query}"
+                respuestas = []
+                nodo_emisor = client_socket
+                print('nodo maestro recibe mensaje')
+                for destino, client_socket in active_connections.items():
+                    try:
+                        if client_socket.fileno() != -1:  # Verifica que el socket siga activo
+                            client_socket.send(mensaje_nuevo.encode())
+                            log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
+                            #print('nodo maestro envia mensaje a nodos')
+
+                            # Analizar la respuesta del servidor
+                            respuesta = client_socket.recv(1024).decode()  # Tamaño del buffer ajustable
+                            log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
+                            respuestas.append(respuesta)
+                            
+                        else:
+                            log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
+                    except Exception as e:
+                        log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
+
+                # Verificar si todas las respuestas son "OK"
+                if all(respuesta == "OK" for respuesta in respuestas):
+                    log_message("[Consenso] Todos los nodos respondieron OK")
+                    response = f"OK"
+                    log_message(f"[Query] Ejecutada: Estatus: {response} - {query}")
+                else:
+                    log_message("[Sin consenso] No todos los nodos respondieron OK")
+                    response = f"Error"
+                    log_message(f"[Query] Recibido: Estatus: {response} - {query}")           
+                nodo_emisor.send(response.encode())
+                continue
+
+            elif mensaje_completo[:2] == "12":
+                try:
+                # Crear la carpeta 'database' si no existe
+                    os.makedirs("database", exist_ok=True)
+                    log_message("[Info] Carpeta 'database' creada o ya existente.")
+
+                    # Ruta del archivo
+                    archivo_path = os.path.join("database", "changestomake.txt")
+
+                    # Dividir el texto en líneas
+                    lineas = mensaje_completo.splitlines()
+
+                    # Procesar las líneas y guardar las consultas válidas
+                    with open(archivo_path, "w") as archivo:
+                        for linea in lineas:
+                            linea = linea.strip()
+                            if "#" in linea:
+                                # Separar la fecha y hora de la consulta
+                                partes = linea.split("#", 1)
+                                fecha_hora = partes[0].strip()[:-2]
+                                consulta = partes[1].strip()
+
+                                # Eliminar el guion antes de la consulta (si existe)
+                                consulta = consulta.replace(" - ", " ")
+
+                                # Validar formato de fecha y hora (opcional)
+                                try:
+                                    datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M:%S")
+                                    # Escribir en el archivo
+                                    archivo.write(f"{fecha_hora}#{consulta}\n")
+                                    log_message(f"[Info] Consulta guardada: {fecha_hora} {consulta}")
+                                except ValueError:
+                                    log_message(f"[Error] Formato de fecha y hora no válido: {fecha_hora}")
+                except Exception as e:
+                    log_message(f"[Error] No se pudo procesar el mensaje '12': {e}")
+                
+                continue
+            else:
+                
+                log_message("No se encontró el código de instrucción")
+                print('\nNo se encontró el código de instrucción')
+                print(mensaje_completo)
+                break
+            
+            # log_message(f"[Mensaje recibido] De {addr}: {data.decode()}")
+            # response = f"Servidor recibió: {data.decode()}"
+            # client_socket.send(response.encode())
+    except Exception as e:
+        log_message(f"[Error] Cliente {addr}: {e}")
+    finally:
+        client_socket.close()
+        log_message(f"[Servidor] Conexión cerrada con {addr}")
 
 def start_server():
     
@@ -208,7 +204,7 @@ def connect_clients(nodes):
 
             # Enviar mensaje de conexión con código de instrucción
             instruction_code = "01"
-            message = f"{instruction_code}"
+            message = f"{instruction_code} Hola, soy un nodo nuevo en el sistema"
             client.send(message.encode())
             elegir_nodo_maestro()
             log_message(f"[Conexión exitosa] Nodo {node_id} conectado. Activas: {list(active_connections.keys())}")
@@ -216,13 +212,12 @@ def connect_clients(nodes):
             log_message(f"[Error] No se pudo conectar con el nodo {node['ip']}: {e}")
         finally:
             if node_id not in active_connections:
-                try:
-                    client.close()  # Asegurarse de cerrar conexiones fallidas
-                except Exception as e:
-                    log_message(f"[Error] No se pudo cerrar el socket: {e}")
+                client.close()  # Asegurarse de cerrar conexiones fallidas
 
-def connect_clients_only(nodes):
-    # Conecta con los nodos de la red
+
+
+def connect_clients_send_dbchanges(nodes):
+    # Conecta con los nodos de la red y envía los cambios de la base de datos
     for node in nodes:
         node_id = int(node['id'])
         if node_id in [1, 2, 254]:  # Opcional: omitir nodos específicos
@@ -237,45 +232,26 @@ def connect_clients_only(nodes):
             log_message(f"[Intentando conectar] Nodo ID: {node_id}, IP: {node['ip']}")
             client.connect((node['ip'], 9999))
             active_connections[node_id] = client  # Almacena la conexión activa
-
-            # Enviar mensaje de conexión con código de instrucción
-            instruction_code = "00"
-            message = f"{instruction_code}"
-            client.send(message.encode())
             elegir_nodo_maestro()
-            log_message(f"[Conexión exitosa] Nodo {node_id} conectado. Activas: {list(active_connections.keys())}")
+            # Leer el contenido del archivo db_changes
+            try:
+                with open('history/db_changes.txt', 'r') as file:
+                    db_changes = file.read()
+                # Enviar los cambios de la base de datos con código de instrucción "12"
+                instruction_code = "12"
+                message = f"{instruction_code}\n{db_changes}"
+                client.send(message.encode())
+                log_message(f"[Mensaje enviado] Cambios de la base de datos enviados a nodo {node_id}")
+            except FileNotFoundError:
+                log_message("[Error] El archivo 'db_changes' no se encontró en la carpeta 'history'")
+            except Exception as e:
+                log_message(f"[Error] No se pudo leer el archivo 'db_changes': {e}")
+
         except Exception as e:
             log_message(f"[Error] No se pudo conectar con el nodo {node['ip']}: {e}")
         finally:
             if node_id not in active_connections:
                 client.close()  # Asegurarse de cerrar conexiones fallidas
-
-def connect_clients_send_dbchanges(client_socket):
-    # Conecta con los nodos de la red y envía los cambios de la base de datos
-    try:
-        # Leer el contenido del archivo db_changes
-        try:
-            with open('history/db_changes.txt', 'r') as file:
-                db_changes = file.read()
-                # Enviar los cambios de la base de datos con código de instrucción "12"
-                instruction_code = "12"
-                message = f"{instruction_code}\n{db_changes}"
-                client_socket.send(message.encode())
-                log_message(f"[Mensaje enviado dbchanges] Cambios de la base de datos enviados al cliente")
-        except FileNotFoundError:
-            log_message("[Error] El archivo 'db_changes' no se encontró en la carpeta 'history'")
-        except Exception as e:
-            log_message(f"[Error] No se pudo leer el archivo 'db_changes': {e}")
-    except Exception as e:
-        log_message(f"[Error] No se pudo enviar el mensaje al cliente: {e}")
-    # finally:
-    #     client_ip = client_socket.getpeername()[0]
-    #     if client_ip not in active_connections.values():
-    #         try:
-    #             client_socket.close()  # Asegurarse de cerrar conexiones fallidas
-    #             log_message(f"[Info] Conexión cerrada para IP: {client_ip}")
-    #         except Exception as e:
-    #             log_message(f"[Error] No se pudo cerrar el socket para IP: {client_ip}: {e}")
 
 
 def mostrar_conexiones():
