@@ -269,14 +269,14 @@ def connect_clients_send_dbchanges(client_socket):
             log_message(f"[Error] No se pudo leer el archivo 'db_changes': {e}")
     except Exception as e:
         log_message(f"[Error] No se pudo enviar el mensaje al cliente: {e}")
-    finally:
-        client_ip = client_socket.getpeername()[0]
-        if client_ip not in active_connections.values():
-            try:
-                client_socket.close()  # Asegurarse de cerrar conexiones fallidas
-                log_message(f"[Info] Conexión cerrada para IP: {client_ip}")
-            except Exception as e:
-                log_message(f"[Error] No se pudo cerrar el socket para IP: {client_ip}: {e}")
+    # finally:
+    #     client_ip = client_socket.getpeername()[0]
+    #     if client_ip not in active_connections.values():
+    #         try:
+    #             client_socket.close()  # Asegurarse de cerrar conexiones fallidas
+    #             log_message(f"[Info] Conexión cerrada para IP: {client_ip}")
+    #         except Exception as e:
+    #             log_message(f"[Error] No se pudo cerrar el socket para IP: {client_ip}: {e}")
 
 
 def mostrar_conexiones():
