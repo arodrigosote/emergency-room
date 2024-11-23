@@ -38,7 +38,7 @@ def handle_client(client_socket, addr):
                 #hora_ejecucion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 log_message(f"[Query] Recibido: {hora_actual} - {query}")
-
+                print(query)
                 resultado = execute_query(query)
                 if resultado:
                     response = f"OK"
@@ -75,13 +75,14 @@ def handle_client(client_socket, addr):
                 # Verificar si todas las respuestas son "OK"
                 if all(respuesta == "OK" for respuesta in respuestas):
                     log_message("[Consenso] Todos los nodos respondieron OK")
-                    response = f"OK"
+                    response = "OK"
                     log_message(f"[Query] Ejecutada: Estatus: {response} - {query}")
                 else:
                     log_message("[Sin consenso] No todos los nodos respondieron OK")
-                    response = f"Error"
-                    log_message(f"[Query] Recibido: Estatus: {response} - {query}")           
-                nodo_emisor.send(response.encode())
+                    response = "Error"
+                    log_message(f"[Query] Recibido: Estatus: {response} - {query}")   
+                print('respuesta a nodo emisor')        
+                nodo_emisor.sendall(response.encode())
                 continue
 
             elif mensaje_completo[:2] == "12":
