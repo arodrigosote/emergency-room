@@ -96,6 +96,9 @@ def handle_client(client_socket, addr):
                     # Dividir el texto en líneas
                     lineas = mensaje_completo.splitlines()
 
+                    print('\nlineas')
+                    print(lineas)
+
                     # Procesar las líneas y guardar las consultas válidas
                     with open(archivo_path, "w") as archivo:
                         for linea in lineas:
@@ -232,9 +235,11 @@ def connect_clients_send_dbchanges(nodes):
             elegir_nodo_maestro()
             # Leer el contenido del archivo db_changes
             try:
+                print('intentando abrir archivo db_changes')
                 with open('history/db_changes.txt', 'r') as file:
                     db_changes = file.read()
                 # Enviar los cambios de la base de datos con código de instrucción "12"
+                print(db_changes)
                 instruction_code = "12"
                 message = f"{instruction_code}\n{db_changes}"
                 client.send(message.encode())

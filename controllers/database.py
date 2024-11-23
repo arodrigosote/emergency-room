@@ -93,6 +93,11 @@ def mostrar_log_changestomake():
         print("[Error] No se encontró el archivo de log de la base de datos.")
 
 
+
+##
+##  No se guarda en changestomake ningun cambio para ser enviado.
+##
+
 def ejecutar_dbchanges():
     archivo_path = os.path.join("database", "changestomake.txt")
     
