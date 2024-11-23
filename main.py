@@ -76,7 +76,7 @@ def main():
     
     activar_sala(own_node['ip'], master_node['ip'])
 
-    ejecutar_dbchanges()
+    #ejecutar_dbchanges()
 
     try:
         while True:
