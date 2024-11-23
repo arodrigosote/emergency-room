@@ -97,6 +97,7 @@ def handle_client(client_socket, addr):
                     lineas = mensaje_completo.splitlines()
 
                     print('\nlineas')
+                    print(lineas)
 
                     # Procesar las líneas y guardar las consultas válidas
                     with open(archivo_path, "w") as archivo:
@@ -119,6 +120,10 @@ def handle_client(client_socket, addr):
                                     log_message(f"[Info] Consulta guardada: {fecha_hora} {consulta}")
                                 except ValueError:
                                     log_message(f"[Error] Formato de fecha y hora no válido: {fecha_hora}")
+                    
+                    log_message("[Info] Cambios en changestomake guardados correctamente.")
+                    response = "OK"
+                    client_socket.send(response.encode())
                 except Exception as e:
                     log_message(f"[Error] No se pudo procesar el mensaje '12': {e}")
                 
