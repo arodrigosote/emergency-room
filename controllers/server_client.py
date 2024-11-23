@@ -222,10 +222,6 @@ def connect_clients_send_dbchanges(nodes):
         if node_id in [1, 2, 254]:  # Opcional: omitir nodos específicos
             continue
 
-        if node_id in active_connections:
-            log_message(f"[Info] Nodo {node_id} ya está conectado.")
-            continue
-
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             log_message(f"[Intentando conectar] Nodo ID: {node_id}, IP: {node['ip']}")
