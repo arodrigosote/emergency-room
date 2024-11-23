@@ -238,9 +238,16 @@ def connect_clients_send_dbchanges(nodes):
                 # Enviar los cambios de la base de datos con código de instrucción "12"
                 print(db_changes)
                 instruction_code = "12"
-                message = f"{instruction_code}\n{db_changes}"
+                message = f"{instruction_code}#{db_changes}"
+                print(message)
                 client.send(message.encode())
                 log_message(f"[Mensaje enviado] Cambios de la base de datos enviados a nodo {node_id}")
+
+                response = client.recv(1024).decode()
+                if response == "OK":
+                    log_message(f"[Respuesta recibida] De nodo {node_id}: {response}")
+                else:
+                    log_message(f"[Error] Respuesta inesperada de nodo {node_id}: {response}")
             except FileNotFoundError:
                 log_message("[Error] El archivo 'db_changes' no se encontró en la carpeta 'history'")
             except Exception as e:
