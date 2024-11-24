@@ -81,7 +81,7 @@ def mostrar_menu_utilidades():
 def realizar_accion_utilidades(opcion):
     if opcion == '1':
         print("\nListando nodos activos con sala de emergencia")
-        for node_id, client in active_connections:
+        for node_id, client in active_connections.items():
             print(f"ID del nodo: {node_id}, IP: {client.getpeername()[0]}")
         log_message("[Utilidades] Listando nodos activos con sala de emergencia.")
     elif opcion == '2':
