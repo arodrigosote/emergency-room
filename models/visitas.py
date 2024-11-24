@@ -3,6 +3,7 @@ import os
 from utils.log import log_message
 from datetime import datetime
 from models.node import procesar_consulta
+from models.emergency_room import obtener_sala_y_cama
 
 def listar_visitas():
     # Lista todas las visitas en la base de datos y las muestra en una tabla por consola
@@ -80,8 +81,18 @@ def agregar_visita(id_trabajador):
         # Generar timestamp para la fecha de salida
         fecha_salida = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        consulta = f"INSERT INTO visitas_emergencia (id_paciente, motivo, id_sala, id_cama, id_doctor, id_trabajador_social, fecha_salida) VALUES ({paciente_id}, '{motivo}', 00, 01, {id_doctor}, {id_trabajador}, '{fecha_salida}')"
+        # Obtener sala y cama disponibles
+        id_sala, id_cama = obtener_sala_y_cama()
         
+        # Insertar la visita en la base de datos
+        cursor.execute("""
+            INSERT INTO visitas_emergencia 
+            (id_paciente, motivo, id_sala, id_cama, id_doctor, id_trabajador_social, fecha_salida) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (paciente_id, motivo, id_sala, id_cama, id_doctor, id_trabajador, fecha_salida))
+        conn.commit()
+
+        consulta = f"INSERT INTO visitas_emergencia (id_paciente, motivo, id_sala, id_cama, id_doctor, id_trabajador_social, fecha_salida) VALUES ({paciente_id}, '{motivo}', {id_sala}, {id_cama}, {id_doctor}, {id_trabajador}, '{fecha_salida}')"
         procesar_consulta(consulta)
         log_message("[Base de Datos] Visita de emergencia agregada a la base de datos.")
     except sqlite3.Error as e:
