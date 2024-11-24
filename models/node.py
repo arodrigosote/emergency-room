@@ -76,7 +76,7 @@ def procesar_consulta(consulta, es_compleja=False):
                     else:
                         log_message("[Error] No hay camas disponibles.")
                 else:
-                    enviar_mensajes_a_todos("10", consulta)
+                    enviar_mensajes_a_todos("10", consulta, incluir_propio=True)
 
             else:
                 log_message("[Nodo] Nodo maestro remoto detectado.")
