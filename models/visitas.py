@@ -2,7 +2,7 @@ import sqlite3
 import os
 from utils.log import log_message
 from datetime import datetime
-from models.node import enviar_mensaje_a_todos, enviar_consulta_sencilla, enviar_consulta_compleja
+from models.node import procesar_consulta
 
 def listar_visitas():
     # Lista todas las visitas en la base de datos y las muestra en una tabla por consola
@@ -56,7 +56,7 @@ def agregar_visita(id_trabajador):
 
 
             mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
-            enviar_consulta_sencilla(mensaje)
+            procesar_consulta(mensaje)
 
             
             log_message("[Base de Datos] Nuevo paciente registrado en la base de datos.")
@@ -82,7 +82,7 @@ def agregar_visita(id_trabajador):
 
         consulta = f"INSERT INTO visitas_emergencia (id_paciente, motivo, id_sala, id_cama, id_doctor, id_trabajador_social, fecha_salida) VALUES ({paciente_id}, '{motivo}', 00, 01, {id_doctor}, {id_trabajador}, '{fecha_salida}')"
         
-        enviar_consulta_compleja(consulta)
+        procesar_consulta(consulta)
         log_message("[Base de Datos] Visita de emergencia agregada a la base de datos.")
     except sqlite3.Error as e:
         log_message(f"[Error] No se pudo agregar la visita de emergencia: {e}")
@@ -115,7 +115,7 @@ def cerrar_visita_emergencia(id_doctor):
         conn.commit()
 
         mensaje = f"UPDATE visitas_emergencia SET fecha_salida = '{fecha_salida}', estado = 'cerrada' WHERE id_visita = {id_visita}"
-        enviar_consulta_sencilla(mensaje)
+        procesar_consulta(mensaje)
 
         log_message("[Base de Datos] Visita de emergencia cerrada.")
     except sqlite3.Error as e:
