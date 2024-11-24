@@ -38,7 +38,7 @@ def handle_client(client_socket, addr):
                 continue
             
             elif codigo_instruccion in ("10", "11"):  # Ejecución de consultas
-                procesar_query(codigo_instruccion, mensaje_completo, client_socket)
+                procesar_query(codigo_instruccion, mensaje_completo, client_socket, active_connections)
 
                 # #hora_ejecucion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 # codigo_instruccion, hora_actual, query = mensaje_completo.split("|")

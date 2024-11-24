@@ -1,7 +1,7 @@
 import os
 from utils.log import log_message
 from models.database import execute_query
-from controllers.server_client import active_connections
+
 
 def procesar_query(codigo_instruccion, mensaje, client_socket):
     try:
@@ -16,7 +16,7 @@ def procesar_query(codigo_instruccion, mensaje, client_socket):
         log_message(f"[Error] Al procesar la consulta: {e}")
         client_socket.send("Error".encode())
 
-def propagar_consulta_a_nodos(hora_actual, query, nodo_emisor):
+def propagar_consulta_a_nodos(hora_actual, query, nodo_emisor ,active_connections):
     mensaje_nuevo = f"10|{hora_actual}|{query}"
     respuestas = []
     
