@@ -4,120 +4,96 @@ from utils.log import log_message
 from controllers.server_client import get_client_socket_by_ip, active_connections  # Asegúrate de tener una función para obtener el socket del cliente
 from controllers.nodes import get_network_nodes, get_own_node
 
+def obtener_nodo_propio(cursor, own_node_ip):
+    cursor.execute("SELECT * FROM salas_emergencia WHERE ip = ?", (own_node_ip,))
+    return cursor.fetchone()
 
 def enviar_consulta_sencilla(consulta):
+    try:
+        master_node_id = max(active_connections.keys())
+        master_node_ip = active_connections[master_node_id].getpeername()[0]
+        own_node = get_own_node()
 
-    # Obteniendo nodo maestro de conexiones activas
-    master_node_id = max(active_connections.keys())
-    master_node_ip = active_connections[master_node_id].getpeername()[0]
-    own_node = get_own_node()
+        with sqlite3.connect('nodos.db') as conn:
+            cursor = conn.cursor()
+            nodo_propio = obtener_nodo_propio(cursor, own_node['ip'])
 
-    # Conexion con la base de datos
-    conn = sqlite3.connect('nodos.db')
-    cursor = conn.cursor()
-
-    # Obtener el nodo propio
-    cursor.execute("SELECT * FROM salas_emergencia WHERE ip = ?", (own_node['ip'],))
-    nodo_propio = cursor.fetchone()
-
-    # Comprobar si el nodo propio es el maestro o no.
-    if nodo_propio:
-        # Comparar con el nodo maestro
-        if nodo_propio[2] == master_node_ip:
-            log_message("[Nodo] El nodo propio es el nodo maestro.")
-            # Enviar mensaje a todos los nodos
-            codigo = "10"
-            enviar_mensaje_a_todos(codigo, consulta)
-        else:
-            log_message("[Nodo] El nodo propio no es el nodo maestro.")
-            codigo = "11"
-            enviar_mensaje_a_maestro(master_node_ip, codigo, consulta)
-    else:
-        log_message("\n[Nodo Propio] No se encontró el nodo propio.")
-
+            if nodo_propio:
+                if nodo_propio[2] == master_node_ip:
+                    log_message("[Nodo] El nodo propio es el nodo maestro.")
+                    enviar_mensaje_a_todos("10", consulta)
+                else:
+                    log_message("[Nodo] El nodo propio no es el nodo maestro.")
+                    enviar_mensaje_a_maestro(master_node_ip, "11", consulta)
+            else:
+                log_message("\n[Nodo Propio] No se encontró el nodo propio.")
+    except Exception as e:
+        log_message(f"[Error] {str(e)}")
 
 def enviar_consulta_compleja(consulta):
+    try:
+        master_node_id = max(active_connections.keys())
+        master_node_ip = active_connections[master_node_id].getpeername()[0]
+        own_node = get_own_node()
 
-    # Obteniendo nodo maestro de conexiones activas
-    master_node_id = max(active_connections.keys())
-    master_node_ip = active_connections[master_node_id].getpeername()[0]
-    own_node = get_own_node()
+        with sqlite3.connect('nodos.db') as conn:
+            cursor = conn.cursor()
+            nodo_propio = obtener_nodo_propio(cursor, own_node['ip'])
 
-    # Conexion con la base de datos
-    conn = sqlite3.connect('nodos.db')
-    cursor = conn.cursor()
-
-    # Obtener el nodo propio
-    cursor.execute("SELECT * FROM salas_emergencia WHERE ip = ?", (own_node['ip'],))
-    nodo_propio = cursor.fetchone()
-
-    # Comprobar si el nodo propio es el maestro o no.
-    if nodo_propio:
-        # Comparar con el nodo maestro
-        if nodo_propio[2] == master_node_ip:
-            sala, cama = obtener_sala_y_cama()
-            if sala and cama:
-                # Reemplazar "00" con el valor de sala y "01" con el valor de cama
-                consulta = consulta.replace("00", str(sala)).replace("01", str(cama))
-                log_message("[Nodo] El nodo propio es el nodo maestro.")
-                # Enviar mensaje a todos los nodos
-                codigo = "10"
-                enviar_mensaje_a_todos_incluyendo_propio(codigo, consulta)
-                log_message(f"[Nodo] Se asignó la cama {cama} en la sala {sala} al paciente.")
+            if nodo_propio:
+                if nodo_propio[2] == master_node_ip:
+                    sala, cama = obtener_sala_y_cama()
+                    if sala and cama:
+                        consulta = consulta.replace("00", str(sala)).replace("01", str(cama))
+                        log_message("[Nodo] El nodo propio es el nodo maestro.")
+                        enviar_mensaje_a_todos_incluyendo_propio("10", consulta)
+                        log_message(f"[Nodo] Se asignó la cama {cama} en la sala {sala} al paciente.")
+                    else:
+                        log_message("[Nodo] No hay camas disponibles en ninguna sala.")
+                        print("No hay camas disponibles en ninguna sala.")
+                else:
+                    log_message("[Nodo] El nodo propio no es el nodo maestro.")
+                    enviar_mensaje_a_maestro_calculo_sala(master_node_ip, "11", consulta)
             else:
-                log_message("[Nodo] No hay camas disponibles en ninguna sala.")
-                print("No hay camas disponibles en ninguna sala.")
-                
-        else:
-            log_message("[Nodo] El nodo propio no es el nodo maestro.")
-            codigo = "11"
-            enviar_mensaje_a_maestro_calculo_sala(master_node_ip, codigo, consulta)
-    else:
-        log_message("\n[Nodo Propio] No se encontró el nodo propio.")
+                log_message("\n[Nodo Propio] No se encontró el nodo propio.")
+    except Exception as e:
+        log_message(f"[Error] {str(e)}")
 
 def obtener_sala_y_cama():
-    conn = sqlite3.connect('nodos.db')
-    cursor = conn.cursor()
-    
-    # Obtener la sala con mayor disponibilidad relativa
-    cursor.execute("""
-        SELECT 
-            salas_emergencia.id_sala 
-        FROM 
-            salas_emergencia
-        LEFT JOIN 
-            camas 
-        ON 
-            salas_emergencia.id_sala = camas.id_sala
-        WHERE 
-            salas_emergencia.estado = 'activado' 
-            AND camas.estado = 'disponible'
-        GROUP BY 
-            salas_emergencia.id_sala
-        ORDER BY 
-            (CAST(COUNT(camas.id_cama) AS FLOAT) / salas_emergencia.capacidad_total) DESC
-        LIMIT 1;
-    """)
-    sala = cursor.fetchone()
-    
-    if sala:
-        # Obtener una cama disponible en la sala seleccionada
-        cursor.execute("""
-            SELECT id_cama 
-            FROM camas 
-            WHERE id_sala = ? AND estado = 'disponible' 
-            LIMIT 1
-        """, (sala[0],))
-        cama = cursor.fetchone()
-        
-        if cama:
-            print(f"Cama disponible: {cama[0]}")
-            return sala[0], cama[0]
-        else:
-            print("No hay camas disponibles en esta sala.")
-            return sala[0], None
-    else:
-        print("No hay salas activas con camas disponibles.")
+    try:
+        with sqlite3.connect('nodos.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT salas_emergencia.id_sala 
+                FROM salas_emergencia
+                LEFT JOIN camas ON salas_emergencia.id_sala = camas.id_sala
+                WHERE salas_emergencia.estado = 'activado' AND camas.estado = 'disponible'
+                GROUP BY salas_emergencia.id_sala
+                ORDER BY (CAST(COUNT(camas.id_cama) AS FLOAT) / salas_emergencia.capacidad_total) DESC
+                LIMIT 1;
+            """)
+            sala = cursor.fetchone()
+
+            if sala:
+                cursor.execute("""
+                    SELECT id_cama 
+                    FROM camas 
+                    WHERE id_sala = ? AND estado = 'disponible' 
+                    LIMIT 1
+                """, (sala[0],))
+                cama = cursor.fetchone()
+
+                if cama:
+                    print(f"Cama disponible: {cama[0]}")
+                    return sala[0], cama[0]
+                else:
+                    print("No hay camas disponibles en esta sala.")
+                    return sala[0], None
+            else:
+                print("No hay salas activas con camas disponibles.")
+                return None, None
+    except Exception as e:
+        log_message(f"[Error] {str(e)}")
         return None, None
 
 def enviar_mensaje_a_todos(codigo_instruccion, mensaje):

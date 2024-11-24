@@ -5,14 +5,11 @@ from datetime import datetime
 from utils.log import log_message
 from models.master_node import actualizar_nodo_maestro
 from models.database import execute_query
-# from models.emergency_room import activar_sala  # Mover esta importación dentro de la función
 from controllers.nodes import get_network_nodes, get_own_node
-
 
 # Diccionario para mantener las conexiones activas
 active_connections = {}
 master_node = None
-
 
 def handle_client(client_socket, addr):
     # Maneja la conexión con un cliente
@@ -28,34 +25,24 @@ def handle_client(client_socket, addr):
                 break
             elif mensaje_completo[:2] == "01":
                 nodos = get_network_nodes()
-
-                #envia cambios de base de datos a nuevas conexiones
                 connect_clients_send_dbchanges(nodos)
                 mostrar_conexiones()
                 continue
-            
             elif mensaje_completo[:2] == "10":
-                #hora_ejecucion = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 log_message(f"[Query] Recibido: {hora_actual} - {query}")
 
                 resultado = execute_query(query)
-                if resultado:
-                    response = f"OK"
-                    #print('nodos responden a maestro OK')
-                    log_message(f"[Query] Ejecutada - Estatus: {response} - {query}")
-                else:
-                    response = f"Error"
-                    log_message(f"[Query] Recibido - Estatus: {response} - {query}")
+                response = "OK" if resultado else "Error"
+                log_message(f"[Query] Ejecutada - Estatus: {response} - {query}")
                 client_socket.send(response.encode())
-                
                 continue
             elif mensaje_completo[:2] == "11":
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 mensaje_nuevo = f"10|{hora_actual}|{query}"
                 respuestas = []
                 nodo_emisor = client_socket
-                print('nodo maestro recibe mensaje')
+                log_message('[Nodo Maestro] Recibe mensaje')
                 for destino, client_socket in active_connections.items():
                     try:
                         if client_socket.fileno() != -1:  # Verifica que el socket siga activo
@@ -66,27 +53,19 @@ def handle_client(client_socket, addr):
                             respuesta = client_socket.recv(1024).decode()  
                             log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
                             respuestas.append(respuesta)
-                            
                         else:
                             log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
                     except Exception as e:
                         log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
 
                 # Verificar si todas las respuestas son "OK"
-                if all(respuesta == "OK" for respuesta in respuestas):
-                    log_message("[Consenso] Todos los nodos respondieron OK")
-                    response = f"OK"
-                    log_message(f"[Query] Ejecutada: Estatus: {response} - {query}")
-                else:
-                    log_message("[Sin consenso] No todos los nodos respondieron OK")
-                    response = f"Error"
-                    log_message(f"[Query] Recibido: Estatus: {response} - {query}")           
+                response = "OK" if all(respuesta == "OK" for respuesta in respuestas) else "Error"
+                log_message(f"[Query] Ejecutada: Estatus: {response} - {query}")
                 nodo_emisor.send(response.encode())
                 continue
-
             elif mensaje_completo[:2] == "12":
                 try:
-                    print('Recibiendo query')
+                    log_message('[Recibiendo query]')
 
                     # Crear la carpeta 'database' si no existe
                     os.makedirs("database", exist_ok=True)
@@ -98,8 +77,8 @@ def handle_client(client_socket, addr):
                     # Dividir el texto en líneas
                     lineas = mensaje_completo.splitlines()
 
-                    print('\n Codigo 12, mostrando lineas')
-                    print(lineas)
+                    log_message('[Codigo 12] Mostrando lineas')
+                    log_message(str(lineas))
 
                     # Procesar las líneas y guardar las consultas válidas
                     with open(archivo_path, "w") as archivo:
@@ -128,23 +107,18 @@ def handle_client(client_socket, addr):
                     client_socket.send(response.encode())
                 except Exception as e:
                     log_message(f"[Error] No se pudo procesar el mensaje '12': {e}")
-                
                 continue
             else:
-                
-                log_message("No se encontró el código de instrucción")
-                print('\nNo se encontró el código de instrucción')
-                print(mensaje_completo)
+                log_message("[Error] No se encontró el código de instrucción")
+                log_message(mensaje_completo)
                 break
-            
     except Exception as e:
         log_message(f"[Error] Cliente {addr}: {e}")
-    # finally:
-    #     client_socket.close()
-    #     log_message(f"[Servidor] Conexión cerrada con {addr}")
+    finally:
+        client_socket.close()
+        log_message(f"[Servidor] Conexión cerrada con {addr}")
 
 def start_server():
-    
     # Inicia el servidor y maneja solicitudes de clientes
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -154,15 +128,14 @@ def start_server():
         server.listen(15)
         
         # Crear la carpeta 'history' si no existe
-        if not os.path.exists('history'):
-            os.makedirs('history')
+        os.makedirs('history', exist_ok=True)
         # Obtener la fecha y hora actual
         now = datetime.now()
         timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
         
         # Mensaje a escribir en el archivo
         message = f"{timestamp} - [Servidor] Escuchando en el puerto 9999\n"
-         # Escribir el mensaje en el archivo 'server_log.txt' dentro de la carpeta 'history'
+        # Escribir el mensaje en el archivo 'server_log.txt' dentro de la carpeta 'history'
         with open('history/server_log.txt', 'a') as log_file:
             log_file.write(message)
 
@@ -217,8 +190,6 @@ def connect_clients(nodes):
             if node_id not in active_connections:
                 client.close()  # Asegurarse de cerrar conexiones fallidas
 
-
-
 def connect_clients_send_dbchanges(nodes):
     # Conecta con los nodos de la red y envía los cambios de la base de datos
     for node in nodes:
@@ -239,7 +210,7 @@ def connect_clients_send_dbchanges(nodes):
                 # Enviar los cambios de la base de datos con código de instrucción "12"
                 instruction_code = "12"
                 message = f"{instruction_code}\n{db_changes}"
-                print(message)
+                log_message(message)
                 client.send(message.encode())
                 log_message(f"[Mensaje enviado] Cambios de la base de datos enviados a nodo {node_id}")
 
@@ -258,7 +229,6 @@ def connect_clients_send_dbchanges(nodes):
         finally:
             if node_id not in active_connections:
                 client.close()  # Asegurarse de cerrar conexiones fallidas
-
 
 def mostrar_conexiones():
     # Muestra las conexiones activas
