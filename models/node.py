@@ -11,7 +11,8 @@ def obtener_nodo_propio(cursor, own_node_ip):
 def enviar_consulta_sencilla(consulta):
     try:
         master_node_id = max(active_connections.keys())
-        master_node_ip = active_connections[master_node_id].getpeername()[0]
+        master_node_ip = active_connections[master_node_id]
+        print(master_node_ip)
         own_node = get_own_node()
 
         with sqlite3.connect('nodos.db') as conn:
@@ -24,7 +25,7 @@ def enviar_consulta_sencilla(consulta):
                     enviar_mensaje_a_todos("10", consulta)
                 else:
                     log_message("[Nodo] El nodo propio no es el nodo maestro.")
-                    enviar_mensaje_a_maestro(master_node_ip, "11", consulta)
+                    enviar_mensaje_a_maestro_cliente(master_node_ip, "11", consulta)
             else:
                 log_message("\n[Nodo Propio] No se encontró el nodo propio.")
     except Exception as e:
@@ -177,12 +178,36 @@ def enviar_mensaje_a_maestro(ip_nodo_maestro, codigo, mensaje):
                 log_message("[Sin consenso] El nodo maestro no respondió OK, Error")
                 
         else:
-            log_message(f"[Error] La conexión con el nodo maestro no está activa.")
+            log_message("[Error] La conexión con el nodo maestro no está activa.")
     except Exception as e:
         print(f"[Error] No se pudo enviar el mensaje al nodo maestro: {e}")
         print(f"[Debug] Detalles del error: {str(e)}")
         import traceback
-        print(f"[Debug] Traceback: {traceback.format_exc()}")
+        
+def enviar_mensaje_a_maestro_cliente(client, codigo, mensaje):
+    hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    mensaje_completo = f"{codigo}|{hora_actual}|{mensaje}"
+    #nodo_maestro = get_client_socket_by_ip(ip_nodo_maestro)  # Obtener el socket del nodo maestro usando su IP
+    try:
+        if client.fileno() != -1:  # Verifica que el socket siga activo
+            client.send(mensaje_completo.encode())
+            log_message(f"[Mensaje enviado] A nodo maestro: {mensaje_completo}")
+            
+            # Analizar la respuesta del servidor
+            respuesta = client.recv(1024).decode()  # Tamaño del buffer ajustable
+            log_message(f"[Respuesta recibida] De nodo maestro: {respuesta}")
+            
+            if respuesta == "OK":
+                log_message("[Consenso] El nodo maestro respondió OK, Query ejecutada en todos nodos")
+            else:
+                log_message("[Sin consenso] El nodo maestro no respondió OK, Error")
+                
+        else:
+            log_message("[Error] La conexión con el nodo maestro no está activa.")
+    except Exception as e:
+        print(f"[Error] No se pudo enviar el mensaje al nodo maestro: {e}")
+        print(f"[Debug] Detalles del error: {str(e)}")
+        import traceback
 
 def enviar_mensaje_a_maestro_calculo_sala(ip_nodo_maestro, codigo, mensaje):
     hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

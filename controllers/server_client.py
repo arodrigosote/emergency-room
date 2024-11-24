@@ -43,14 +43,14 @@ def handle_client(client_socket, addr):
                 respuestas = []
                 nodo_emisor = client_socket
                 log_message('[Nodo Maestro] Recibe mensaje')
-                for destino, client_socket in active_connections.items():
+                for destino, client in active_connections.items():
                     try:
-                        if client_socket.fileno() != -1:  # Verifica que el socket siga activo
-                            client_socket.send(mensaje_nuevo.encode())
+                        if client.fileno() != -1:  # Verifica que el socket siga activo
+                            client.send(mensaje_nuevo.encode())
                             log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
 
                             # Analizar la respuesta del servidor
-                            respuesta = client_socket.recv(1024).decode()  
+                            respuesta = client.recv(1024).decode()  
                             log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
                             respuestas.append(respuesta)
                         else:
@@ -247,9 +247,5 @@ def elegir_nodo_maestro():
         return master_node
 
 def get_client_socket_by_ip(ip):
-    # ...existing code...
-    id = ip.split('.')[-1]
-    for node_id, client_socket in active_connections.items():
-        if int(node_id) == int(id):
-            return client_socket
-    return None
+    id = int(ip.split('.')[-1])
+    return active_connections.get(id, None)
