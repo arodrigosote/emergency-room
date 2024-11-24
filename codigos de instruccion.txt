@@ -5,5 +5,3 @@
 11 - Ejecutar query enviando primero al nodo maestro para que este mande a los demas
 
 12 - Emparejar nueva conexion con los cambios hehcos en la base de datos
-
-14 - Se envia una consulta compleja
