@@ -25,8 +25,9 @@ def handle_client(client_socket, addr):
                 break
             elif mensaje_completo[:2] == "01":
                 nodos = get_network_nodes()
+                connect_clients(nodos)
                 connect_clients_send_dbchanges(nodos)
-                mostrar_conexiones()
+                # mostrar_conexiones()
                 continue
             elif mensaje_completo[:2] == "10":
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
