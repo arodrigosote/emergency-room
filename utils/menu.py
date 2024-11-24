@@ -8,6 +8,7 @@ from models.trabajadores import listar_trabajadores_sociales
 from controllers.database import mostrar_log_base_datos, mostrar_log_servidor, mostrar_log_changestomake
 from utils.log import log_message
 from controllers.nodes import get_network_nodes
+from controllers.server_client import active_connections
 
 def mostrar_menu():
     print("\n\nMenú:")
@@ -80,9 +81,8 @@ def mostrar_menu_utilidades():
 def realizar_accion_utilidades(opcion):
     if opcion == '1':
         print("\nListando nodos activos con sala de emergencia")
-        nodes = get_network_nodes()  # Obtener nodos de la red
-        for node in nodes:
-            print(f"IP del nodo: {node['ip']}")
+        for node_id, client in active_connections:
+            print(f"ID del nodo: {node_id}, IP: {client.getpeername()[0]}")
         log_message("[Utilidades] Listando nodos activos con sala de emergencia.")
     elif opcion == '2':
         print("\nMostrando Log de cambios en la base de datos")
