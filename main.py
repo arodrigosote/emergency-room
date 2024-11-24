@@ -9,7 +9,7 @@ from controllers.database import init_db, agregar_salas_emergencia, ejecutar_dbc
 from models.emergency_room import agregar_sala_emergencia, listar_salas_emergencia, activar_sala
 from models.camas import agregar_camas
 from models.trabajadores import listar_trabajadores_sociales, agregar_trabajadores_sociales
-from models.doctors import agregar_doctores
+from models.doctors import agregar_doctores, listar_doctores_ocupados
 import os
 
 # Diccionario para mantener las conexiones activas
@@ -91,9 +91,11 @@ def main():
                 opcion_ts = input("Seleccione una opción: ")
                 realizar_accion_trabajador_social(id_trabajador,opcion_ts)
             elif opcion == '2':
+                listar_doctores_ocupados()
+                id_doctor = input("¿Quíen realiza la opción? (Ingrese el ID del doctor): ")
                 mostrar_menu_doctor()
                 opcion_doc = input("Seleccione una opción: ")
-                realizar_accion_doctor(opcion_doc)
+                realizar_accion_doctor(id_doctor, opcion_doc)
             elif opcion == '3':
                 mostrar_menu_utilidades()
                 opcion_util = input("Seleccione una opción: ")

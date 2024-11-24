@@ -2,7 +2,7 @@ from models.emergency_room import listar_salas_emergencia
 from models.doctors import listar_doctores
 from models.camas import listar_camas
 from models.pacientes import listar_pacientes
-from models.visitas import listar_visitas, agregar_visita
+from models.visitas import listar_visitas, agregar_visita, cerrar_visita_emergencia
 from models.master_node import obtener_nodo_maestro
 from models.trabajadores import listar_trabajadores_sociales
 from controllers.database import mostrar_log_base_datos, mostrar_log_servidor, mostrar_log_changestomake
@@ -54,9 +54,9 @@ def mostrar_menu_doctor():
     print("1. Cerrar visita de emergencia")
     print("5. Volver")
 
-def realizar_accion_doctor(opcion):
+def realizar_accion_doctor(id_doctor, opcion):
     if opcion == '1':
-        print("Cerrar visita emergencia")
+        cerrar_visita_emergencia(id_doctor)
     else:
         print("Opción no válida, intente de nuevo.")
 

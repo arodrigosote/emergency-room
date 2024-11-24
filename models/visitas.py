@@ -88,3 +88,37 @@ def agregar_visita(id_trabajador):
         log_message(f"[Error] No se pudo agregar la visita de emergencia: {e}")
     finally:
         conn.close()
+
+def cerrar_visita_emergencia(id_doctor):
+    try:
+        conn = sqlite3.connect('nodos.db')
+        cursor = conn.cursor()
+
+        # Obtener visitas de emergencia en curso
+        cursor.execute("SELECT id_visita, folio FROM visitas_emergencia WHERE id_doctor = ? AND estado = 'activa'", (id_doctor,))
+        visita = cursor.fetchall()
+        if not visita:
+            print("No hay visitas de emergencia en curso para este doctor.")
+            return
+
+        # Mostrar visitas de emergencia en curso y seleccionar una
+        print("\nVisita de emergencia activa:")
+        print(f"ID Visita: {visita[0]}, Folio: {visita[1]}")
+        
+        id_visita = visita[0]
+
+        # Generar timestamp para la fecha de salida
+        fecha_salida = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        # Actualizar la visita de emergencia
+        cursor.execute("UPDATE visitas_emergencia SET fecha_salida = ?, estado = 'cerrada' WHERE id_visita = ?", (fecha_salida, id_visita))
+        conn.commit()
+
+        mensaje = f"UPDATE visitas_emergencia SET fecha_salida = '{fecha_salida}', estado = 'cerrada' WHERE id_visita = {id_visita}"
+        enviar_consulta_sencilla(mensaje)
+
+        log_message("[Base de Datos] Visita de emergencia cerrada.")
+    except sqlite3.Error as e:
+        log_message(f"[Error] No se pudo cerrar la visita de emergencia: {e}")
+    finally:
+        conn.close() 

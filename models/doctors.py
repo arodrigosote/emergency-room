@@ -41,3 +41,18 @@ def listar_doctores():
     print("-" * 65)
     for doctor in doctores:
         print(f"{doctor[0]:<10} {doctor[1]:<20} {doctor[2]:<20} {doctor[3]:<10}")
+
+def listar_doctores_ocupados():
+    # Lista todos los trabajadores sociales en la base de datos y los muestra en una tabla por consola
+    conn = sqlite3.connect('nodos.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM doctores WHERE estado = "ocupado"')
+    doctores = cursor.fetchall()
+    conn.close()
+
+    # Mostrar los trabajadores sociales en una tabla por consola sin utilizar tabulate
+    headers = ["ID Doctor", "Nombre"]
+    print(f"{headers[0]:<15} {headers[1]:<20}")
+    print("-" * 35)
+    for doctor in doctores:
+        print(f"{doctor[0]:<15} {doctor[1]:<20}")
