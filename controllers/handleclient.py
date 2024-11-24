@@ -16,7 +16,7 @@ def procesar_query(codigo_instruccion, mensaje, client_socket):
         log_message(f"[Error] Al procesar la consulta: {e}")
         client_socket.send("Error".encode())
 
-def propagar_consulta_a_nodos(hora_actual, query, nodo_emisor ,active_connections):
+def propagar_consulta_a_nodos(hora_actual, query, active_connections):
     mensaje_nuevo = f"10|{hora_actual}|{query}"
     respuestas = []
     
