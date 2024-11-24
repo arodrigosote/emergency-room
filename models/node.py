@@ -72,7 +72,7 @@ def procesar_consulta(consulta, es_compleja=False):
                     sala, cama = obtener_sala_y_cama()
                     if sala and cama:
                         consulta = consulta.replace("00", str(sala)).replace("01", str(cama))
-                        enviar_mensajes_a_todos("10", consulta, incluir_propio=False)
+                        enviar_mensajes_a_todos("10", consulta, incluir_propio=True)
                     else:
                         log_message("[Error] No hay camas disponibles.")
                 else:

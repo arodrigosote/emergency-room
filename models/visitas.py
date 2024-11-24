@@ -45,15 +45,15 @@ def agregar_visita(id_trabajador):
                 alergias = 'None'
 
 
-            # Insertar los datos del paciente
-            cursor.execute("""
-                INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) 
-                VALUES (?, ?, ?, ?)
-            """, (nombre, genero, tipo_sangre, alergias))
+            # # Insertar los datos del paciente
+            # cursor.execute("""
+            #     INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) 
+            #     VALUES (?, ?, ?, ?)
+            # """, (nombre, genero, tipo_sangre, alergias))
             
-            # Obtener el ID del nuevo paciente
-            paciente_id = cursor.lastrowid  # Obtiene el id del último registro insertado
-            conn.commit()
+            # # Obtener el ID del nuevo paciente
+            # paciente_id = cursor.lastrowid  # Obtiene el id del último registro insertado
+            # conn.commit()
 
 
             mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
@@ -84,13 +84,13 @@ def agregar_visita(id_trabajador):
         # Obtener sala y cama disponibles
         id_sala, id_cama = obtener_sala_y_cama()
         
-        # Insertar la visita en la base de datos
-        cursor.execute("""
-            INSERT INTO visitas_emergencia 
-            (id_paciente, motivo, id_sala, id_cama, id_doctor, id_trabajador_social, fecha_salida) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (paciente_id, motivo, id_sala, id_cama, id_doctor, id_trabajador, fecha_salida))
-        conn.commit()
+        # # Insertar la visita en la base de datos
+        # cursor.execute("""
+        #     INSERT INTO visitas_emergencia 
+        #     (id_paciente, motivo, id_sala, id_cama, id_doctor, id_trabajador_social, fecha_salida) 
+        #     VALUES (?, ?, ?, ?, ?, ?, ?)
+        # """, (paciente_id, motivo, id_sala, id_cama, id_doctor, id_trabajador, fecha_salida))
+        # conn.commit()
 
         consulta = f"INSERT INTO visitas_emergencia (id_paciente, motivo, id_sala, id_cama, id_doctor, id_trabajador_social, fecha_salida) VALUES ({paciente_id}, '{motivo}', {id_sala}, {id_cama}, {id_doctor}, {id_trabajador}, '{fecha_salida}')"
         procesar_consulta(consulta)
