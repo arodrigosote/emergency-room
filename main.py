@@ -3,7 +3,7 @@ import threading
 from controllers.nodes import get_network_nodes, get_own_node
 from utils.menu import mostrar_menu, mostrar_menu_trabajador_social, mostrar_menu_doctor, realizar_accion_trabajador_social, realizar_accion_doctor, mostrar_menu_utilidades, realizar_accion_utilidades, mostrar_menu_utilidades, mostrar_menu_tablas, realizar_accion_tablas
 from utils.log import log_message
-from controllers.server_client import start_server, connect_clients, mostrar_conexiones, active_connections, elegir_nodo_maestro
+from controllers.server_client import start_server, connect_to_node, mostrar_conexiones, active_connections, elegir_nodo_maestro
 from controllers.messages import enviar_mensaje_a_nodo, enviar_mensaje_a_todos
 from controllers.database import init_db, agregar_salas_emergencia, ejecutar_dbchanges
 from models.emergency_room import activar_sala
@@ -58,7 +58,7 @@ def main():
     for node in nodes:
         node_id = node.get("id")  
         if node_id not in active_connections:
-            conn = connect_clients([node])
+            conn = connect_to_node(node)
             if conn:
                 active_connections[node_id] = conn
     

@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from utils.log import log_message
 from models.master_node import actualizar_nodo_maestro
-from models.database import execute_query
+from models.database import execute_query, obtener_cambios_db
 from controllers.nodes import get_network_nodes, get_own_node
 
 # Diccionario para mantener las conexiones activas
@@ -25,9 +25,13 @@ def handle_client(client_socket, addr):
                 break
             elif mensaje_completo[:2] == "01":
                 nodos = get_network_nodes()
-                connect_clients(nodos)
-                connect_clients_send_dbchanges(nodos)
-                # mostrar_conexiones()
+
+                # Obtener cambios en base de datos y regresar como respuesta a nodo.
+                queries = obtener_cambios_db()
+                if queries:
+                    client_socket.send(queries.encode())
+                    log_message(f"[Master Actualizar base de datos] Enviando cambios a nodo {addr}")
+
                 continue
             elif mensaje_completo[:2] == "10":
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
@@ -162,34 +166,55 @@ def start_server():
     finally:
         server.close()
 
-def connect_clients(nodes):
-    # Conecta con los nodos de la red
-    for node in nodes:
-        node_id = int(node['id'])
-        if node_id in [1, 2, 254]:  # Opcional: omitir nodos específicos
-            continue
+def connect_to_node(node_ip):
+    """
+    Conecta con un nodo específico dado su dirección IP.
+    """
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        log_message(f"[Intentando conectar] Nodo IP: {node_ip}")
+        client.connect((node_ip, 9999))
 
+        # Generar un ID basado en la IP (puedes ajustar esta lógica según tu implementación)
+        node_id = int(node_ip.split('.')[-1])
+
+        # Verificar si el nodo ya está conectado
         if node_id in active_connections:
             log_message(f"[Info] Nodo {node_id} ya está conectado.")
-            continue
+            client.close()  # Cerrar la conexión redundante
+            return
 
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            log_message(f"[Intentando conectar] Nodo ID: {node_id}, IP: {node['ip']}")
-            client.connect((node['ip'], 9999))
-            active_connections[node_id] = client  # Almacena la conexión activa
+        # Almacenar la conexión activa
+        active_connections[node_id] = client
 
-            # Enviar mensaje de conexión con código de instrucción
-            instruction_code = "01"
-            message = f"{instruction_code} Hola, soy un nodo nuevo en el sistema"
-            client.send(message.encode())
-            elegir_nodo_maestro()
-            log_message(f"[Conexión exitosa] Nodo {node_id} conectado. Activas: {list(active_connections.keys())}")
-        except Exception as e:
-            log_message(f"[Error] No se pudo conectar con el nodo {node['ip']}: {e}")
-        finally:
-            if node_id not in active_connections:
-                client.close()  # Asegurarse de cerrar conexiones fallidas
+        # Enviar mensaje de conexión con código de instrucción
+        instruction_code = "01"
+        message = f"{instruction_code} Hola, soy un nodo nuevo en el sistema"
+        client.send(message.encode())
+        log_message(f"[Conexión exitosa] Nodo {node_id} conectado. Activas: {list(active_connections.keys())}")
+        
+        
+        log_message(f"[Actualizar base de datos] Esperando respuesta de nodo {node_id} ...")
+        queries = client.recv(1024).decode()
+        if queries:
+            log_message(f"[Actualizar base de datos] Recibido de nodo {node_id}: {queries}")
+            
+            
+            # Procesar las consultas recibidas
+            execute_query(queries)
+            log_message(f"[Actualizar base de datos] Consultas procesadas correctamente.")
+
+        
+        # Actualizar el nodo maestro
+        elegir_nodo_maestro()
+
+    except Exception as e:
+        log_message(f"[Error] No se pudo conectar con el nodo {node_ip}: {e}")
+    finally:
+        # Asegurarse de cerrar la conexión si no se almacenó correctamente
+        if int(node_ip.split('.')[-1]) not in active_connections:
+            client.close()
+
 
 def connect_clients_send_dbchanges(nodes):
     # Conecta con los nodos de la red y envía los cambios de la base de datos
