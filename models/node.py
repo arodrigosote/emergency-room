@@ -3,7 +3,7 @@ from datetime import datetime
 from utils.log import log_message
 from controllers.server_client import get_client_socket_by_ip, active_connections  # Asegúrate de tener una función para obtener el socket del cliente
 from controllers.nodes import get_network_nodes, get_own_node
-from models.emergency_room import obtener_sala_y_cama
+
 
 def obtener_nodo_propio(cursor, own_node_ip):
     cursor.execute("SELECT * FROM salas_emergencia WHERE ip = ?", (own_node_ip,))
@@ -67,6 +67,7 @@ def procesar_consulta(consulta, es_compleja=False):
 
             if nodo_propio[2] == master_node_ip:
                 log_message("[Nodo] Este nodo es el maestro.")
+                from models.emergency_room import obtener_sala_y_cama
                 if es_compleja:
                     sala, cama = obtener_sala_y_cama()
                     if sala and cama:
