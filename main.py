@@ -6,7 +6,7 @@ from utils.log import log_message
 from controllers.server_client import start_server, connect_clients, mostrar_conexiones, active_connections, elegir_nodo_maestro
 from controllers.messages import enviar_mensaje_a_nodo, enviar_mensaje_a_todos
 from controllers.database import init_db, agregar_salas_emergencia, ejecutar_dbchanges
-from models.emergency_room import agregar_sala_emergencia, listar_salas_emergencia, activar_sala
+from models.emergency_room import activar_sala
 from models.camas import agregar_camas
 from models.trabajadores import listar_trabajadores_sociales, agregar_trabajadores_sociales
 from models.doctors import agregar_doctores, listar_doctores_ocupados
