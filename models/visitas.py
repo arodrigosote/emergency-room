@@ -83,6 +83,7 @@ def agregar_visita(id_trabajador):
 
         # Obtener sala y cama disponibles
         id_sala, id_cama = obtener_sala_y_cama()
+        log_message(f"[Base de Datos] Sala y cama asignadas: {id_sala}, {id_cama}")
         
         # Insertar la visita en la base de datos
         cursor.execute("""
