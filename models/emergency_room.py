@@ -47,40 +47,39 @@ def activar_sala(ip):
     except sqlite3.Error as e:
         log_message(f"[Error] No se pudo activar la sala: {e}")
 
-
 def obtener_sala_y_cama():
     try:
-        with sqlite3.connect('nodos.db') as conn:
+        with get_db_connection() as conn:
             cursor = conn.cursor()
+            
+            # Selecciona la sala activa con la mayor proporción de camas disponibles
             cursor.execute("""
                 SELECT salas_emergencia.id_sala 
                 FROM salas_emergencia
                 LEFT JOIN camas ON salas_emergencia.id_sala = camas.id_sala
-                WHERE salas_emergencia.estado = 'activado' AND camas.estado = 'disponible'
-                GROUP BY salas_emergencia.id_sala
-                ORDER BY (CAST(COUNT(camas.id_cama) AS FLOAT) / salas_emergencia.capacidad_total) DESC
+                WHERE salas_emergencia.estado = ? AND camas.estado = ?
+                GROUP BY salas_emergencia.id_sala, salas_emergencia.capacidad_total
+                ORDER BY (CAST(COUNT(camas.id_cama) AS REAL) / salas_emergencia.capacidad_total) DESC
                 LIMIT 1;
-            """)
+            """, ('activado', 'disponible'))
             sala = cursor.fetchone()
 
             if sala:
+                # Selecciona la primera cama disponible de la sala encontrada
                 cursor.execute("""
                     SELECT id_cama 
                     FROM camas 
-                    WHERE id_sala = ? AND estado = 'disponible' 
+                    WHERE id_sala = ? AND estado = ? 
                     LIMIT 1
-                """, (sala[0],))
+                """, (sala[0], 'disponible'))
                 cama = cursor.fetchone()
 
                 if cama:
-                    print(f"Cama disponible: {cama[0]}")
                     return sala[0], cama[0]
                 else:
-                    print("No hay camas disponibles en esta sala.")
                     return sala[0], None
             else:
-                print("No hay salas activas con camas disponibles.")
                 return None, None
-    except Exception as e:
+    except sqlite3.Error as e:
         log_message(f"[Error] {str(e)}")
         return None, None
