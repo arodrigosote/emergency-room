@@ -142,19 +142,6 @@ def verificar_conexiones():
                 log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                 del active_connections[nodo_id]
 
-                # Desactivar sala en la base de datos
-                try:
-                    with sqlite3.connect('nodos.db') as conn:
-                        cursor = conn.cursor()
-                        cursor.execute("UPDATE salas_emergencia SET estado = 'inactiva' WHERE ip = ?", (nodo_ip,))
-                        conn.commit()
-                        log_message(f"[Desactivar sala] Sala con IP {nodo_ip} desactivada en la base de datos.")
-                        log_database(f"# UPDATE salas_emergencia SET estado = 'inactiva' WHERE ip = '{nodo_ip}'")
-                except sqlite3.Error as db_error:
-                    log_message(f"[Error de base de datos] {str(db_error)}")
-
-
-
             else:
                 destino_ip = client_socket.getpeername()[0]
                 if destino_ip not in [nodo['ip'] for nodo in nodos_red]:
