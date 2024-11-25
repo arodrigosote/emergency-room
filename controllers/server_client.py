@@ -173,8 +173,9 @@ def connect_to_node(node):
     """
     # Generar un ID basado en la IP
     print(node)
-    node_id = node.get("id")
-    node_ip = node.get("ip")
+    print(node[0])
+    node_id = int(node[3])
+    node_ip = node[0]
     if node_id in [1, 2, 254]:  # Opcional: omitir nodos específicos
         return None
 
