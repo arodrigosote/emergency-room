@@ -212,7 +212,7 @@ def connect_to_node(node_ip):
         log_message(f"[Error] No se pudo conectar con el nodo {node_ip}: {e}")
     finally:
         # Asegurarse de cerrar la conexión si no se almacenó correctamente
-        if node_ip.split('.')[-1] not in active_connections:
+        if node_id not in active_connections:
             client.close()
 
 
