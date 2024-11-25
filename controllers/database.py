@@ -96,6 +96,10 @@ def mostrar_log_changestomake():
 
 
 
+
+
+
+
 ##
 ##  No se guarda en changestomake ningun cambio para ser enviado.
 ##

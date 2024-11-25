@@ -3,6 +3,7 @@ from datetime import datetime
 from utils.log import log_message
 from controllers.server_client import get_client_socket_by_ip, active_connections  # Asegúrate de tener una función para obtener el socket del cliente
 from controllers.nodes import get_network_nodes, get_own_node
+from models.database import guardar_cambios_db_changestomake
 
 
 def obtener_nodo_propio(cursor, own_node_ip):
@@ -108,12 +109,15 @@ def solicitar_cambios_db():
                 log_message("[Soliitar cambios] Este nodo es el maestro.")
                 respuestas = enviar_mensajes_a_todos("12", "Solicitar cambios en la base de datos.", incluir_propio=True)
                 print(respuestas)
+                guardar_cambios_db_changestomake(respuestas)
                 log_message("[Solicitar cambios] Se han solicitado los cambios en la base de datos.")
             else:
                 log_message("[Nodo] Nodo maestro remoto detectado.")
                 master_socket = active_connections[master_node_id]
                 respuestas = enviar_mensaje(master_socket, "13", "Solicitar cambios en la base de datos.")
                 print(respuestas)
+                guardar_cambios_db_changestomake(respuestas)
+                log_message("[Solicitar cambios] Se han solicitado los cambios en la base de datos.")
 
     except Exception as e:
         log_message(f"[Error] {str(e)}")

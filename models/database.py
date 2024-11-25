@@ -81,4 +81,3 @@ def guardar_cambios_db_changestomake(queries):
         log_message(f"Consultas guardadas en 'changestomake.txt': {queries}")
     except Exception as e:
         log_message(f"[Error] No se pudo guardar en 'changestomake.txt': {e}")
-
