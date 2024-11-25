@@ -90,6 +90,12 @@ def main():
             
             mostrar_menu()
 
+            # Verificar conexiones activas
+            for node_id, conn in list(active_connections.items()):
+                if conn.fileno() == -1:
+                    log_message(f"[Conexión inactiva] Nodo {node_id} desconectado.")
+                    del active_connections[node_id]
+
             try:
                 opcion = input("Seleccione una opción: ")
             except EOFError:

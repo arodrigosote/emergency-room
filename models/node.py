@@ -25,6 +25,10 @@ def enviar_mensaje(client_socket, codigo, mensaje):
         else:
             log_message("[Error] Conexión inactiva.")
             return None
+    except (ConnectionResetError, BrokenPipeError) as e:
+        log_message(f"[Error] Conexión perdida con el cliente: {str(e)}")
+        # Aquí puedes agregar lógica para manejar la desconexión, como eliminar la conexión de active_connections
+        return None
     except Exception as e:
         log_message(f"[Error al enviar] {str(e)}")
         return None
@@ -210,7 +214,7 @@ def solicitar_cambios_db():
 #         log_message("[Sin consenso] No todos los nodos respondieron OK")
 
 # def enviar_mensaje_a_todos_incluyendo_propio(codigo_instruccion, mensaje):
-#     hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+#     hora_actual = datetime.now().strftime("%Y-%m-%d %H:%:%S")
 #     mensaje_completo = f"{codigo_instruccion}|{hora_actual}|{mensaje}"
 #     respuestas = []
 #     own_node = get_own_node()
