@@ -1,6 +1,6 @@
 import sqlite3
 import os
-from utils.log import log_message
+from utils.log import log_message, log_database
 from datetime import datetime
 from models.node import procesar_consulta
 from models.emergency_room import obtener_sala_y_cama
@@ -57,6 +57,7 @@ def agregar_visita(id_trabajador):
 
 
             mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
+            log_database(f"# INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')")
             procesar_consulta(mensaje)
 
             

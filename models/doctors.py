@@ -1,6 +1,7 @@
 import sqlite3
 import os
-from utils.log import log_message
+from utils.log import log_message, log_database
+from models.node import procesar_consulta
 
 def agregar_doctores():
     doctores = [
@@ -24,6 +25,29 @@ def agregar_doctores():
         log_message("[Base de Datos] 5 doctores agregados a la base de datos.")
     except sqlite3.Error as e:
         log_message(f"[Error] No se pudo agregar los doctores: {e}")
+    finally:
+        conn.close()
+
+def agregar_doctor():
+    nombre = input("Ingrese el nombre del doctor: ")
+    especialidad = input("Ingrese la especialidad del doctor: ")
+    
+    try:
+        conn = sqlite3.connect('nodos.db')
+        cursor = conn.cursor()
+        
+        query = """
+            INSERT INTO doctores (nombre, especialidad) VALUES (?, ?)
+        """
+        
+        cursor.execute(query, (nombre, especialidad))
+        conn.commit()
+        mensaje = f"INSERT INTO doctores (nombre, especialidad) VALUES ('{nombre}', '{especialidad}')"
+        log_database(f"# INSERT INTO doctores (nombre, especialidad) VALUES ('{nombre}', '{especialidad}')")
+        procesar_consulta(mensaje)
+        log_message("[Base de Datos] Doctor agregado a la base de datos.")
+    except sqlite3.Error as e:
+        log_message(f"[Error] No se pudo agregar el doctor: {e}")
     finally:
         conn.close()
 

@@ -1,5 +1,5 @@
 from models.emergency_room import listar_salas_emergencia
-from models.doctors import listar_doctores
+from models.doctors import listar_doctores, agregar_doctor
 from models.camas import listar_camas
 from models.pacientes import listar_pacientes
 from models.visitas import listar_visitas, agregar_visita, cerrar_visita_emergencia
@@ -33,7 +33,7 @@ def realizar_accion_trabajador_social(id_trabajador,opcion):
         agregar_visita(id_trabajador)
     elif opcion == '2':
         print("\nRegistrar doctor")
-
+        agregar_doctor()
     elif opcion == '3':
         print("\nRegistrar paciente")
 
