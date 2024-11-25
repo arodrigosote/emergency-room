@@ -1,7 +1,7 @@
 import sqlite3
 from datetime import datetime
 from utils.log import log_message, log_database
-from controllers.server_client import get_client_socket_by_ip, active_connections, active_connections_lock, elegir_nodo_maestro, nodos_confirmando_desconexion
+from controllers.server_client import get_client_socket_by_ip, active_connections, elegir_nodo_maestro, nodos_confirmando_desconexion
 from controllers.nodes import get_network_nodes, get_own_node
 from models.database import guardar_cambios_db_changestomake
 
@@ -131,19 +131,16 @@ def verificar_conexiones():
     # print("Verificando conexiones...")
     try:
         nodos_red = get_network_nodes()
-        with active_connections_lock:
-            nodos_activos = list(active_connections.keys())
+        nodos_activos = list(active_connections.keys())
 
         for nodo_id in nodos_activos:
             # print(f"Verificando nodo {nodo_id}...")
-            with active_connections_lock:
-                client_socket = active_connections[nodo_id]
+            client_socket = active_connections[nodo_id]
             if client_socket.fileno() == -1:  # Verifica que el socket siga activo
                 nodo_ip = client_socket.getpeername()[0]
                 print(f"\n[Conexión perdida] Nodo {nodo_id} desconectado.")
                 log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
-                with active_connections_lock:
-                    del active_connections[nodo_id]
+                del active_connections[nodo_id]
 
                 # Desactivar sala en la base de datos
                 try:
@@ -156,16 +153,14 @@ def verificar_conexiones():
                 except sqlite3.Error as db_error:
                     log_message(f"[Error de base de datos] {str(db_error)}")
 
-                # redistribuir_carga(nodo_ip)
-               
+
 
             else:
                 destino_ip = client_socket.getpeername()[0]
                 if destino_ip not in [nodo['ip'] for nodo in nodos_red]:
                     log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                     print(f"\n[Conexión perdida] Nodo {nodo_id} desconectado.")
-                    with active_connections_lock:
-                        del active_connections[nodo_id]
+                    del active_connections[nodo_id]
                     elegir_nodo_maestro()
 
     except Exception as e:

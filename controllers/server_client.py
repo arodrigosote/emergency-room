@@ -10,7 +10,6 @@ from controllers.nodes import get_network_nodes, get_own_node
 
 # Diccionario para mantener las conexiones activas
 active_connections = {}
-active_connections_lock = threading.Lock()  # Agregar un lock para sincronizar el acceso
 master_node = None
 
 # Lista global para almacenar los IDs de los nodos que envían el mensaje "15"
@@ -33,9 +32,8 @@ def handle_client(client_socket, addr):
                     nodos = get_network_nodes()
                     for node in nodos:
                         node_id = node.get("id")  
-                        with active_connections_lock:
-                            if node_id not in active_connections:
-                                conn = connect_to_node(node)
+                        if node_id not in active_connections:
+                            conn = connect_to_node(node)
 
                     client_socket.send("OK".encode())
                     continue
@@ -54,21 +52,20 @@ def handle_client(client_socket, addr):
                     respuestas = []
                     nodo_emisor = client_socket
                     log_message('[Nodo Maestro] Recibe mensaje')
-                    with active_connections_lock:
-                        for destino, client in active_connections.items():
-                            try:
-                                if client.fileno() != -1:  # Verifica que el socket siga activo
-                                    client.send(mensaje_nuevo.encode())
-                                    log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
+                    for destino, client in active_connections.items():
+                        try:
+                            if client.fileno() != -1:  # Verifica que el socket siga activo
+                                client.send(mensaje_nuevo.encode())
+                                log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
 
-                                    # Analizar la respuesta del servidor
-                                    respuesta = client.recv(1024).decode()  
-                                    log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
-                                    respuestas.append(respuesta)
-                                else:
-                                    log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
-                            except Exception as e:
-                                log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
+                                # Analizar la respuesta del servidor
+                                respuesta = client.recv(1024).decode()  
+                                log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
+                                respuestas.append(respuesta)
+                            else:
+                                log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
+                        except Exception as e:
+                            log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
 
                     # Verificar si todas las respuestas son "OK"
                     response = "OK" if all(respuesta == "OK" for respuesta in respuestas) else "Error"
@@ -106,21 +103,20 @@ def handle_client(client_socket, addr):
                     respuestas = []
                     nodo_emisor = client_socket
                     log_message('[Nodo Maestro] Recibe mensaje')
-                    with active_connections_lock:
-                        for destino, client in active_connections.items():
-                            try:
-                                if client.fileno() != -1:  # Verifica que el socket siga activo
-                                    client.send(mensaje_nuevo.encode())
-                                    log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
+                    for destino, client in active_connections.items():
+                        try:
+                            if client.fileno() != -1:  # Verifica que el socket siga activo
+                                client.send(mensaje_nuevo.encode())
+                                log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
 
-                                    # Analizar la respuesta del servidor
-                                    respuesta = client.recv(1024).decode()  
-                                    log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
-                                    respuestas.append(respuesta)
-                                else:
-                                    log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
-                            except Exception as e:
-                                log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
+                                # Analizar la respuesta del servidor
+                                respuesta = client.recv(1024).decode()  
+                                log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
+                                respuestas.append(respuesta)
+                            else:
+                                log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
+                        except Exception as e:
+                            log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
 
                     if codigo_instruccion == "13":
                         respuestas_texto = "\n".join(respuestas)
@@ -151,11 +147,10 @@ def handle_client(client_socket, addr):
         client_socket.close()
         log_message(f"[Servidor] Conexión cerrada con {addr}")
         # Eliminar la conexión de active_connections
-        with active_connections_lock:
-            for node_id, conn in active_connections.items():
-                if conn == client_socket:
-                    del active_connections[node_id]
-                    break
+        for node_id, conn in active_connections.items():
+            if conn == client_socket:
+                del active_connections[node_id]
+                break
 
 def start_server():
     # Inicia el servidor y maneja solicitudes de clientes
@@ -189,10 +184,9 @@ def start_server():
             log_message("[Error] El puerto 9999 ya está en uso. Liberando...")
             server.close()
             # Liberar conexiones activas
-            with active_connections_lock:
-                for conn in active_connections.values():
-                    conn.close()
-                active_connections.clear()
+            for conn in active_connections.values():
+                conn.close()
+            active_connections.clear()
             start_server()  # Intentar reiniciar el servidor
         else:
             log_message(f"[Error] Problema al iniciar el servidor: {e}")
@@ -217,14 +211,13 @@ def connect_to_node(node):
         client.connect((node_ip, 9999))
 
         # Verificar si el nodo ya está conectado
-        with active_connections_lock:
-            if node_id in active_connections:
-                log_message(f"[Info] Nodo {node_id} ya está conectado.")
-                client.close()  # Cerrar la conexión redundante
-                return
+        if node_id in active_connections:
+            log_message(f"[Info] Nodo {node_id} ya está conectado.")
+            client.close()  # Cerrar la conexión redundante
+            return
 
-            # Almacenar la conexión activa
-            active_connections[node_id] = client
+        # Almacenar la conexión activa
+        active_connections[node_id] = client
 
         # Enviar mensaje de conexión con código de instrucción
         instruction_code = "01"
@@ -245,44 +238,39 @@ def connect_to_node(node):
         log_message(f"[Error] No se pudo conectar con el nodo {node_ip}: {e}")
     finally:
         # Asegurarse de cerrar la conexión si no se almacenó correctamente
-        with active_connections_lock:
-            if node_id not in active_connections:
-                client.close()
+        if node_id not in active_connections:
+            client.close()
 
 def mostrar_conexiones():
     # Muestra las conexiones activas
     log_message("[Conexiones activas]:")
-    with active_connections_lock:
-        for node_id in active_connections.keys():
-            log_message(f"ID: {node_id}")
+    for node_id in active_connections.keys():
+        log_message(f"ID: {node_id}")
 
 def elegir_nodo_maestro():
     global master_node
-    with active_connections_lock:
-        if active_connections:
-            master_node_id = max(active_connections.keys())
-            master_node_ip = active_connections[master_node_id].getpeername()[0]
-            master_node = {'id': master_node_id, 'ip': master_node_ip}
-            log_message(f"[Nodo Maestro] Nodo {master_node['id']} con IP {master_node['ip']} es el nodo maestro.")
-            actualizar_nodo_maestro(master_node_ip)
-            return master_node
+    if active_connections:
+        master_node_id = max(active_connections.keys())
+        master_node_ip = active_connections[master_node_id].getpeername()[0]
+        master_node = {'id': master_node_id, 'ip': master_node_ip}
+        log_message(f"[Nodo Maestro] Nodo {master_node['id']} con IP {master_node['ip']} es el nodo maestro.")
+        actualizar_nodo_maestro(master_node_ip)
+        return master_node
 
 def get_client_socket_by_ip(ip):
     id = int(ip.split('.')[-1])
-    with active_connections_lock:
-        return active_connections.get(id, None)
+    return active_connections.get(id, None)
 
 def refrescar_conexiones():
     nodos = get_network_nodes()
     nodos_ids = {node.get("id") for node in nodos}
     
     # Eliminar conexiones que ya no están en la lista de nodos
-    with active_connections_lock:
-        for node_id in list(active_connections.keys()):
-            if node_id not in nodos_ids:
-                conn = active_connections.pop(node_id)
-                conn.close()
-                log_message(f"[Conexión cerrada] Nodo {node_id} eliminado de conexiones activas.")
+    for node_id in list(active_connections.keys()):
+        if node_id not in nodos_ids:
+            conn = active_connections.pop(node_id)
+            conn.close()
+            log_message(f"[Conexión cerrada] Nodo {node_id} eliminado de conexiones activas.")
     
     # Recalcular el nodo maestro
     elegir_nodo_maestro()
