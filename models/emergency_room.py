@@ -40,13 +40,13 @@ def activar_sala(ip):
             cursor.execute(query, (ip,))
             conn.commit()
             
-            log_database(f"# UPDATE salas_emergencia SET estado = 'activado' WHERE ip = '{ip}'")
+            log_database(f"# UPDATE salas_emergencia SET estado = 'activada' WHERE ip = '{ip}'")
             log_message(f"[Consulta] Activación de sala de emergencia con IP '{ip}' guardada en la base de datos.")
 
             cursor.execute("SELECT * FROM salas_emergencia WHERE ip = ?", (ip,))
             nodo_propio = cursor.fetchone()
 
-            mensaje = f"UPDATE salas_emergencia SET estado = 'activado' WHERE ip = '{ip}'"
+            mensaje = f"UPDATE salas_emergencia SET estado = 'activada' WHERE ip = '{ip}'"
 
             procesar_consulta(mensaje)
     except sqlite3.Error as e:
@@ -67,7 +67,7 @@ def obtener_sala_y_cama():
                 HAVING salas_emergencia.capacidad_total > 0
                 ORDER BY (CAST(COUNT(camas.id_cama) AS REAL) / salas_emergencia.capacidad_total) DESC
                 LIMIT 1;
-            """, ('activo', 'disponible'))
+            """, ('activada', 'disponible'))
             sala = cursor.fetchone()
 
             print("Sala encontrada:", sala)  # Debug
