@@ -12,8 +12,14 @@ from models.trabajadores import listar_trabajadores_sociales, agregar_trabajador
 from models.doctors import agregar_doctores, listar_doctores_ocupados
 from models.node import solicitar_cambios_db, verificar_conexiones
 import os
+import time
 
 # Diccionario para mantener las conexiones activas
+
+def verificar_conexiones_en_hilo():
+    while True:
+        verificar_conexiones()
+        time.sleep(1)  # Ajusta el intervalo a 1 segundo
 
 def main():
     server_thread = threading.Thread(target=start_server, daemon=True)
@@ -86,10 +92,12 @@ def main():
     print("---------------------------------------------------")
 
     try:
+        # Crear y empezar el hilo para verificar conexiones
+        verificar_conexiones_thread = threading.Thread(target=verificar_conexiones_en_hilo, daemon=True)
+        verificar_conexiones_thread.start()
+
         while True:
             
-            verificar_conexiones()
-
             mostrar_menu()
 
             try:
