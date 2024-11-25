@@ -1,7 +1,7 @@
 import sqlite3
 from datetime import datetime
-from utils.log import log_message
-from controllers.server_client import get_client_socket_by_ip, active_connections, elegir_nodo_maestro
+from utils.log import log_message, log_database
+from controllers.server_client import get_client_socket_by_ip, active_connections, elegir_nodo_maestro, nodos_confirmando_desconexion
 from controllers.nodes import get_network_nodes, get_own_node
 from models.database import guardar_cambios_db_changestomake
 
@@ -138,20 +138,46 @@ def verificar_conexiones():
             client_socket = active_connections[nodo_id]
             if client_socket.fileno() == -1:  # Verifica que el socket siga activo
                 nodo_ip = client_socket.getpeername()[0]
-                print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
+                print(f"\n[Conexión perdida] Nodo {nodo_id} desconectado.")
                 log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                 del active_connections[nodo_id]
 
-                # desactivar_sala(nodo_ip)
+                # Desactivar sala en la base de datos
+                with sqlite3.connect('nodos.db') as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("UPDATE salas_emergencia SET estado = 'inactiva' WHERE ip = ?", (nodo_ip,))
+                    conn.commit()
+                    log_message(f"[Desactivar sala] Sala con IP {nodo_ip} desactivada en la base de datos.")
+                    log_database(f"# UPDATE salas_emergencia SET estado = 'inactiva' WHERE ip = '{nodo_ip}'")
 
                 # redistribuir_carga(nodo_ip)
-
                 elegir_nodo_maestro()
+
+
+                master_node_id = max(active_connections.keys())
+                master_node_ip = active_connections[master_node_id].getpeername()[0]
+                own_node = get_own_node()
+                 
+                with sqlite3.connect('nodos.db') as conn:
+                    cursor = conn.cursor()
+                    nodo_propio = obtener_nodo_propio(cursor, own_node['ip'])
+
+                    if not nodo_propio:
+                        log_message("[Nodo Propio] Nodo no encontrado en la base de datos.")
+                        return
+
+                    if nodo_propio[2] == master_node_ip:
+                        nodos_confirmando_desconexion.append(nodo_propio[2])
+                    else:
+                        log_message("[Nodo desconectado] Nodo maestro remoto detectado.")
+                        master_socket = active_connections[master_node_id]
+                        enviar_mensaje(master_socket, "15", "")
+
             else:
                 destino_ip = client_socket.getpeername()[0]
                 if destino_ip not in [nodo['ip'] for nodo in nodos_red]:
                     log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
-                    print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
+                    print(f"\n[Conexión perdida] Nodo {nodo_id} desconectado.")
                     del active_connections[nodo_id]
                     elegir_nodo_maestro()
 
@@ -165,33 +191,59 @@ def redistribuir_carga(nodo_ip):
             cursor = conn.cursor()
             
             # Obtener las camas ocupadas del nodo desconectado
-            cursor.execute("SELECT sala, cama FROM camas_ocupadas WHERE ip = ?", (nodo_ip,))
+            cursor.execute("""
+                SELECT id_sala, id_cama 
+                FROM camas 
+                WHERE id_sala = (SELECT id_sala FROM salas_emergencia WHERE ip = ?) 
+                AND estado = 'ocupada'
+            """, (nodo_ip,))
             camas_ocupadas = cursor.fetchall()
             
             if not camas_ocupadas:
                 log_message(f"[Redistribuir carga] No hay camas ocupadas en el nodo {nodo_ip}.")
                 return
             
-            # Obtener nodos activos
-            nodos_activos = [nodo['ip'] for nodo in get_network_nodes() if nodo['ip'] != nodo_ip]
+            # Obtener nodos activos de active_connections
+            nodos_activos = [client_socket.getpeername()[0] for client_socket in active_connections.values() if client_socket.getpeername()[0] != nodo_ip]
             
-            for sala, cama in camas_ocupadas:
+            # Obtener la capacidad disponible de cada nodo activo
+            capacidad_nodos = {}
+            for nodo_activo in nodos_activos:
+                cursor.execute("""
+                    SELECT capacidad_disponible 
+                    FROM salas_emergencia 
+                    WHERE ip = ?
+                """, (nodo_activo,))
+                capacidad_disponible = cursor.fetchone()
+                if capacidad_disponible:
+                    capacidad_nodos[nodo_activo] = capacidad_disponible[0]
+            
+            for id_sala, id_cama in camas_ocupadas:
+                # Ordenar nodos activos por capacidad disponible en orden descendente
+                nodos_ordenados = sorted(capacidad_nodos.items(), key=lambda x: x[1], reverse=True)
                 redistribuido = False
-                for nodo_activo in nodos_activos:
-                    cursor.execute("SELECT camas_disponibles FROM salas_emergencia WHERE ip = ?", (nodo_activo,))
-                    camas_disponibles = cursor.fetchone()
-                    
-                    if camas_disponibles and camas_disponibles[0] > 0:
+                
+                for nodo_activo, capacidad in nodos_ordenados:
+                    if capacidad > 0:
                         # Redistribuir la cama a este nodo activo
-                        cursor.execute("UPDATE camas_ocupadas SET ip = ? WHERE sala = ? AND cama = ?", (nodo_activo, sala, cama))
-                        cursor.execute("UPDATE salas_emergencia SET camas_disponibles = camas_disponibles - 1 WHERE ip = ?", (nodo_activo,))
+                        cursor.execute("""
+                            UPDATE camas 
+                            SET id_sala = (SELECT id_sala FROM salas_emergencia WHERE ip = ?), estado = 'disponible' 
+                            WHERE id_cama = ?
+                        """, (nodo_activo, id_cama))
+                        cursor.execute("""
+                            UPDATE salas_emergencia 
+                            SET capacidad_disponible = capacidad_disponible - 1 
+                            WHERE ip = ?
+                        """, (nodo_activo,))
                         conn.commit()
-                        log_message(f"[Redistribuir carga] Cama {cama} en sala {sala} redistribuida al nodo {nodo_activo}.")
+                        log_message(f"[Redistribuir carga] Cama {id_cama} en sala {id_sala} redistribuida al nodo {nodo_activo}.")
+                        capacidad_nodos[nodo_activo] -= 1
                         redistribuido = True
                         break
                 
                 if not redistribuido:
-                    log_message(f"[Redistribuir carga] No se pudo redistribuir la cama {cama} en sala {sala}. No hay nodos disponibles.")
+                    log_message(f"[Redistribuir carga] No se pudo redistribuir la cama {id_cama} en sala {id_sala}. No hay nodos disponibles.")
                     
     except Exception as e:
         log_message(f"[Error] {str(e)}")
