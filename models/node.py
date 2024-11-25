@@ -45,6 +45,9 @@ def enviar_mensajes_a_todos(codigo, mensaje, incluir_propio=False):
         except Exception as e:
             log_message(f"[Error] No se pudo enviar mensaje al nodo {destino_id}: {str(e)}")
 
+    if codigo == "12":
+        return respuestas
+
     if all(res == "OK" for res in respuestas):
         log_message("[Consenso] Todos los nodos respondieron OK.")
     else:
@@ -86,6 +89,34 @@ def procesar_consulta(consulta, es_compleja=False):
     except Exception as e:
         log_message(f"[Error] {str(e)}")
 
+def solicitar_cambios_db():
+    """Procesa consultas simples o complejas dependiendo del tipo."""
+    try:
+        master_node_id = max(active_connections.keys())
+        master_node_ip = active_connections[master_node_id].getpeername()[0]
+        own_node = get_own_node()
+
+        with sqlite3.connect('nodos.db') as conn:
+            cursor = conn.cursor()
+            nodo_propio = obtener_nodo_propio(cursor, own_node['ip'])
+
+            if not nodo_propio:
+                log_message("[Nodo Propio] Nodo no encontrado en la base de datos.")
+                return
+
+            if nodo_propio[2] == master_node_ip:
+                log_message("[Soliitar cambios] Este nodo es el maestro.")
+                respuestas = enviar_mensajes_a_todos("12", "Solicitar cambios en la base de datos.", incluir_propio=True)
+                print(respuestas)
+                log_message("[Solicitar cambios] Se han solicitado los cambios en la base de datos.")
+            else:
+                log_message("[Nodo] Nodo maestro remoto detectado.")
+                master_socket = active_connections[master_node_id]
+                respuestas = enviar_mensaje(master_socket, "13", "Solicitar cambios en la base de datos.")
+                print(respuestas)
+
+    except Exception as e:
+        log_message(f"[Error] {str(e)}")
 # def enviar_consulta_sencilla(consulta):
 #     try:
 #         master_node_id = max(active_connections.keys())

@@ -59,6 +59,7 @@ def obtener_cambios_db():
 
 
 
+
 def guardar_cambios_db_changestomake(queries):
     """
     Guarda las consultas en el archivo 'changestomake.txt' dentro de la carpeta 'database'.

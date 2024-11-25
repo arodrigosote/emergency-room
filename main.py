@@ -10,6 +10,7 @@ from models.emergency_room import activar_sala
 from models.camas import agregar_camas
 from models.trabajadores import listar_trabajadores_sociales, agregar_trabajadores_sociales
 from models.doctors import agregar_doctores, listar_doctores_ocupados
+from models.node import solicitar_cambios_db
 import os
 
 # Diccionario para mantener las conexiones activas
@@ -67,7 +68,9 @@ def main():
     
     activar_sala(own_node['ip'])
 
-    ejecutar_dbchanges()
+    solicitar_cambios_db()
+
+    #ejecutar_dbchanges()
 
     try:
         while True:

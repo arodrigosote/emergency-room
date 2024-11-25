@@ -35,9 +35,6 @@ def handle_client(client_socket, addr):
                             active_connections[node_id] = conn
 
                 client_socket.send("OK".encode())
-                # Obtener cambios en base de datos y regresar como respuesta a nodo.
-
-
                 continue
             elif mensaje_completo[:2] == "10":
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
@@ -76,48 +73,58 @@ def handle_client(client_socket, addr):
                 continue
             elif mensaje_completo[:2] == "12":
                 try:
-                    log_message('[Recibiendo query]')
+                    print('[Recibiendo solicitud de cambios]')
 
                     # Crear la carpeta 'database' si no existe
-                    os.makedirs("database", exist_ok=True)
-                    log_message("[Info] Carpeta 'database' creada o ya existente.")
+                    os.makedirs("history", exist_ok=True)
+                    log_message("[Info] Carpeta 'history' creada o ya existente.")
 
                     # Ruta del archivo
-                    archivo_path = os.path.join("database", "changestomake.txt")
+                    archivo_path = os.path.join("history", "db_changes.txt")
 
-                    # Dividir el texto en líneas
-                    lineas = mensaje_completo.splitlines()
+                    # Leer el contenido del archivo db_changes
+                    with open(archivo_path, 'r') as file:
+                        db_changes = file.read()
 
-                    log_message('[Codigo 12] Mostrando lineas')
-                    log_message(str(lineas))
+                    # Enviar el contenido del archivo como respuesta
+                    client_socket.send(db_changes.encode())
+                    log_message("[Mensaje enviado] Contenido del archivo 'db_changes' enviado al cliente.")
 
-                    # Procesar las líneas y guardar las consultas válidas
-                    with open(archivo_path, "w") as archivo:
-                        for linea in lineas:
-                            linea = linea.strip()
-                            if "#" in linea:
-                                # Separar la fecha y hora de la consulta
-                                partes = linea.split("#", 1)
-                                fecha_hora = partes[0].strip()[:-2]
-                                consulta = partes[1].strip()
-
-                                # Eliminar el guion antes de la consulta (si existe)
-                                consulta = consulta.replace(" - ", " ")
-
-                                # Validar formato de fecha y hora (opcional)
-                                try:
-                                    # datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M:%S")
-                                    # Escribir en el archivo
-                                    archivo.write(f"{fecha_hora}#{consulta}\n")
-                                    log_message(f"[Info] Consulta guardada: {fecha_hora} {consulta}")
-                                except ValueError:
-                                    log_message(f"[Error] Formato de fecha y hora no válido: {fecha_hora}")
-                    
-                    log_message("[Info] Cambios en changestomake guardados correctamente.")
-                    response = "OK"
-                    client_socket.send(response.encode())
+                except FileNotFoundError:
+                    log_message("[Error] El archivo 'db_changes' no se encontró en la carpeta 'history'")
+                    client_socket.send("[Error] El archivo 'db_changes' no se encontró.".encode())
                 except Exception as e:
                     log_message(f"[Error] No se pudo procesar el mensaje '12': {e}")
+                    client_socket.send(f"[Error] No se pudo procesar el mensaje '12': {e}".encode())
+                continue
+            elif mensaje_completo[:2] == "13":
+                codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
+                mensaje_nuevo = f"12|{hora_actual}|{query}"
+                respuestas = []
+                nodo_emisor = client_socket
+                log_message('[Nodo Maestro] Recibe mensaje')
+                for destino, client in active_connections.items():
+                    try:
+                        if client.fileno() != -1:  # Verifica que el socket siga activo
+                            client.send(mensaje_nuevo.encode())
+                            log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
+
+                            # Analizar la respuesta del servidor
+                            respuesta = client.recv(1024).decode()  
+                            log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
+                            respuestas.append(respuesta)
+                        else:
+                            log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
+                    except Exception as e:
+                        log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
+
+                if codigo_instruccion == "13":
+                    nodo_emisor.send(respuestas.encode())
+                
+                # Verificar si todas las respuestas son "OK"
+                response = "OK" if all(respuesta == "OK" for respuesta in respuestas) else "Error"
+                log_message(f"[Query] Ejecutada: Estatus: {response} - {query}")
+                nodo_emisor.send(response.encode())
                 continue
             else:
                 log_message("[Error] No se encontró el código de instrucción")
@@ -177,8 +184,6 @@ def connect_to_node(node):
     Conecta con un nodo específico dado su dirección IP.
     """
     # Generar un ID basado en la IP
-    print(node)
-    print(node['ip'])
     node_id = int(node['id'])
     node_ip = node['ip']
     if node_id in [1, 2, 254]:  # Opcional: omitir nodos específicos
