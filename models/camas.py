@@ -17,7 +17,17 @@ def agregar_camas():
         (2, 2, 'disponible'),
         (2, 3, 'disponible'),
         (2, 4, 'disponible'),
-        (2, 5, 'disponible')
+        (2, 5, 'disponible'),
+        (3, 1, 'disponible'),
+        (3, 2, 'disponible'),
+        (3, 3, 'disponible'),
+        (3, 4, 'disponible'),
+        (3, 5, 'disponible'),
+        (4, 1, 'disponible'),
+        (4, 2, 'disponible'),
+        (4, 3, 'disponible'),
+        (4, 4, 'disponible'),
+        (4, 5, 'disponible')
     ]
     
     try:
