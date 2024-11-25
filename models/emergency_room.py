@@ -3,7 +3,7 @@ import os
 from utils.log import log_message, log_database
 from models.node import procesar_consulta
 from datetime import datetime
-from tabulate import tabulate
+
 
 DB_PATH = 'nodos.db'
 
@@ -20,9 +20,14 @@ def listar_salas_emergencia():
             cursor.execute('SELECT * FROM salas_emergencia')
             salas = cursor.fetchall()
 
-        # Mostrar las salas en formato de tabla
+        # Mostrar las salas en formato de tabla manualmente
         headers = ["ID Sala", "Nombre", "IP", "Estado", "Es Maestro", "Capacidad Total", "Capacidad Disponible"]
-        print(tabulate(salas, headers=headers, tablefmt="grid"))
+        header_line = "{:<10} {:<20} {:<15} {:<10} {:<10} {:<18} {:<22}".format(*headers)
+        print(header_line)
+        print("=" * len(header_line))
+
+        for sala in salas:
+            print("{:<10} {:<20} {:<15} {:<10} {:<10} {:<18} {:<22}".format(*sala))
     except sqlite3.Error as e:
         log_message(f"[Error] No se pudo listar las salas de emergencia: {e}")
 
