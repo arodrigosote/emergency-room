@@ -6,7 +6,7 @@ from utils.log import log_message
 from models.master_node import actualizar_nodo_maestro
 from models.database import execute_query, obtener_cambios_db, guardar_cambios_db_changestomake
 from controllers.nodes import get_network_nodes, get_own_node
-from models.node import verificar_conexiones
+
 
 # Diccionario para mantener las conexiones activas
 active_connections = {}
@@ -166,7 +166,7 @@ def start_server():
             log_file.write(message)
 
         elegir_nodo_maestro() 
-
+        from models.node import verificar_conexiones
         while True:
             verificar_conexiones()
             client_socket, addr = server.accept()
