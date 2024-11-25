@@ -76,7 +76,7 @@ def actualizar_trabajador():
     try:
         conn = sqlite3.connect('nodos.db')
         cursor = conn.cursor()
-        cursor.execute('SELECT COUNT(*) FROM trabajadores_sociales WHERE id = ?', (id_trabajador,))
+        cursor.execute('SELECT COUNT(*) FROM trabajadores_sociales WHERE id_trabajador = ?', (id_trabajador,))
         if cursor.fetchone()[0] == 0:
             log_message(f"[Error] El ID {id_trabajador} no existe en la base de datos.")
             print(f"El ID {id_trabajador} no existe en la base de datos.")
@@ -97,12 +97,12 @@ def actualizar_trabajador():
         query = """
             UPDATE trabajadores_sociales
             SET nombre = ?
-            WHERE id = ?
+            WHERE id_trabajador = ?
         """
         
         cursor.execute(query, (nuevo_nombre, id_trabajador))
         conn.commit()
-        mensaje = f"UPDATE trabajadores_sociales SET nombre = '{nuevo_nombre}' WHERE id = {id_trabajador}"
+        mensaje = f"UPDATE trabajadores_sociales SET nombre = '{nuevo_nombre}' WHERE id_trabajador = {id_trabajador}"
         log_database(f"# {mensaje}")
         procesar_consulta(mensaje)
         log_message(f"[Base de Datos] Trabajador {nuevo_nombre} actualizado en la base de datos.")

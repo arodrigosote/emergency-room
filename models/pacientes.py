@@ -22,26 +22,25 @@ def listar_pacientes():
 def agregar_paciente():
     try:
         # Solicitar datos del paciente
-        id_paciente = input("Ingrese el ID del paciente: ")
         nombre = input("Ingrese el nombre del paciente: ")
         genero = input("Ingrese el género del paciente (0 para Hombre, 1 para Mujer): ")
         tipo_sangre = input("Ingrese el tipo de sangre del paciente: ")
         alergias = input("Ingrese las alergias del paciente: ")
-        fecha_registro = input("Ingrese la fecha de registro (YYYY-MM-DD): ")
 
         # Agrega un nuevo paciente a la base de datos
         conn = sqlite3.connect('nodos.db')
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO pacientes (id_paciente, nombre, genero, tipo_sangre, alergias, fecha_registro)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (id_paciente, nombre, genero, tipo_sangre, alergias, fecha_registro))
+            INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias)
+            VALUES (?, ?, ?, ?)
+        ''', (nombre, genero, tipo_sangre, alergias))
         conn.commit()
         conn.close()
-        mensaje = f"INSERT INTO pacientes (id_paciente, nombre, genero, tipo_sangre, alergias, fecha_registro) VALUES ({id_paciente}, '{nombre}', {genero}, '{tipo_sangre}', '{alergias}', '{fecha_registro}')"
-        log_database(f"# INSERT INTO pacientes (id_paciente, nombre, genero, tipo_sangre, alergias, fecha_registro) VALUES ({id_paciente}, '{nombre}', {genero}, '{tipo_sangre}', '{alergias}', '{fecha_registro}')")
+        mensaje = f"INSERT INTO pacientes (nombre, genero, tipo_sangre, alergias) VALUES ('{nombre}', {genero}, '{tipo_sangre}', '{alergias}')"
+        log_database(f"# {mensaje}")
         procesar_consulta(mensaje)
         log_message(f"[Base de Datos] Paciente '{nombre}' agregado a la base de datos.")
+        print(f"Paciente '{nombre}' agregado a la base de datos.")
     except sqlite3.Error as e:
         log_message(f"Error al agregar paciente: {e}")
         print(f"Error al agregar paciente: {e}")
