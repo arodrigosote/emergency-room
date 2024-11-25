@@ -154,25 +154,28 @@ def verificar_conexiones():
                     log_message(f"[Error de base de datos] {str(db_error)}")
 
                 # redistribuir_carga(nodo_ip)
-                master = elegir_nodo_maestro()
-                own_node = get_own_node()
-                print(f"[Nodo Maestro] {master['ip']}")
-                print(f"[Nodo Propio] {own_node['ip']}")
-                with sqlite3.connect('nodos.db') as conn:
-                    cursor = conn.cursor()
-                    nodo_propio = obtener_nodo_propio(cursor, own_node['ip'])
+                try:
+                    master = elegir_nodo_maestro()
+                    own_node = get_own_node()
+                    print(f"[Nodo Maestro] {master['ip']}")
+                    print(f"[Nodo Propio] {own_node['ip']}")
+                    with sqlite3.connect('nodos.db') as conn:
+                        cursor = conn.cursor()
+                        nodo_propio = obtener_nodo_propio(cursor, own_node['ip'])
 
-                    if not nodo_propio:
-                        log_message("[Nodo Propio] Nodo no encontrado en la base de datos.")
-                        return
+                        if not nodo_propio:
+                            log_message("[Nodo Propio] Nodo no encontrado en la base de datos.")
+                            return
 
-                    if nodo_propio[2] == master['ip']:
-                        print('maestro: guardando confirmacion')
-                        nodos_confirmando_desconexion.append(nodo_propio[2])
-                    else:
-                        log_message("[Nodo desconectado] Nodo maestro remoto detectado.")
-                        print('maestro remoto: enviando confirmacion')
-                        enviar_mensaje(master, "15", "")
+                        if nodo_propio[2] == master['ip']:
+                            print('maestro: guardando confirmacion')
+                            nodos_confirmando_desconexion.append(nodo_propio[2])
+                        else:
+                            log_message("[Nodo desconectado] Nodo maestro remoto detectado.")
+                            print('maestro remoto: enviando confirmacion')
+                            enviar_mensaje(master, "15", "")
+                except Exception as e:
+                    log_message(f"[Error al elegir nodo maestro o enviar mensaje] {str(e)}")
 
             else:
                 destino_ip = client_socket.getpeername()[0]
@@ -226,22 +229,25 @@ def redistribuir_carga(nodo_ip):
                 
                 for nodo_activo, capacidad in nodos_ordenados:
                     if capacidad > 0:
-                        # Redistribuir la cama a este nodo activo
-                        cursor.execute("""
-                            UPDATE camas 
-                            SET id_sala = (SELECT id_sala FROM salas_emergencia WHERE ip = ?), estado = 'disponible' 
-                            WHERE id_cama = ?
-                        """, (nodo_activo, id_cama))
-                        cursor.execute("""
-                            UPDATE salas_emergencia 
-                            SET capacidad_disponible = capacidad_disponible - 1 
-                            WHERE ip = ?
-                        """, (nodo_activo,))
-                        conn.commit()
-                        log_message(f"[Redistribuir carga] Cama {id_cama} en sala {id_sala} redistribuida al nodo {nodo_activo}.")
-                        capacidad_nodos[nodo_activo] -= 1
-                        redistribuido = True
-                        break
+                        try:
+                            # Redistribuir la cama a este nodo activo
+                            cursor.execute("""
+                                UPDATE camas 
+                                SET id_sala = (SELECT id_sala FROM salas_emergencia WHERE ip = ?), estado = 'disponible' 
+                                WHERE id_cama = ?
+                            """, (nodo_activo, id_cama))
+                            cursor.execute("""
+                                UPDATE salas_emergencia 
+                                SET capacidad_disponible = capacidad_disponible - 1 
+                                WHERE ip = ?
+                            """, (nodo_activo,))
+                            conn.commit()
+                            log_message(f"[Redistribuir carga] Cama {id_cama} en sala {id_sala} redistribuida al nodo {nodo_activo}.")
+                            capacidad_nodos[nodo_activo] -= 1
+                            redistribuido = True
+                            break
+                        except sqlite3.Error as db_error:
+                            log_message(f"[Error de base de datos] {str(db_error)}")
                 
                 if not redistribuido:
                     log_message(f"[Redistribuir carga] No se pudo redistribuir la cama {id_cama} en sala {id_sala}. No hay nodos disponibles.")
