@@ -36,7 +36,7 @@ def activar_sala(ip):
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
-            query = "UPDATE salas_emergencia SET estado = 'activado' WHERE ip = ?"
+            query = "UPDATE salas_emergencia SET estado = 'activada' WHERE ip = ?"
             cursor.execute(query, (ip,))
             conn.commit()
             

@@ -19,10 +19,19 @@ CREATE TABLE IF NOT EXISTS salas_emergencia (
     id_sala INTEGER PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     ip VARCHAR(30) NOT NULL,
-    estado VARCHAR(20) DEFAULT 'inactivo', -- activo/inactivo
+    estado VARCHAR(20) DEFAULT 'inactiva', -- activo/inactivo
     es_maestro BOOLEAN DEFAULT 0,
     capacidad_total INTEGER NOT NULL,
     capacidad_disponible INTEGER NOT NULL
+);
+
+-- Tabla de Camas
+CREATE TABLE IF NOT EXISTS camas (
+    id_cama INTEGER PRIMARY KEY,
+    id_sala INTEGER NOT NULL,
+    numero_cama INTEGER NOT NULL,
+    estado VARCHAR(20) DEFAULT 'disponible', -- disponible/ocupada
+    FOREIGN KEY (id_sala) REFERENCES salas_emergencia(id_sala) ON DELETE SET NULL
 );
 
 -- Tabla de Doctores
@@ -47,15 +56,6 @@ CREATE TABLE IF NOT EXISTS pacientes (
     tipo_sangre VARCHAR(5),
     alergias TEXT,
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Tabla de Camas
-CREATE TABLE IF NOT EXISTS camas (
-    id_cama INTEGER PRIMARY KEY,
-    id_sala INTEGER NOT NULL,
-    numero_cama INTEGER NOT NULL,
-    estado VARCHAR(20) DEFAULT 'disponible', -- disponible/ocupada
-    FOREIGN KEY (id_sala) REFERENCES salas_emergencia(id_sala) ON DELETE SET NULL
 );
 
 -- Tabla de Visitas de Emergencia
