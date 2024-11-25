@@ -151,7 +151,7 @@ def start_server():
 
     try:
         server.bind(("0.0.0.0", 9999))
-        server.listen(15)
+        server.listen(5)
         
         # Crear la carpeta 'history' si no existe
         os.makedirs('history', exist_ok=True)
@@ -252,3 +252,17 @@ def elegir_nodo_maestro():
 def get_client_socket_by_ip(ip):
     id = int(ip.split('.')[-1])
     return active_connections.get(id, None)
+
+def refrescar_conexiones():
+    nodos = get_network_nodes()
+    nodos_ids = {node.get("id") for node in nodos}
+    
+    # Eliminar conexiones que ya no están en la lista de nodos
+    for node_id in list(active_connections.keys()):
+        if node_id not in nodos_ids:
+            conn = active_connections.pop(node_id)
+            conn.close()
+            log_message(f"[Conexión cerrada] Nodo {node_id} eliminado de conexiones activas.")
+    
+    # Recalcular el nodo maestro
+    elegir_nodo_maestro()
