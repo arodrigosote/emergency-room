@@ -143,17 +143,21 @@ def verificar_conexiones():
                 del active_connections[nodo_id]
 
                 # Desactivar sala en la base de datos
-                with sqlite3.connect('nodos.db') as conn:
-                    cursor = conn.cursor()
-                    cursor.execute("UPDATE salas_emergencia SET estado = 'inactiva' WHERE ip = '?'", (nodo_ip,))
-                    conn.commit()
-                    log_message(f"[Desactivar sala] Sala con IP {nodo_ip} desactivada en la base de datos.")
-                    log_database(f"# UPDATE salas_emergencia SET estado = 'inactiva' WHERE ip = '{nodo_ip}'")
+                try:
+                    with sqlite3.connect('nodos.db') as conn:
+                        cursor = conn.cursor()
+                        cursor.execute("UPDATE salas_emergencia SET estado = 'inactiva' WHERE ip = ?", (nodo_ip,))
+                        conn.commit()
+                        log_message(f"[Desactivar sala] Sala con IP {nodo_ip} desactivada en la base de datos.")
+                        log_database(f"# UPDATE salas_emergencia SET estado = 'inactiva' WHERE ip = '{nodo_ip}'")
+                except sqlite3.Error as db_error:
+                    log_message(f"[Error de base de datos] {str(db_error)}")
 
                 # redistribuir_carga(nodo_ip)
                 master = elegir_nodo_maestro()
                 own_node = get_own_node()
-
+                print(f"[Nodo Maestro] {master['ip']}")
+                print(f"[Nodo Propio] {own_node['ip']}")
                 with sqlite3.connect('nodos.db') as conn:
                     cursor = conn.cursor()
                     nodo_propio = obtener_nodo_propio(cursor, own_node['ip'])
@@ -163,9 +167,11 @@ def verificar_conexiones():
                         return
 
                     if nodo_propio[2] == master['ip']:
+                        print('maestro: guardando confirmacion')
                         nodos_confirmando_desconexion.append(nodo_propio[2])
                     else:
                         log_message("[Nodo desconectado] Nodo maestro remoto detectado.")
+                        print('maestro remoto: enviando confirmacion')
                         enviar_mensaje(master, "15", "")
 
             else:
