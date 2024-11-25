@@ -131,7 +131,7 @@ def handle_client(client_socket, addr):
                 log_message(mensaje_completo)
                 break
     except Exception as e:
-        log_message(f"[Error] Cliente {addr}: {e}")
+        log_message(f"[Error] Cliente {mensaje_completo[:2]} {addr}: {e}")
     finally:
         client_socket.close()
         log_message(f"[Servidor] Conexión cerrada con {addr}")
