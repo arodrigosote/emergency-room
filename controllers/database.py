@@ -5,6 +5,7 @@ from datetime import datetime
 
 
 def init_db():
+    print("Inicializando base de datos...")
     # Inicializa la base de datos
     conn = sqlite3.connect('nodos.db')
     cursor = conn.cursor()

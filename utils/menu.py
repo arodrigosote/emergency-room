@@ -1,10 +1,10 @@
 from models.emergency_room import listar_salas_emergencia
-from models.doctors import listar_doctores, agregar_doctor
+from models.doctors import listar_doctores, agregar_doctor, actualizar_doctor
 from models.camas import listar_camas
-from models.pacientes import listar_pacientes
+from models.pacientes import listar_pacientes, agregar_paciente, actualizar_paciente
 from models.visitas import listar_visitas, agregar_visita, cerrar_visita_emergencia
 from models.master_node import obtener_nodo_maestro
-from models.trabajadores import listar_trabajadores_sociales
+from models.trabajadores import listar_trabajadores_sociales, agregar_trabajador, actualizar_trabajador
 from controllers.database import mostrar_log_base_datos, mostrar_log_servidor, mostrar_log_changestomake
 from utils.log import log_message
 from controllers.nodes import get_network_nodes
@@ -16,7 +16,8 @@ def mostrar_menu():
     print("2. Doctor")
     print("3. Utilidades")
     print("4. Tablas")
-    print("5. Salir")
+    print("5. Admin")
+    print("6. Salir")
 
 
 # Funciones para mostrar y realizar acciones en los menús
@@ -25,6 +26,7 @@ def mostrar_menu_trabajador_social():
     print("1. Registrar visita emergencia")
     print("2. Registrar doctor")
     print("3. Registrar paciente")
+    print("4. Registrar trabajador social")
     print("5. Volver")
 
 def realizar_accion_trabajador_social(id_trabajador,opcion):
@@ -36,7 +38,9 @@ def realizar_accion_trabajador_social(id_trabajador,opcion):
         agregar_doctor()
     elif opcion == '3':
         print("\nRegistrar paciente")
-
+    elif opcion == '4':
+        print("\nRegistrar trabajador social")
+        agregar_trabajador()
     elif opcion == '5':
         print("Regresando al menú principal...")
     else:
@@ -104,6 +108,9 @@ def realizar_accion_utilidades(opcion):
         print("Opción no válida, intente de nuevo.")
 
 
+
+
+
 # Funciones para mostrar y realizar acciones en los menús
 def mostrar_menu_tablas():
     print("\nMenú Tablas:")
@@ -141,6 +148,40 @@ def realizar_accion_tablas(opcion):
         listar_trabajadores_sociales()
         log_message("[Tablas] Mostrando tabla de Trabajadores.")
     elif opcion == '8':
+        print("Regresando al menú principal...")
+    else:
+        print("Opción no válida, intente de nuevo.")
+
+def mostrar_menu_admin():
+    print("\nMenú Admin:")
+    print("1. Registrar doctor")
+    print("2. Registrar paciente")
+    print("3. Registrar trabajador social")
+    print("4. Actualizar doctor")
+    print("5. Actualizar paciente")
+    print("6. Actualizar trabajador social")
+    print("7. Volver")
+
+def realizar_accion_admin(opcion):
+    if opcion == '1':
+        print("\nRegistrar doctor")
+        agregar_doctor()
+    elif opcion == '2':
+        print("\nRegistrar paciente")
+        agregar_paciente()
+    elif opcion == '3':
+        print("\nRegistrar trabajador social")
+        agregar_trabajador()
+    elif opcion == '4':
+        print("\nActualizar doctor")
+        actualizar_doctor()
+    elif opcion == '5':
+        print("\nActualizar paciente")
+        actualizar_paciente()
+    elif opcion == '6':
+        print("\nActualizar trabajador social")
+        actualizar_trabajador()
+    elif opcion == '7':
         print("Regresando al menú principal...")
     else:
         print("Opción no válida, intente de nuevo.")

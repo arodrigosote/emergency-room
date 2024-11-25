@@ -1,7 +1,7 @@
 import socket
 import threading
 from controllers.nodes import get_network_nodes, get_own_node
-from utils.menu import mostrar_menu, mostrar_menu_trabajador_social, mostrar_menu_doctor, realizar_accion_trabajador_social, realizar_accion_doctor, mostrar_menu_utilidades, realizar_accion_utilidades, mostrar_menu_utilidades, mostrar_menu_tablas, realizar_accion_tablas
+from utils.menu import mostrar_menu, mostrar_menu_trabajador_social, mostrar_menu_doctor, realizar_accion_trabajador_social, realizar_accion_doctor, mostrar_menu_utilidades, realizar_accion_utilidades, mostrar_menu_utilidades, mostrar_menu_tablas, realizar_accion_tablas, mostrar_menu_admin, realizar_accion_admin
 from utils.log import log_message
 from controllers.server_client import start_server, connect_to_node, mostrar_conexiones, active_connections, elegir_nodo_maestro
 from controllers.messages import enviar_mensaje_a_nodo, enviar_mensaje_a_todos
@@ -48,29 +48,32 @@ def main():
     else:
         log_message(f"[Advertencia] El archivo 'changestomake.txt' no existe.")
 
+    
     # Agregar una nueva sala de emergencia
     agregar_salas_emergencia()
     agregar_doctores()
     agregar_camas()
     agregar_trabajadores_sociales()
+    print("Base de datos configurada.")
 
+    print("Conectando a la red...")
     nodes = get_network_nodes()  # Obtener nodos de la red
-
     for node in nodes:
         node_id = node.get("id")  
         if node_id not in active_connections:
             conn = connect_to_node(node)
             if conn:
                 active_connections[node_id] = conn
-    
+    print("Conexiones establecidas.")
 
     own_node = get_own_node()
-    
     activar_sala(own_node['ip'])
 
+    print('Solicitando cambios ya hechos en base de datos...')
     solicitar_cambios_db()
 
     ejecutar_dbchanges()
+    print("Cambios en base de datos ejecutados.")
 
     try:
         while True:
@@ -104,6 +107,10 @@ def main():
                 opcion_tablas = input("Seleccione una opción: ")
                 realizar_accion_tablas(opcion_tablas)
             elif opcion == '5':
+                mostrar_menu_admin()
+                opcion_admin = input("Seleccione una opción: ")
+                realizar_accion_admin(opcion_admin)
+            elif opcion == '6':
                 print("Saliendo...")
                 break
             else:

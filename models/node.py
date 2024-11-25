@@ -110,14 +110,12 @@ def solicitar_cambios_db():
             if nodo_propio[2] == master_node_ip:
                 log_message("[Soliitar cambios] Este nodo es el maestro.")
                 respuestas = enviar_mensajes_a_todos("12", "Solicitar cambios en la base de datos.", incluir_propio=True)
-                print(respuestas)
                 guardar_cambios_db_changestomake(respuestas)
                 log_message("[Solicitar cambios] Se han solicitado los cambios en la base de datos.")
             else:
                 log_message("[Nodo] Nodo maestro remoto detectado.")
                 master_socket = active_connections[master_node_id]
                 respuestas = enviar_mensaje(master_socket, "13", "Solicitar cambios en la base de datos.")
-                print(respuestas)
                 guardar_cambios_db_changestomake(respuestas)
                 log_message("[Solicitar cambios] Se han solicitado los cambios en la base de datos.")
 

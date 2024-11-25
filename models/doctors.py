@@ -45,9 +45,57 @@ def agregar_doctor():
         mensaje = f"INSERT INTO doctores (nombre, especialidad) VALUES ('{nombre}', '{especialidad}')"
         log_database(f"# INSERT INTO doctores (nombre, especialidad) VALUES ('{nombre}', '{especialidad}')")
         procesar_consulta(mensaje)
-        log_message("[Base de Datos] Doctor agregado a la base de datos.")
+        log_message(f"[Base de Datos] Doctor {nombre} agregado a la base de datos.")
+        print(f"Doctor {nombre} agregado a la base de datos.")
     except sqlite3.Error as e:
         log_message(f"[Error] No se pudo agregar el doctor: {e}")
+        print(f"Error al agregar el doctor: {e}")
+    finally:
+        conn.close()
+
+def actualizar_doctor():
+    listar_doctores()
+    id_doctor = input("Ingrese el ID del doctor a actualizar: ")
+    
+    # Validar si el ID existe en la base de datos
+    try:
+        conn = sqlite3.connect('nodos.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT COUNT(*) FROM doctores WHERE id = ?', (id_doctor,))
+        if cursor.fetchone()[0] == 0:
+            log_message(f"[Error] El ID {id_doctor} no existe en la base de datos.")
+            print(f"El ID {id_doctor} no existe en la base de datos.")
+            conn.close()
+            return
+    except sqlite3.Error as e:
+        log_message(f"[Error] No se pudo validar el ID del doctor: {e}")
+        print(f"Error al validar el ID del doctor: {e}")
+        conn.close()
+        return
+    
+    nuevo_nombre = input("Ingrese el nuevo nombre del doctor: ")
+    nueva_especialidad = input("Ingrese la nueva especialidad del doctor: ")
+    
+    try:
+        conn = sqlite3.connect('nodos.db')
+        cursor = conn.cursor()
+        
+        query = """
+            UPDATE doctores
+            SET nombre = ?, especialidad = ?
+            WHERE id = ?
+        """
+        
+        cursor.execute(query, (nuevo_nombre, nueva_especialidad, id_doctor))
+        conn.commit()
+        mensaje = f"UPDATE doctores SET nombre = '{nuevo_nombre}', especialidad = '{nueva_especialidad}' WHERE id = {id_doctor}"
+        log_database(f"# UPDATE doctores SET nombre = '{nuevo_nombre}', especialidad = '{nueva_especialidad}' WHERE id = {id_doctor}")
+        procesar_consulta(mensaje)
+        log_message(f"[Base de Datos] Doctor {nuevo_nombre} actualizado en la base de datos.")
+        print(f"Doctor {nuevo_nombre} actualizado en la base de datos.")
+    except sqlite3.Error as e:
+        log_message(f"[Error] No se pudo actualizar el doctor: {e}")
+        print(f"Error al actualizar el doctor: {e}")
     finally:
         conn.close()
 
