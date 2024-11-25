@@ -3,11 +3,6 @@ from utils.log import log_message
 
 def agregar_camas():
     camas = [
-        (0, 1, 'disponible'),
-        (0, 2, 'disponible'),
-        (0, 3, 'disponible'),
-        (0, 4, 'disponible'),
-        (0, 5, 'disponible'),
         (1, 1, 'disponible'),
         (1, 2, 'disponible'),
         (1, 3, 'disponible'),
@@ -27,7 +22,12 @@ def agregar_camas():
         (4, 2, 'disponible'),
         (4, 3, 'disponible'),
         (4, 4, 'disponible'),
-        (4, 5, 'disponible')
+        (4, 5, 'disponible'),
+        (5, 1, 'disponible'),
+        (5, 2, 'disponible'),
+        (5, 3, 'disponible'),
+        (5, 4, 'disponible'),
+        (5, 5, 'disponible')
     ]
     
     try:

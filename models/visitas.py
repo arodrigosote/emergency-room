@@ -96,6 +96,7 @@ def agregar_visita(id_trabajador):
         conn.commit()
 
         consulta = f"INSERT INTO visitas_emergencia (id_paciente, motivo, id_sala, id_cama, id_doctor, id_trabajador_social, fecha_salida) VALUES ({paciente_id}, '{motivo}', {id_sala}, {id_cama}, {id_doctor}, {id_trabajador}, '{fecha_salida}')"
+        log_database(f"# {consulta}")
         procesar_consulta(consulta)
         log_message("[Base de Datos] Visita de emergencia agregada a la base de datos.")
     except sqlite3.Error as e:
