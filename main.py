@@ -18,8 +18,9 @@ import time
 
 def verificar_conexiones_periodicamente():
     while True:
-        verificar_conexiones()
-        time.sleep(1)  # Verificar conexiones cada 60 segundos
+        conexiones_cerradas = verificar_conexiones()
+        print("Conexiones cerradas: ", conexiones_cerradas)
+        time.sleep(2)  # Verificar conexiones cada 60 segundos
 
 def main():
     server_thread = threading.Thread(target=start_server, daemon=True)
