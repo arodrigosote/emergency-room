@@ -205,13 +205,12 @@ def connect_to_node(node_ip):
             guardar_cambios_db_changestomake(queries)
             log_message(f"[Actualizar base de datos] Guardadas en changestomake correctamente.")
 
-        
-
 
     except Exception as e:
         log_message(f"[Error] No se pudo conectar con el nodo {node_ip}: {e}")
     finally:
         # Asegurarse de cerrar la conexión si no se almacenó correctamente
+        print(node_id)
         if node_id not in active_connections:
             client.close()
 
