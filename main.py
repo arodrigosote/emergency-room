@@ -75,6 +75,12 @@ def main():
     ejecutar_dbchanges()
     print("Cambios en base de datos ejecutados.")
 
+    print("---------------------------------------------------")
+    print("|                                                 |")
+    print("| Bienvenido al sistema de gestión de emergencias |")
+    print("|                                                 |")
+    print("---------------------------------------------------")
+
     try:
         while True:
             

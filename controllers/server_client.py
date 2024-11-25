@@ -26,7 +26,6 @@ def handle_client(client_socket, addr):
                 break
             elif mensaje_completo[:2] == "01":
                 nodos = get_network_nodes()
-                print('Server recibe solicitud nueva')
                 for node in nodos:
                     node_id = node.get("id")  
                     if node_id not in active_connections:
@@ -73,7 +72,6 @@ def handle_client(client_socket, addr):
                 continue
             elif mensaje_completo[:2] == "12":
                 try:
-                    print('[Recibiendo solicitud de cambios]')
 
                     # Crear la carpeta 'database' si no existe
                     os.makedirs("history", exist_ok=True)
