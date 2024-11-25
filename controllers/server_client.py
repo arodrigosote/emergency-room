@@ -6,7 +6,7 @@ from utils.log import log_message
 from models.master_node import actualizar_nodo_maestro
 from models.database import execute_query, obtener_cambios_db, guardar_cambios_db_changestomake
 from controllers.nodes import get_network_nodes, get_own_node
-from models.emergency_room import desactivar_sala
+# from models.emergency_room import desactivar_sala
 
 # Diccionario para mantener las conexiones activas
 active_connections = {}
@@ -284,7 +284,7 @@ def verificar_conexiones():
                 log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                 del active_connections[nodo_id]
 
-                desactivar_sala(nodo_ip)
+                # desactivar_sala(nodo_ip)
 
                 # redistribuir_carga(nodo_ip)
 
