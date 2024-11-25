@@ -12,9 +12,6 @@ from controllers.nodes import get_network_nodes, get_own_node
 active_connections = {}
 master_node = None
 
-# Lista global para almacenar los IDs de los nodos que envían el mensaje "15"
-nodos_confirmando_desconexion = []
-
 def handle_client(client_socket, addr):
     # Maneja la conexión con un cliente
     try:
@@ -34,6 +31,8 @@ def handle_client(client_socket, addr):
                         node_id = node.get("id")  
                         if node_id not in active_connections:
                             conn = connect_to_node(node)
+                            if conn:
+                                active_connections[node_id] = conn
 
                     client_socket.send("OK".encode())
                     continue
@@ -126,13 +125,6 @@ def handle_client(client_socket, addr):
                     response = "OK" if all(respuesta == "OK" for respuesta in respuestas) else "Error"
                     log_message(f"[Query] Ejecutada: Estatus: {response} - {query}")
                     nodo_emisor.send(response.encode())
-                    continue
-                elif mensaje_completo[:2] == "15":
-                    # Obtener el ID del nodo desde la dirección IP
-                    nodo_id = int(addr[0].split('.')[-1])
-                    # Agregar el ID del nodo a la lista global
-                    nodos_confirmando_desconexion.append(nodo_id)
-                    log_message(f"[Mensaje 15] Nodo {nodo_id} agregado a la lista global 'nodos'.")
                     continue
                 else:
                     log_message("[Error] No se encontró el código de instrucción")
