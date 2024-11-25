@@ -87,8 +87,6 @@ def main():
 
     try:
         while True:
-            
-            verificar_conexiones()
 
             mostrar_menu()
 
