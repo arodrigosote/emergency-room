@@ -62,12 +62,11 @@ def obtener_sala_y_cama():
                 SELECT salas_emergencia.id_sala 
                 FROM salas_emergencia
                 LEFT JOIN camas ON salas_emergencia.id_sala = camas.id_sala
-                WHERE salas_emergencia.estado = 'activada' AND camas.estado = 'disponible'
+                WHERE salas_emergencia.estado = ? AND camas.estado = ?
                 GROUP BY salas_emergencia.id_sala, salas_emergencia.capacidad_total
-                HAVING salas_emergencia.capacidad_total > 0
-                ORDER BY (CAST(COUNT(camas.id_cama) AS REAL) / salas_emergencia.capacidad_total) DESC
+                ORDER BY (CAST(COUNT(camas.id_cama) AS FLOAT) / salas_emergencia.capacidad_total) DESC
                 LIMIT 1;
-            """)
+            """, ('activada', 'disponible'))
             sala = cursor.fetchone()
 
             print("Sala encontrada:", sala)  # Debug
