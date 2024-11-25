@@ -40,7 +40,7 @@ def agregar_trabajador():
             INSERT INTO trabajadores_sociales (nombre) VALUES (?)
         """
         
-        cursor.execute(query, (nombre))
+        cursor.execute(query, (nombre,)) 
         conn.commit()
         mensaje = f"INSERT INTO trabajadores_sociales (nombre) VALUES ('{nombre}')"
         log_database(f"# INSERT INTO trabajadores_sociales (nombre) VALUES ('{nombre}')")
