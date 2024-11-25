@@ -128,7 +128,7 @@ def solicitar_cambios_db():
 
 def verificar_conexiones():
     """Verifica las conexiones activas y recalcula el nodo maestro si es necesario."""
-    print("Verificando conexiones...")
+    conexiones_cerradas = []
     try:
         nodos_red = get_network_nodes()
         nodos_activos = list(active_connections.keys())
@@ -139,6 +139,7 @@ def verificar_conexiones():
             if client_socket.fileno() == -1:  # Verifica que el socket siga activo
                 print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                 log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
+                conexiones_cerradas.append(nodo_id)
                 del active_connections[nodo_id]
                 elegir_nodo_maestro()
             else:
@@ -146,11 +147,14 @@ def verificar_conexiones():
                 if destino_ip not in [nodo['ip'] for nodo in nodos_red]:
                     log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                     print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
+                    conexiones_cerradas.append(nodo_id)
                     del active_connections[nodo_id]
                     elegir_nodo_maestro()
 
     except Exception as e:
         log_message(f"[Error] {str(e)}")
+    
+    return conexiones_cerradas
 
 # def enviar_consulta_sencilla(consulta):
 #     try:
@@ -263,7 +267,7 @@ def verificar_conexiones():
 #             log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
     
 #     # Verificar si todas las respuestas son "OK"
-#     if all(respuesta == "OK" for respuesta in respuestas):
+#     if all(respuesta == "OK" for respuesta en respuestas):
 #         log_message("[Consenso] Todos los nodos respondieron OK")
 #     else:
 #         log_message("[Sin consenso] No todos los nodos respondieron OK")
