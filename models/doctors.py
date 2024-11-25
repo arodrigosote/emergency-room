@@ -61,7 +61,7 @@ def actualizar_doctor():
     try:
         conn = sqlite3.connect('nodos.db')
         cursor = conn.cursor()
-        cursor.execute('SELECT COUNT(*) FROM doctores WHERE id = ?', (id_doctor,))
+        cursor.execute('SELECT COUNT(*) FROM doctores WHERE id_doctor = ?', (id_doctor,))
         if cursor.fetchone()[0] == 0:
             log_message(f"[Error] El ID {id_doctor} no existe en la base de datos.")
             print(f"El ID {id_doctor} no existe en la base de datos.")
@@ -83,13 +83,13 @@ def actualizar_doctor():
         query = """
             UPDATE doctores
             SET nombre = ?, especialidad = ?
-            WHERE id = ?
+            WHERE id_doctor = ?
         """
         
         cursor.execute(query, (nuevo_nombre, nueva_especialidad, id_doctor))
         conn.commit()
-        mensaje = f"UPDATE doctores SET nombre = '{nuevo_nombre}', especialidad = '{nueva_especialidad}' WHERE id = {id_doctor}"
-        log_database(f"# UPDATE doctores SET nombre = '{nuevo_nombre}', especialidad = '{nueva_especialidad}' WHERE id = {id_doctor}")
+        mensaje = f"UPDATE doctores SET nombre = '{nuevo_nombre}', especialidad = '{nueva_especialidad}' WHERE id_doctor = {id_doctor}"
+        log_database(f"# UPDATE doctores SET nombre = '{nuevo_nombre}', especialidad = '{nueva_especialidad}' WHERE id_doctor = {id_doctor}")
         procesar_consulta(mensaje)
         log_message(f"[Base de Datos] Doctor {nuevo_nombre} actualizado en la base de datos.")
         print(f"Doctor {nuevo_nombre} actualizado en la base de datos.")
