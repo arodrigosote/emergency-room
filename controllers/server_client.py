@@ -187,17 +187,17 @@ def connect_to_node(node):
     node_ip = node['ip']
     if node_id in [1, 2, 254]:  # Opcional: omitir nodos específicos
         return None
+    
+    # Verificar si el nodo ya está conectado
+    if node_id in active_connections:
+        log_message(f"[Info] Nodo {node_id} ya está conectado.")
+        client.close()  # Cerrar la conexión redundante
+        return
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         log_message(f"[Intentando conectar] Nodo IP: {node_ip}")
         client.connect((node_ip, 9999))
-
-        # Verificar si el nodo ya está conectado
-        if node_id in active_connections:
-            log_message(f"[Info] Nodo {node_id} ya está conectado.")
-            client.close()  # Cerrar la conexión redundante
-            return
 
         # Almacenar la conexión activa
         active_connections[node_id] = client
