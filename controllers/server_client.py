@@ -119,7 +119,8 @@ def handle_client(client_socket, addr):
                         log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
 
                 if codigo_instruccion == "13":
-                    nodo_emisor.send(respuestas.encode())
+                    respuestas_texto = "\n".join(respuestas)
+                    nodo_emisor.send(respuestas_texto.encode())
                 
                 # Verificar si todas las respuestas son "OK"
                 response = "OK" if all(respuesta == "OK" for respuesta in respuestas) else "Error"
