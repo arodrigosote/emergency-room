@@ -45,9 +45,11 @@ def agregar_trabajador():
         mensaje = f"INSERT INTO trabajadores_sociales (nombre) VALUES ('{nombre}')"
         log_database(f"# INSERT INTO trabajadores_sociales (nombre) VALUES ('{nombre}')")
         procesar_consulta(mensaje)
-        log_message("[Base de Datos] Doctor agregado a la base de datos.")
+        log_message("[Base de Datos] Trabajador agregado a la base de datos.")
+        print(f"Trabajador: {nombre} agregado a la base de datos.")
     except sqlite3.Error as e:
         log_message(f"[Error] No se pudo agregar el doctor: {e}")
+        print(f"Error al agregar el trabajador: {e}")
     finally:
         conn.close()
 
