@@ -70,7 +70,7 @@ def main():
 
     solicitar_cambios_db()
 
-    #ejecutar_dbchanges()
+    ejecutar_dbchanges()
 
     try:
         while True:
