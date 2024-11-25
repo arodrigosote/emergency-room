@@ -122,7 +122,7 @@ def ejecutar_dbchanges():
         linea = linea.strip()
         if linea:
             try:
-                fecha_hora, consulta = linea.split("#", 1)
+                fecha_hora, consulta = linea.split("- #", 1)
                 registros.append((datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M:%S"), consulta))
                 
             except ValueError:
