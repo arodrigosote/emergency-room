@@ -26,12 +26,12 @@ def handle_client(client_socket, addr):
                 break
             elif mensaje_completo[:2] == "01":
                 nodos = get_network_nodes()
-
+                print('server recibe solicitud nueva')
                 # Obtener cambios en base de datos y regresar como respuesta a nodo.
                 queries = obtener_cambios_db()
-                if queries:
-                    client_socket.send(queries.encode())
-                    log_message(f"[Master Actualizar base de datos] Enviando cambios a nodo {addr}")
+                print(queries)
+                client_socket.send(queries.encode())
+                log_message(f"[Master Actualizar base de datos] Enviando cambios a nodo {addr}")
 
                 continue
             elif mensaje_completo[:2] == "10":
