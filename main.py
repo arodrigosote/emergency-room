@@ -75,9 +75,13 @@ def main():
     ejecutar_dbchanges()
     print("Cambios en base de datos ejecutados.")
 
-    print("---------------------------------------------------")
+    print("\n\n---------------------------------------------------")
     print("|                                                 |")
     print("| Bienvenido al sistema de gestión de emergencias |")
+    print("|              Fabian Armenta                     |")
+    print("|              Tania Gomez                        |")
+    print("|              Nayeli Sierra                      |")
+    print("|              Rodrigo Sotelo                     |")
     print("|                                                 |")
     print("---------------------------------------------------")
 
