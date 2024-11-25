@@ -208,11 +208,11 @@ def connect_to_node(node_ip):
 
     except Exception as e:
         log_message(f"[Error] No se pudo conectar con el nodo {node_ip}: {e}")
-    finally:
-        # Asegurarse de cerrar la conexión si no se almacenó correctamente        
-        node_id = int(node_ip.split('.')[-1])   
-        if node_id not in active_connections:
-            client.close()
+    # finally:
+    #     # Asegurarse de cerrar la conexión si no se almacenó correctamente        
+    #     node_id = int(node_ip.split('.')[-1])   
+    #     if node_id not in active_connections:
+    #         client.close()
 
 
 def connect_clients_send_dbchanges(nodes):
