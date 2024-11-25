@@ -154,24 +154,24 @@ def verificar_conexiones():
                 elegir_nodo_maestro()
 
 
-                master_node_id = max(active_connections.keys())
-                master_node_ip = active_connections[master_node_id].getpeername()[0]
-                own_node = get_own_node()
+                # master_node_id = max(active_connections.keys())
+                # master_node_ip = active_connections[master_node_id].getpeername()[0]
+                # own_node = get_own_node()
                  
-                with sqlite3.connect('nodos.db') as conn:
-                    cursor = conn.cursor()
-                    nodo_propio = obtener_nodo_propio(cursor, own_node['ip'])
+                # with sqlite3.connect('nodos.db') as conn:
+                #     cursor = conn.cursor()
+                #     nodo_propio = obtener_nodo_propio(cursor, own_node['ip'])
 
-                    if not nodo_propio:
-                        log_message("[Nodo Propio] Nodo no encontrado en la base de datos.")
-                        return
+                #     if not nodo_propio:
+                #         log_message("[Nodo Propio] Nodo no encontrado en la base de datos.")
+                #         return
 
-                    if nodo_propio[2] == master_node_ip:
-                        nodos_confirmando_desconexion.append(nodo_propio[2])
-                    else:
-                        log_message("[Nodo desconectado] Nodo maestro remoto detectado.")
-                        master_socket = active_connections[master_node_id]
-                        enviar_mensaje(master_socket, "15", "")
+                #     if nodo_propio[2] == master_node_ip:
+                #         nodos_confirmando_desconexion.append(nodo_propio[2])
+                #     else:
+                #         log_message("[Nodo desconectado] Nodo maestro remoto detectado.")
+                #         master_socket = active_connections[master_node_id]
+                #         enviar_mensaje(master_socket, "15", "")
 
             else:
                 destino_ip = client_socket.getpeername()[0]
