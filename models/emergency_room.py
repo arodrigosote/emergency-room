@@ -57,24 +57,14 @@ def obtener_sala_y_cama():
         with get_db_connection() as conn:
             cursor = conn.cursor()
 
-            # Selecciona todas las salas activas
-            cursor.execute("SELECT * FROM salas_emergencia WHERE estado = 'activada'")
-            salas_activas = cursor.fetchall()
-            print("Salas activas:", salas_activas)  # Debug
-
-            # Selecciona todas las camas disponibles
-            cursor.execute("SELECT * FROM camas WHERE estado = 'disponible'")
-            camas_disponibles = cursor.fetchall()
-            print("Camas disponibles:", camas_disponibles)  # Debug
-
             # Selecciona la sala activa con la mayor proporción de camas disponibles
             cursor.execute("""
-                SELECT se.id_sala
-                FROM salas_emergencia se
-                JOIN camas c ON se.id_sala = c.id_sala
-                WHERE se.estado = ? AND c.estado = ?
-                GROUP BY se.id_sala
-                ORDER BY (CAST(SUM(c.estado = 'disponible') AS FLOAT) / se.capacidad_total) DESC
+                SELECT salas_emergencia.id_sala 
+                FROM salas_emergencia
+                LEFT JOIN camas ON salas_emergencia.id_sala = camas.id_sala
+                WHERE salas_emergencia.estado = ? AND camas.estado = ?
+                GROUP BY salas_emergencia.id_sala, salas_emergencia.capacidad_total
+                ORDER BY (CAST(COUNT(camas.id_cama) AS FLOAT) / salas_emergencia.capacidad_total) DESC
                 LIMIT 1;
             """, ('activada', 'disponible'))
             sala = cursor.fetchone()
