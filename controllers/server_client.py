@@ -167,14 +167,15 @@ def start_server():
     finally:
         server.close()
 
-def connect_to_node(node_ip):
+def connect_to_node(node):
     """
     Conecta con un nodo específico dado su dirección IP.
     """
     # Generar un ID basado en la IP
-    node_id = int(node_ip.split('.')[-1])
+    node_id = int(node['id'])
+    node_ip = node['ip']
     if node_id in [1, 2, 254]:  # Opcional: omitir nodos específicos
-        return
+        return None
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:

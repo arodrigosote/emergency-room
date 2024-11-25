@@ -58,7 +58,7 @@ def main():
     for node in nodes:
         node_id = node.get("id")  
         if node_id not in active_connections:
-            conn = connect_to_node(node)
+            conn = connect_to_node([node])
             if conn:
                 active_connections[node_id] = conn
     
