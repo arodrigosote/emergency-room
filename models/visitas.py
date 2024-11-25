@@ -62,6 +62,7 @@ def agregar_visita(id_trabajador):
 
             
             log_message("[Base de Datos] Nuevo paciente registrado en la base de datos.")
+            print(f"Paciente registrado con ID: {paciente_id}")
         else:
             log_message("[Base de Datos] Paciente ya registrado en la base de datos.")
 

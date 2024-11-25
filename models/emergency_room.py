@@ -59,12 +59,12 @@ def obtener_sala_y_cama():
             
             # Selecciona la sala activa con la mayor proporción de camas disponibles
             cursor.execute("""
-                SELECT salas_emergencia.id_sala 
-                FROM salas_emergencia
-                LEFT JOIN camas ON salas_emergencia.id_sala = camas.id_sala
-                WHERE salas_emergencia.estado = ? AND camas.estado = ?
-                GROUP BY salas_emergencia.id_sala, salas_emergencia.capacidad_total
-                ORDER BY (CAST(COUNT(camas.id_cama) AS FLOAT) / salas_emergencia.capacidad_total) DESC
+                SELECT se.id_sala
+                FROM salas_emergencia se
+                JOIN camas c ON se.id_sala = c.id_sala
+                WHERE se.estado = ? AND c.estado = ?
+                GROUP BY se.id_sala, se.capacidad_total
+                ORDER BY (CAST(SUM(c.estado = 'disponible') AS FLOAT) / se.capacidad_total) DESC
                 LIMIT 1;
             """, ('activada', 'disponible'))
             sala = cursor.fetchone()
