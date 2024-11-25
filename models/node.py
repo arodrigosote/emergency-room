@@ -4,7 +4,6 @@ from utils.log import log_message
 from controllers.server_client import get_client_socket_by_ip, active_connections, elegir_nodo_maestro
 from controllers.nodes import get_network_nodes, get_own_node
 from models.database import guardar_cambios_db_changestomake
-from models.emergency_room import desactivar_sala
 
 
 def obtener_nodo_propio(cursor, own_node_ip):
