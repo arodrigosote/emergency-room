@@ -1,7 +1,7 @@
 import sqlite3
 from datetime import datetime
 from utils.log import log_message, log_database
-from controllers.server_client import get_client_socket_by_ip, active_connections, elegir_nodo_maestro, nodos_confirmando_desconexion
+from controllers.server_client import get_client_socket_by_ip, active_connections, active_connections_lock, elegir_nodo_maestro, nodos_confirmando_desconexion
 from controllers.nodes import get_network_nodes, get_own_node
 from models.database import guardar_cambios_db_changestomake
 
@@ -131,16 +131,19 @@ def verificar_conexiones():
     # print("Verificando conexiones...")
     try:
         nodos_red = get_network_nodes()
-        nodos_activos = list(active_connections.keys())
+        with active_connections_lock:
+            nodos_activos = list(active_connections.keys())
 
         for nodo_id in nodos_activos:
             # print(f"Verificando nodo {nodo_id}...")
-            client_socket = active_connections[nodo_id]
+            with active_connections_lock:
+                client_socket = active_connections[nodo_id]
             if client_socket.fileno() == -1:  # Verifica que el socket siga activo
                 nodo_ip = client_socket.getpeername()[0]
                 print(f"\n[Conexión perdida] Nodo {nodo_id} desconectado.")
                 log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
-                del active_connections[nodo_id]
+                with active_connections_lock:
+                    del active_connections[nodo_id]
 
                 # Desactivar sala en la base de datos
                 try:
@@ -154,35 +157,15 @@ def verificar_conexiones():
                     log_message(f"[Error de base de datos] {str(db_error)}")
 
                 # redistribuir_carga(nodo_ip)
-                try:
-                    master = elegir_nodo_maestro()
-                    own_node = get_own_node()
-                    print(f"[Nodo Maestro] {master['ip']}")
-                    print(f"[Nodo Propio] {own_node['ip']}")
-                    with sqlite3.connect('nodos.db') as conn:
-                        cursor = conn.cursor()
-                        nodo_propio = obtener_nodo_propio(cursor, own_node['ip'])
-
-                        if not nodo_propio:
-                            log_message("[Nodo Propio] Nodo no encontrado en la base de datos.")
-                            return
-
-                        if nodo_propio[2] == master['ip']:
-                            print('maestro: guardando confirmacion')
-                            nodos_confirmando_desconexion.append(nodo_propio[2])
-                        else:
-                            log_message("[Nodo desconectado] Nodo maestro remoto detectado.")
-                            print('maestro remoto: enviando confirmacion')
-                            enviar_mensaje(master, "15", "")
-                except Exception as e:
-                    log_message(f"[Error al elegir nodo maestro o enviar mensaje] {str(e)}")
+               
 
             else:
                 destino_ip = client_socket.getpeername()[0]
                 if destino_ip not in [nodo['ip'] for nodo in nodos_red]:
                     log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                     print(f"\n[Conexión perdida] Nodo {nodo_id} desconectado.")
-                    del active_connections[nodo_id]
+                    with active_connections_lock:
+                        del active_connections[nodo_id]
                     elegir_nodo_maestro()
 
     except Exception as e:
