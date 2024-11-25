@@ -93,9 +93,9 @@ def main():
     print("---------------------------------------------------")
 
     try:
-        # Crear y empezar el hilo para verificar conexiones
-        # verificar_conexiones_thread = threading.Thread(target=verificar_conexiones_en_hilo, daemon=True)
-        # verificar_conexiones_thread.start()
+        #Crear y empezar el hilo para verificar conexiones
+        verificar_conexiones_thread = threading.Thread(target=verificar_conexiones_en_hilo, daemon=True)
+        verificar_conexiones_thread.start()
 
         while True:
             

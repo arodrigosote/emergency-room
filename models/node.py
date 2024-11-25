@@ -134,7 +134,6 @@ def verificar_conexiones():
         nodos_activos = list(active_connections.keys())
 
         for nodo_id in nodos_activos:
-            # print(f"Verificando nodo {nodo_id}...")
             client_socket = active_connections[nodo_id]
             if client_socket.fileno() == -1:  # Verifica que el socket siga activo
                 nodo_ip = client_socket.getpeername()[0]
