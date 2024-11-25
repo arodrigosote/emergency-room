@@ -4,8 +4,9 @@ import os
 from datetime import datetime
 from utils.log import log_message
 from models.master_node import actualizar_nodo_maestro
-from models.database import execute_query, obtener_cambios_db
+from models.database import execute_query, obtener_cambios_db, guardar_cambios_db_changestomake
 from controllers.nodes import get_network_nodes, get_own_node
+
 
 # Diccionario para mantener las conexiones activas
 active_connections = {}
@@ -193,20 +194,19 @@ def connect_to_node(node_ip):
         client.send(message.encode())
         log_message(f"[Conexión exitosa] Nodo {node_id} conectado. Activas: {list(active_connections.keys())}")
         
+        # Actualizar el nodo maestro
+        elegir_nodo_maestro()
         
         log_message(f"[Actualizar base de datos] Esperando respuesta de nodo {node_id} ...")
         queries = client.recv(1024).decode()
         if queries:
             log_message(f"[Actualizar base de datos] Recibido de nodo {node_id}: {queries}")
             
-            
-            # Procesar las consultas recibidas
-            execute_query(queries)
-            log_message(f"[Actualizar base de datos] Consultas procesadas correctamente.")
+            guardar_cambios_db_changestomake(queries)
+            log_message(f"[Actualizar base de datos] Guardadas en changestomake correctamente.")
 
         
-        # Actualizar el nodo maestro
-        elegir_nodo_maestro()
+
 
     except Exception as e:
         log_message(f"[Error] No se pudo conectar con el nodo {node_ip}: {e}")

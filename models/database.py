@@ -55,9 +55,34 @@ def obtener_cambios_db():
         consultas.sort(key=lambda x: datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S"))
 
         # Convertir a una cadena para enviar
-        consultas_ordenadas = "\n".join([f"{fecha} - # {consulta}" for fecha, consulta in consultas])
+        consultas_ordenadas = "\n".join([f"{fecha} # {consulta}" for fecha, consulta in consultas])
+        print(consultas_ordenadas)
         return consultas_ordenadas
 
     except Exception as e:
         log_message(f"[Error] No se pudo leer o procesar 'db_changes.txt': {e}")
         return ""
+
+
+def guardar_cambios_db_changestomake(queries):
+    """
+    Guarda las consultas en el archivo 'changestomake.txt' dentro de la carpeta 'database'.
+    Si el archivo no existe, lo crea.
+
+    Args:
+        queries (str): Las consultas a guardar.
+    """
+    archivo_path = os.path.join("database", "changestomake.txt")
+
+    try:
+        # Crear la carpeta 'database' si no existe
+        os.makedirs(os.path.dirname(archivo_path), exist_ok=True)
+
+        # Abrir el archivo en modo append para no borrar el contenido anterior
+        with open(archivo_path, "a") as archivo:
+            archivo.write(queries + "\n")
+        
+        log_message(f"Consultas guardadas en 'changestomake.txt': {queries}")
+    except Exception as e:
+        log_message(f"[Error] No se pudo guardar en 'changestomake.txt': {e}")
+
