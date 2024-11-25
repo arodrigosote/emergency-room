@@ -23,8 +23,8 @@ def verificar_conexiones_en_hilo():
         time.sleep(1)  # Ajusta el intervalo a 1 segundo
 
 def main():
-    server_thread = threading.Thread(target=start_server, daemon=True)
-    server_thread.start()
+    # server_thread = threading.Thread(target=start_server, daemon=True)
+    # server_thread.start()
 
     init_db()
 
