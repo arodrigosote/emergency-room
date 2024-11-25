@@ -30,8 +30,14 @@ def handle_client(client_socket, addr):
                 # Obtener cambios en base de datos y regresar como respuesta a nodo.
                 queries = obtener_cambios_db()
                 print(queries)
-                client_socket.send(queries.encode())
-                log_message(f"[Master Actualizar base de datos] Enviando cambios a nodo {addr}")
+                if queries:
+                    client_socket.send(queries.encode())
+                    log_message(f"[Master Actualizar base de datos] Enviando cambios a nodo {addr}")
+                    print('server envia cambios a nodo')
+                else:
+                    client_socket.send("".encode())
+                    log_message(f"[Master Actualizar base de datos] No hay cambios en la base de datos.")
+                    print('server no hay cambios en la base de datos')
 
                 continue
             elif mensaje_completo[:2] == "10":
