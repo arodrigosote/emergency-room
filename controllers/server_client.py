@@ -26,18 +26,17 @@ def handle_client(client_socket, addr):
                 break
             elif mensaje_completo[:2] == "01":
                 nodos = get_network_nodes()
-                print('server recibe solicitud nueva')
+                print('Server recibe solicitud nueva')
+                for node in nodos:
+                    node_id = node.get("id")  
+                    if node_id not in active_connections:
+                        conn = connect_to_node(node)
+                        if conn:
+                            active_connections[node_id] = conn
+
+                client_socket.send("OK".encode())
                 # Obtener cambios en base de datos y regresar como respuesta a nodo.
-                queries = obtener_cambios_db()
-                print(queries)
-                if queries:
-                    client_socket.send(queries.encode())
-                    log_message(f"[Master Actualizar base de datos] Enviando cambios a nodo {addr}")
-                    print('server envia cambios a nodo')
-                else:
-                    client_socket.send("".encode())
-                    log_message(f"[Master Actualizar base de datos] No hay cambios en la base de datos.")
-                    print('server no hay cambios en la base de datos')
+
 
                 continue
             elif mensaje_completo[:2] == "10":
@@ -211,15 +210,8 @@ def connect_to_node(node):
         log_message(f"[Actualizar base de datos] Esperando respuesta de nodo {node_id} ...")
         data = client.recv(1024).decode()
 
-        # Asegurarse de que 'data' es una cadena
-        if isinstance(data, str) and data.strip():
-            log_message(f"[Actualizar base de datos] Recibido de nodo {node_id}: {data}")
-
-            # Procesar y guardar los cambios recibidos
-            guardar_cambios_db_changestomake(data)
-            log_message(f"[Actualizar base de datos] Guardadas en changestomake correctamente.")
-        else:
-            log_message(f"[Error] Respuesta del nodo {node_id} no es válida: {data}")
+        if data == "OK":
+            log_message(f"[Respuesta recibida] De nodo {node_id}: {data}")
 
     except Exception as e:
         log_message(f"[Error] No se pudo conectar con el nodo {node_ip}: {e}")
