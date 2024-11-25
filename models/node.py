@@ -47,7 +47,9 @@ def enviar_mensajes_a_todos(codigo, mensaje, incluir_propio=False):
             log_message(f"[Error] No se pudo enviar mensaje al nodo {destino_id}: {str(e)}")
 
     if codigo == "12":
-        return respuestas
+        respuestas_texto = "\n".join(respuestas)
+        return respuestas_texto
+        
 
     if all(res == "OK" for res in respuestas):
         log_message("[Consenso] Todos los nodos respondieron OK.")
