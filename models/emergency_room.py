@@ -56,6 +56,8 @@ def obtener_sala_y_cama():
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
+
+
             
             # Selecciona la sala activa con la mayor proporción de camas disponibles
             cursor.execute("""
@@ -63,7 +65,7 @@ def obtener_sala_y_cama():
                 FROM salas_emergencia se
                 JOIN camas c ON se.id_sala = c.id_sala
                 WHERE se.estado = ? AND c.estado = ?
-                GROUP BY se.id_sala, se.capacidad_total
+                GROUP BY se.id_sala
                 ORDER BY (CAST(SUM(c.estado = 'disponible') AS FLOAT) / se.capacidad_total) DESC
                 LIMIT 1;
             """, ('activada', 'disponible'))

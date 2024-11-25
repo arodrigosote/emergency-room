@@ -6,7 +6,7 @@ from utils.log import log_message
 from controllers.server_client import start_server, connect_to_node, mostrar_conexiones, active_connections, elegir_nodo_maestro
 from controllers.messages import enviar_mensaje_a_nodo, enviar_mensaje_a_todos
 from controllers.database import init_db, agregar_salas_emergencia, ejecutar_dbchanges
-from models.emergency_room import activar_sala
+from models.emergency_room import activar_sala, obtener_sala_y_cama
 from models.camas import agregar_camas
 from models.trabajadores import listar_trabajadores_sociales, agregar_trabajadores_sociales
 from models.doctors import agregar_doctores, listar_doctores_ocupados
@@ -122,6 +122,9 @@ def main():
                 realizar_accion_admin(opcion_admin)
             elif opcion == '6':
                 print("Saliendo...")
+            elif opcion == '7':
+                sala, cama = obtener_sala_y_cama()
+                print(f"Sala: {sala}, Cama: {cama}")
                 break
             else:
                 print("Opción no válida, intente de nuevo.")
