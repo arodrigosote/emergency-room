@@ -69,7 +69,7 @@ def desactivar_sala(ip):
 
             mensaje = f"UPDATE salas_emergencia SET estado = 'desactivada' WHERE ip = '{ip}'"
 
-            procesar_consulta(mensaje)
+            # procesar_consulta(mensaje)
     except sqlite3.Error as e:
         log_message(f"[Error] No se pudo desactivar la sala: {e}")
 

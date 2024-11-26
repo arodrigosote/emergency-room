@@ -20,11 +20,12 @@ def verificar_conexiones():
                     del active_connections[nodo_id]
                     unactive_connections.append(nodo_id)
                     
-                    # desactivar_sala(nodo_ip) #
-
+            
                     # redistribuir_carga(nodo_ip)
 
                     elegir_nodo_maestro()
+
+                    desactivar_sala(nodo_ip)
                 else:
                     destino_ip = client_socket.getpeername()[0]
                     if destino_ip not in [nodo['ip'] for nodo in nodos_red]:
