@@ -155,9 +155,8 @@ def handle_client(client_socket, addr):
 def start_server():
     # Inicia el servidor y maneja solicitudes de clientes
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.settimeout(3600)
-
     try:
         server.bind(("0.0.0.0", 9999))
         server.listen(15)
@@ -208,7 +207,7 @@ def connect_to_node(node):
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)  # Activa TCP Keep-Alive
-    client.settimeout(3600)  # Tiempo de espera en segundos
+    client.settimeout(3600)
     try:
         log_message(f"[Intentando conectar] Nodo IP: {node_ip}")
         client.connect((node_ip, 9999))
