@@ -120,7 +120,7 @@ def cerrar_visita_emergencia(id_doctor):
         print("\nVisita de emergencia activa:")
         print(f"ID Visita: {visita}")
         
-        id_visita = visita[0]
+        id_visita = visita[0][0]
 
         # Generar timestamp para la fecha de salida
         fecha_salida = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -131,7 +131,7 @@ def cerrar_visita_emergencia(id_doctor):
 
         mensaje = f"UPDATE visitas_emergencia SET fecha_salida = '{fecha_salida}', estado = 'cerrada' WHERE id_visita = {id_visita}"
         procesar_consulta(mensaje)
-
+        log_database(f"# {mensaje}")
         log_message("[Base de Datos] Visita de emergencia cerrada.")
     except sqlite3.Error as e:
         log_message(f"[Error] No se pudo cerrar la visita de emergencia: {e}")

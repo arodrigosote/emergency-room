@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS visitas_emergencia (
     id_sala INTEGER NOT NULL,
     id_cama INTEGER NOT NULL,
     id_trabajador_social INTEGER NOT NULL,
+    fecha_entrada TIMESTAMP , 
     fecha_salida TIMESTAMP,
     estado VARCHAR(20) DEFAULT 'activa', -- activa/cerrada
     FOREIGN KEY (id_paciente) REFERENCES pacientes(id_paciente) ON DELETE SET NULL,
@@ -161,5 +162,36 @@ BEGIN
     INSERT INTO log_cambios (tabla_afectada, id_registro, tipo_operacion, nodo_origen)
     VALUES ('visitas_emergencia', NEW.id_visita, 'UPDATE', NEW.id_sala);
 END;
+
+-- Trigger para actualizar capacidad disponible de sala cuando una visita se cierra
+CREATE TRIGGER IF NOT EXISTS actualizar_capacidad_sala_cierre
+AFTER UPDATE ON visitas_emergencia
+WHEN OLD.estado = 'activa' AND NEW.estado = 'cerrada'
+BEGIN
+    UPDATE salas_emergencia 
+    SET capacidad_disponible = capacidad_disponible + 1
+    WHERE id_sala = NEW.id_sala;
+END;
+
+-- Trigger para cambiar el estado de la cama a disponible cuando una visita se cierra
+CREATE TRIGGER IF NOT EXISTS actualizar_estado_cama_cierre
+AFTER UPDATE ON visitas_emergencia
+WHEN OLD.estado = 'activa' AND NEW.estado = 'cerrada'
+BEGIN
+    UPDATE camas 
+    SET estado = 'disponible'
+    WHERE id_cama = NEW.id_cama;
+END;
+
+-- Trigger para cambiar el estado del doctor a disponible cuando una visita se cierra
+CREATE TRIGGER IF NOT EXISTS actualizar_estado_doctor_cierre
+AFTER UPDATE ON visitas_emergencia
+WHEN OLD.estado = 'activa' AND NEW.estado = 'cerrada'
+BEGIN
+    UPDATE doctores 
+    SET estado = 'disponible'
+    WHERE id_doctor = NEW.id_doctor;
+END;
+
 COMMIT;
 PRAGMA foreign_keys = ON;
