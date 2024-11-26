@@ -23,9 +23,8 @@ def main():
     # Hilo para verificar conexiones en un bucle infinito
     def run_verificar_conexiones():
         while True:
-            conexiones_cerradas = verificar_conexiones()
-            print("Conexiones cerradas: ", conexiones_cerradas)
-            time.sleep(1)  # Esperar 5 segundos antes de la siguiente verificación
+            verificar_conexiones()
+            time.sleep(1)  
 
     verificar_conexiones_thread = threading.Thread(target=run_verificar_conexiones, daemon=True)
     verificar_conexiones_thread.start()

@@ -253,21 +253,11 @@ def get_client_socket_by_ip(ip):
     id = int(ip.split('.')[-1])
     return active_connections.get(id, None)
 
-def ping_node(client):
-    try:
-        client.send("ping".encode())
-        response = client.recv(1024).decode()
-        return response == "pong"
-    except Exception as e:
-        log_message(f"[Error] No se pudo hacer ping al nodo: {e}")
-        return False
-
 def verificar_conexiones():
     # Verifica y elimina conexiones inactivas
     conexiones_inactivas = []
     for node_id, client in active_connections.items():
-        log_message(f"[Verificando] Nodo {node_id} ...")
-        if not ping_node(client):  # Usar ping_node en lugar de fileno
+        if client.fileno() == -1:  # Verifica si el socket está cerrado
             conexiones_inactivas.append(node_id)
             client.close()
             log_message(f"[Conexión inactiva] Nodo {node_id} eliminado.")
@@ -276,4 +266,3 @@ def verificar_conexiones():
     for node_id in conexiones_inactivas:
         del active_connections[node_id]
     
-    return conexiones_inactivas
