@@ -56,15 +56,10 @@ def mostrar_menu_doctor():
     print("5. Volver")
 
 def realizar_accion_doctor(id_doctor, opcion):
-    def accion():
-        if opcion == '1':
-            cerrar_visita_emergencia(id_doctor)
-        else:
-            print("Opción no válida, intente de nuevo.")
-    
-    hilo = threading.Thread(target=accion)
-    hilo.start()
-    hilo.join()
+    if opcion == '1':
+        cerrar_visita_emergencia(id_doctor)
+    else:
+        print("Opción no válida, intente de nuevo.")
 
 
 
@@ -83,34 +78,29 @@ def mostrar_menu_utilidades():
     print("6. Volver")
 
 def realizar_accion_utilidades(opcion):
-    def accion():
-        if opcion == '1':
-            print("\nListando nodos activos con sala de emergencia")
-            for node_id, client in active_connections.items():
-                print(f"ID del nodo: {node_id}, IP: {client.getpeername()[0]}")
-            log_message("[Utilidades] Listando nodos activos con sala de emergencia.")
-        elif opcion == '2':
-            print("\nMostrando Log de cambios en la base de datos")
-            mostrar_log_base_datos()  # Llamar a la función para mostrar log de base de datos
-            log_message("[Utilidades] Mostrando Log de cambios en la base de datos.")
-        elif opcion == '3':
-            print("\nMostrando Log de servidor")
-            mostrar_log_servidor()  # Llamar a la función para mostrar log de servidor
-            log_message("[Utilidades] Mostrando Log de servidor.")
-        elif opcion == '4':
-            print("\nMostrando Nodo Maestro")
-            obtener_nodo_maestro() # Llamar a la función para mostrar nodo maestro
-            log_message("[Utilidades] Mostrando Nodo Maestro.")
-        elif opcion == '5':
-            print("\nMostrando changetomake")
-            mostrar_log_changestomake()  # Llamar a la función para mostrar log de base de datos
-            log_message("[Utilidades] Mostrando Log de cambios en la base de datos.")
-        else:
-            print("Opción no válida, intente de nuevo.")
-    
-    hilo = threading.Thread(target=accion)
-    hilo.start()
-    hilo.join()
+    if opcion == '1':
+        print("\nListando nodos activos con sala de emergencia")
+        for node_id, client in active_connections.items():
+            print(f"ID del nodo: {node_id}, IP: {client.getpeername()[0]}")
+        log_message("[Utilidades] Listando nodos activos con sala de emergencia.")
+    elif opcion == '2':
+        print("\nMostrando Log de cambios en la base de datos")
+        mostrar_log_base_datos()  # Llamar a la función para mostrar log de base de datos
+        log_message("[Utilidades] Mostrando Log de cambios en la base de datos.")
+    elif opcion == '3':
+        print("\nMostrando Log de servidor")
+        mostrar_log_servidor()  # Llamar a la función para mostrar log de servidor
+        log_message("[Utilidades] Mostrando Log de servidor.")
+    elif opcion == '4':
+        print("\nMostrando Nodo Maestro")
+        obtener_nodo_maestro() # Llamar a la función para mostrar nodo maestro
+        log_message("[Utilidades] Mostrando Nodo Maestro.")
+    elif opcion == '5':
+        print("\nMostrando changetomake")
+        mostrar_log_changestomake()  # Llamar a la función para mostrar log de base de datos
+        log_message("[Utilidades] Mostrando Log de cambios en la base de datos.")
+    else:
+        print("Opción no válida, intente de nuevo.")
 
 
 
@@ -128,39 +118,34 @@ def mostrar_menu_tablas():
     print("8. Volver")
 
 def realizar_accion_tablas(opcion):
-    def accion():
-        if opcion == '1':
-            print("\nMostrando tabla Salas de Emergencia")
-            listar_salas_emergencia()
-            log_message("[Tablas] Mostrando tabla de Salas de Emergencias.")
-        elif opcion == '2':
-            print("\nMostrando tabla Doctores")
-            listar_doctores()
-            log_message("[Tablas] Mostrando tabla de Doctores.")
-        elif opcion == '3':
-            print("\nMostrando tabla Camas")
-            listar_camas()
-            log_message("[Tablas] Mostrando tabla de Camas.")
-        elif opcion == '4':
-            print("\nMostrando tabla Pacientes")
-            listar_pacientes()
-            log_message("[Tablas] Mostrando tabla de Pacientes.")
-        elif opcion == '5':
-            print("\nMostrando tabla Visitas")
-            listar_visitas()
-            log_message("[Tablas] Mostrando tabla de Visitas.")
-        elif opcion == '7':
-            print("\nMostrando tabla Trabajadores")
-            listar_trabajadores_sociales()
-            log_message("[Tablas] Mostrando tabla de Trabajadores.")
-        elif opcion == '8':
-            print("Regresando al menú principal...")
-        else:
-            print("Opción no válida, intente de nuevo.")
-    
-    hilo = threading.Thread(target=accion)
-    hilo.start()
-    hilo.join()
+    if opcion == '1':
+        print("\nMostrando tabla Salas de Emergencia")
+        listar_salas_emergencia()
+        log_message("[Tablas] Mostrando tabla de Salas de Emergencias.")
+    elif opcion == '2':
+        print("\nMostrando tabla Doctores")
+        listar_doctores()
+        log_message("[Tablas] Mostrando tabla de Doctores.")
+    elif opcion == '3':
+        print("\nMostrando tabla Camas")
+        listar_camas()
+        log_message("[Tablas] Mostrando tabla de Camas.")
+    elif opcion == '4':
+        print("\nMostrando tabla Pacientes")
+        listar_pacientes()
+        log_message("[Tablas] Mostrando tabla de Pacientes.")
+    elif opcion == '5':
+        print("\nMostrando tabla Visitas")
+        listar_visitas()
+        log_message("[Tablas] Mostrando tabla de Visitas.")
+    elif opcion == '7':
+        print("\nMostrando tabla Trabajadores")
+        listar_trabajadores_sociales()
+        log_message("[Tablas] Mostrando tabla de Trabajadores.")
+    elif opcion == '8':
+        print("Regresando al menú principal...")
+    else:
+        print("Opción no válida, intente de nuevo.")
 
 def mostrar_menu_admin():
     print("\nMenú Admin:")
@@ -173,30 +158,25 @@ def mostrar_menu_admin():
     print("7. Volver")
 
 def realizar_accion_admin(opcion):
-    def accion():
-        if opcion == '1':
-            print("\nRegistrar doctor")
-            agregar_doctor()
-        elif opcion == '2':
-            print("\nRegistrar paciente")
-            agregar_paciente()
-        elif opcion == '3':
-            print("\nRegistrar trabajador social")
-            agregar_trabajador()
-        elif opcion == '4':
-            print("\nActualizar doctor")
-            actualizar_doctor()
-        elif opcion == '5':
-            print("\nActualizar paciente")
-            actualizar_paciente()
-        elif opcion == '6':
-            print("\nActualizar trabajador social")
-            actualizar_trabajador()
-        elif opcion == '7':
-            print("Regresando al menú principal...")
-        else:
-            print("Opción no válida, intente de nuevo.")
-    
-    hilo = threading.Thread(target=accion)
-    hilo.start()
-    hilo.join()
+    if opcion == '1':
+        print("\nRegistrar doctor")
+        agregar_doctor()
+    elif opcion == '2':
+        print("\nRegistrar paciente")
+        agregar_paciente()
+    elif opcion == '3':
+        print("\nRegistrar trabajador social")
+        agregar_trabajador()
+    elif opcion == '4':
+        print("\nActualizar doctor")
+        actualizar_doctor()
+    elif opcion == '5':
+        print("\nActualizar paciente")
+        actualizar_paciente()
+    elif opcion == '6':
+        print("\nActualizar trabajador social")
+        actualizar_trabajador()
+    elif opcion == '7':
+        print("Regresando al menú principal...")
+    else:
+        print("Opción no válida, intente de nuevo.")

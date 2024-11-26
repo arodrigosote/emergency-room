@@ -58,10 +58,13 @@ def handle_client(client_socket, addr):
                 respuestas = []
                 nodo_emisor = client_socket
                 # log_message('[Nodo Maestro] Recibe mensaje')
+                print('\n')
+                print(client.getpeername()[0])
+                print(nodo_emisor.getpeername()[0])
                 for destino, client in active_connections.items():
                     try:
                         if client.fileno() != -1:
-                            if client != nodo_emisor:
+                            if client.getpeername()[0] != nodo_emisor.getpeername()[0]:
                                 client.send(mensaje_nuevo.encode())
                                 log_message(f"[Master Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
 
