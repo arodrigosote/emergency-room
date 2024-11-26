@@ -125,4 +125,28 @@ def solicitar_cambios_db():
 
 def distribuir_carga():
     """Distribuye la carga de trabajo entre los nodos."""
+    """Procesa consultas simples o complejas dependiendo del tipo."""
+    try:
+        master_node_id = max(active_connections.keys())
+        master_node_ip = active_connections[master_node_id].getpeername()[0]
+        own_node = get_own_node()
+
+        with sqlite3.connect('nodos.db') as conn:
+            cursor = conn.cursor()
+            nodo_propio = obtener_nodo_propio(cursor, own_node['ip'])
+
+            if not nodo_propio:
+                log_message("[Nodo Propio] Nodo no encontrado en la base de datos.")
+                return
+
+            if nodo_propio[2] == master_node_ip:
+                log_message("[Nodo] Este nodo es el maestro.")
+                enviar_mensajes_a_todos("14", consulta, incluir_propio=False)
+            else:
+                log_message("[Nodo] Nodo maestro remoto detectado.")
+                master_socket = active_connections[master_node_id]
+                enviar_mensaje(master_socket, "15", consulta)
+
+    except Exception as e:
+        log_message(f"[Error] {str(e)}")
     pass
