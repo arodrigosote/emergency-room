@@ -33,26 +33,18 @@ def mostrar_menu_trabajador_social():
     print("5. Volver")
 
 def realizar_accion_trabajador_social(id_trabajador,opcion):
-    def accion():
-        if opcion == '1':
-            print("\nRegistrar visita emergencia")
-            agregar_visita(id_trabajador)
-        elif opcion == '2':
-            print("\nRegistrar doctor")
-            agregar_doctor()
-        elif opcion == '3':
-            print("\nRegistrar paciente")
-        elif opcion == '4':
-            print("\nRegistrar trabajador social")
-            agregar_trabajador()
-        elif opcion == '5':
-            print("Regresando al menú principal...")
-        else:
-            print("Opción no válida, intente de nuevo.")
     
-    hilo = threading.Thread(target=accion)
-    hilo.start()
-    hilo.join()
+    if opcion == '1':
+        print("\nRegistrar visita emergencia")
+        agregar_visita(id_trabajador)
+    elif opcion == '5':
+        print("Regresando al menú principal...")
+    else:
+        print("Opción no válida, intente de nuevo.")   
+    
+    # hilo = threading.Thread(target=accion)
+    # hilo.start()
+    # hilo.join()
 
 
 
