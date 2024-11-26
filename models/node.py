@@ -122,3 +122,7 @@ def solicitar_cambios_db():
     except Exception as e:
         log_message(f"[Error] {str(e)}")
 
+
+def distribuir_carga():
+    """Distribuye la carga de trabajo entre los nodos."""
+    pass
