@@ -255,9 +255,12 @@ def verificar_conexiones():
     # Verifica y elimina conexiones inactivas
     conexiones_inactivas = []
     for node_id, client in active_connections.items():
+        print(f"[Verificando] Nodo {node_id} ...")
         if client.fileno() == -1:  # Verifica si el socket está cerrado
             conexiones_inactivas.append(node_id)
-    
+            client.close()
+            print(f"[Conexión inactiva] Nodo {node_id} eliminado.")
+        print(f"[Conexión activa] Nodo {node_id} ...")
     for node_id in conexiones_inactivas:
         log_message(f"[Conexión inactiva] Nodo {node_id} eliminado.")
         del active_connections[node_id]
