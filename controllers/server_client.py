@@ -60,7 +60,7 @@ def handle_client(client_socket, addr):
                 # log_message('[Nodo Maestro] Recibe mensaje')
                 for destino, client in active_connections.items():
                     try:
-                        if client.fileno() != -1:  # Verifica que el socket siga activo
+                        if client.fileno() != -1 and client != nodo_emisor:  # Verifica que el socket siga activo y no es el nodo emisor
                             client.send(mensaje_nuevo.encode())
                             log_message(f"[Master Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
 
@@ -265,4 +265,4 @@ def get_client_socket_by_ip(ip):
 
 
 
-    
+
