@@ -253,7 +253,7 @@ def get_client_socket_by_ip(ip):
     id = int(ip.split('.')[-1])
     return active_connections.get(id, None)
 
-def verificar_conexiones2():
+def verificar_conexiones():
     """
     Verifica las conexiones activas enviando un mensaje de prueba.
     Si la conexión está inactiva, elimina el nodo de la lista de conexiones activas.
@@ -277,7 +277,7 @@ def verificar_conexiones2():
         del active_connections[node_id]
         log_message(f"[Conexión eliminada] Nodo {node_id} eliminado del diccionario de conexiones activas.")
 
-def verificar_conexiones():
+def verificar_conexiones2():
     """Verifica las conexiones activas y recalcula el nodo maestro si es necesario."""
     print("Verificando conexiones...")
     try:
