@@ -63,6 +63,9 @@ def handle_client(client_socket, addr):
                             respuestas.append(respuesta)
                         else:
                             log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
+                    except BrokenPipeError:
+                        log_message(f"[Error] Broken pipe al enviar mensaje a nodo {destino}.")
+                        conexiones_inactivas.append(destino)
                     except Exception as e:
                         log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
 
@@ -117,6 +120,9 @@ def handle_client(client_socket, addr):
                             respuestas.append(respuesta)
                         else:
                             log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
+                    except BrokenPipeError:
+                        log_message(f"[Error] Broken pipe al enviar mensaje a nodo {destino}.")
+                        conexiones_inactivas.append(destino)
                     except Exception as e:
                         log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
 
@@ -267,6 +273,10 @@ def verificar_conexiones():
         try:
             # Intentamos enviar un mensaje de prueba
             client.send(b"ping")
+        except BrokenPipeError:
+            log_message(f"[Error] Broken pipe al enviar ping a nodo {node_id}.")
+            conexiones_inactivas.append(node_id)
+            client.close()  # Cerramos el socket inactivo
         except (socket.error, OSError) as e:
             # Si hay un error, la conexión está inactiva
             log_message(f"[Conexión perdida] Nodo {node_id}. Error: {e}")
