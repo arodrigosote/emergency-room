@@ -14,7 +14,7 @@ def listar_visitas():
     conn.close()
 
     # Mostrar las visitas en una tabla por consola sin utilizar tabulate
-    headers = ["ID Visita", "Folio", "Motivo", "ID Paciente", "ID Doctor", "ID Sala", "ID Cama", "ID Trabajador Social", "Fecha Salida", "Estado"]
+    headers = ["ID Visita", "Folio", "Motivo", "ID Paciente", "ID Doctor", "ID Sala", "ID Cama", "ID Trabajador Social", "Fecha Entrada", "Estado"]
     print(f"{headers[0]:<10} {headers[1]:<15} {headers[2]:<30} {headers[3]:<12} {headers[4]:<10} {headers[5]:<8} {headers[6]:<8} {headers[7]:<20} {headers[8]:<20} {headers[9]:<10}")
     print("-" * 160)
     for visita in visitas:
