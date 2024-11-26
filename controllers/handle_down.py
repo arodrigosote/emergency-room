@@ -20,7 +20,7 @@ def verificar_conexiones():
                 del active_connections[nodo_id]
                 unactive_connections.append(nodo_id)
                 
-                # desactivar_sala(nodo_ip) 
+                # desactivar_sala(nodo_ip) #
 
                 # redistribuir_carga(nodo_ip)
 
@@ -35,5 +35,4 @@ def verificar_conexiones():
 
     except Exception as e:
         log_message(f"[Error] {str(e)}")
-
 
