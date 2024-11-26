@@ -93,11 +93,11 @@ def main():
     print("---------------------------------------------------")
 
     try:
-        # # Crear y empezar el hilo para verificar conexiones
-        # verificar_conexiones_thread = threading.Thread(target=verificar_conexiones_en_hilo, daemon=True)
-        # verificar_conexiones_thread.start()
+        # Crear y empezar el hilo para verificar conexiones
+        verificar_conexiones_thread = threading.Thread(target=verificar_conexiones_en_hilo, daemon=True)
+        verificar_conexiones_thread.start()
         while True:
-            verificar_conexiones()
+            # verificar_conexiones()
             mostrar_menu()
 
             try:
@@ -107,31 +107,31 @@ def main():
                 break
 
             if opcion == '1':
-                verificar_conexiones()
+                # verificar_conexiones()
                 listar_trabajadores_sociales()
                 id_trabajador = input("¿Quién realizará acciones? (Ingrese el ID del trabajador social): ")
                 mostrar_menu_trabajador_social()
                 opcion_ts = input("Seleccione una opción: ")
                 realizar_accion_trabajador_social(id_trabajador,opcion_ts)
             elif opcion == '2':
-                verificar_conexiones()
+                # verificar_conexiones()
                 listar_doctores_ocupados()
                 id_doctor = input("¿Quíen realiza la opción? (Ingrese el ID del doctor): ")
                 mostrar_menu_doctor()
                 opcion_doc = input("Seleccione una opción: ")
                 realizar_accion_doctor(id_doctor, opcion_doc)
             elif opcion == '3':
-                verificar_conexiones()
+                # verificar_conexiones()
                 mostrar_menu_utilidades()
                 opcion_util = input("Seleccione una opción: ")
                 realizar_accion_utilidades(opcion_util)
             elif opcion == '4':
-                verificar_conexiones()
+                # verificar_conexiones()
                 mostrar_menu_tablas()
                 opcion_tablas = input("Seleccione una opción: ")
                 realizar_accion_tablas(opcion_tablas)
             elif opcion == '5':
-                verificar_conexiones()
+                # verificar_conexiones()
                 mostrar_menu_admin()
                 opcion_admin = input("Seleccione una opción: ")
                 realizar_accion_admin(opcion_admin)
