@@ -27,9 +27,6 @@ def mostrar_menu():
 def mostrar_menu_trabajador_social():
     print("\nMenú Trabajador Social:")
     print("1. Registrar visita emergencia")
-    print("2. Registrar doctor")
-    print("3. Registrar paciente")
-    print("4. Registrar trabajador social")
     print("5. Volver")
 
 def realizar_accion_trabajador_social(id_trabajador,opcion):
