@@ -9,7 +9,7 @@ def listar_visitas():
     # Lista todas las visitas en la base de datos y las muestra en una tabla por consola
     conn = sqlite3.connect('nodos.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT id_visita, folio, motivo, id_paciente, id_doctor, id_sala, id_cama, id_trabajador_social, fecha_salida, estado FROM visitas_emergencia')
+    cursor.execute('SELECT id_visita, folio, motivo, id_paciente, id_doctor, id_sala, id_cama, id_trabajador_social, fehca_entrada, fecha_salida, estado FROM visitas_emergencia')
     visitas = cursor.fetchall()
     conn.close()
 
