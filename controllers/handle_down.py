@@ -2,6 +2,7 @@ from controllers.server_client import active_connections, elegir_nodo_maestro, u
 from models.emergency_room import desactivar_sala
 from controllers.nodes import get_network_nodes
 from utils.log import log_message, log_database
+import socket
 
 def verificar_conexiones():
         """Verifica las conexiones activas y recalcula el nodo maestro si es necesario."""
@@ -13,7 +14,9 @@ def verificar_conexiones():
             for nodo_id in nodos_activos:
                 # print(f"Verificando nodo {nodo_id}...")
                 client_socket = active_connections[nodo_id]
-                if client_socket.fileno() == -1:  # Verifica que el socket siga activo
+                try:
+                    client_socket.send(b'')  # Intenta enviar un mensaje vacío
+                except (socket.error, OSError):  # Captura errores de socket
                     nodo_ip = client_socket.getpeername()[0]
                     print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                     log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
