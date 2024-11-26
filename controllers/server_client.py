@@ -262,7 +262,7 @@ def get_client_socket_by_ip(ip):
 
 def verificar_conexiones():
     """
-    Verifica las conexiones activas enviando un mensaje de prueba.
+    Verifica las conexiones activas usando fileno.
     Si la conexión está inactiva, elimina el nodo de la lista de conexiones activas.
     """
     log_message("[Verificación] Iniciando verificación de conexiones...")
@@ -270,17 +270,9 @@ def verificar_conexiones():
     conexiones_inactivas = []  # Lista para almacenar nodos inactivos
 
     for node_id, client in list(active_connections.items()):
-        try:
-            # Intentamos enviar un mensaje de prueba
-            client.send(b"ping")
-        except BrokenPipeError:
-            log_message(f"[Error] Broken pipe al enviar ping a nodo {node_id}.")
-            conexiones_inactivas.append(node_id)
-            client.close()  # Cerramos el socket inactivo
-        except (socket.error, OSError) as e:
-            # Si hay un error, la conexión está inactiva
-            log_message(f"[Conexión perdida] Nodo {node_id}. Error: {e}")
-            print(f"[Conexión perdida] Nodo {node_id}. Error: {e}")
+        if client.fileno() == -1:  # Verifica si el socket está inactivo
+            log_message(f"[Conexión perdida] Nodo {node_id}.")
+            print(f"[Conexión perdida] Nodo {node_id}.")
             conexiones_inactivas.append(node_id)
             client.close()  # Cerramos el socket inactivo
 
