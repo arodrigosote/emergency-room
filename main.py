@@ -18,10 +18,9 @@ import time
 
 
 def verificar_conexiones_en_hilo():
-    log_message("[Hilo] Iniciando verificación de conexiones en bucle.")
     while True:
         verificar_conexiones()
-        time.sleep(1)  # Ajusta el intervalo a 1 segundo
+        time.sleep(2)  # Ajusta el intervalo a 1 segundo
 
 def main():
     server_thread = threading.Thread(target=start_server, daemon=True)
@@ -94,11 +93,11 @@ def main():
     print("---------------------------------------------------")
 
     try:
-        # # Crear y empezar el hilo para verificar conexiones
-        # verificar_conexiones_thread = threading.Thread(target=verificar_conexiones_en_hilo, daemon=True)
-        # verificar_conexiones_thread.start()
+        # Crear y empezar el hilo para verificar conexiones
+        verificar_conexiones_thread = threading.Thread(target=verificar_conexiones_en_hilo, daemon=True)
+        verificar_conexiones_thread.start()
         while True:
-            verificar_conexiones()
+            # verificar_conexiones()
             mostrar_menu()
 
             try:

@@ -11,6 +11,7 @@ from controllers.nodes import get_network_nodes, get_own_node
 # Diccionario para mantener las conexiones activas
 active_connections = {}
 master_node = None
+conexiones_inactivas = []  # Lista para almacenar nodos inactivos
 
 def handle_client(client_socket, addr):
     # Maneja la conexión con un cliente
@@ -259,54 +260,24 @@ def verificar_conexiones():
     Si la conexión está inactiva, elimina el nodo de la lista de conexiones activas.
     """
     log_message("[Verificación] Iniciando verificación de conexiones...")
-    conexiones_inactivas = []  # Lista para almacenar nodos inactivos
 
     for node_id, client in list(active_connections.items()):
         try:
             # Intentamos enviar un mensaje de prueba
             client.send(b"ping")
-            log_message(f"[Conexión activa] Nodo {node_id}.")
         except (socket.error, OSError) as e:
             # Si hay un error, la conexión está inactiva
-            log_message(f"[Conexión inactiva] Nodo {node_id}. Error: {e}")
+            log_message(f"[Conexión perdida] Nodo {node_id}. Error: {e}")
+            print(f"[Conexión perdida] Nodo {node_id}. Error: {e}")
             conexiones_inactivas.append(node_id)
             client.close()  # Cerramos el socket inactivo
+            elegir_nodo_maestro()
 
     # Eliminar nodos inactivos del diccionario de conexiones activas
     for node_id in conexiones_inactivas:
         del active_connections[node_id]
         log_message(f"[Conexión eliminada] Nodo {node_id} eliminado del diccionario de conexiones activas.")
 
-def verificar_conexiones2():
-    """Verifica las conexiones activas y recalcula el nodo maestro si es necesario."""
-    print("Verificando conexiones...")
-    try:
-        nodos_red = get_network_nodes()
-        nodos_activos = list(active_connections.keys())
 
-        for nodo_id in nodos_activos:
-            print(f"Verificando nodo {nodo_id}...")
-            client_socket = active_connections[nodo_id]
-            if client_socket.fileno() == -1:  # Verifica que el socket siga activo
-                nodo_ip = client_socket.getpeername()[0]
-                print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
-                log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
-                del active_connections[nodo_id]
-
-                # desactivar_sala(nodo_ip)
-
-                # redistribuir_carga(nodo_ip)
-
-                elegir_nodo_maestro()
-            else:
-                destino_ip = client_socket.getpeername()[0]
-                if destino_ip not in [nodo['ip'] for nodo in nodos_red]:
-                    log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
-                    print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
-                    del active_connections[nodo_id]
-                    elegir_nodo_maestro()
-
-    except Exception as e:
-        log_message(f"[Error] {str(e)}")
 
     
