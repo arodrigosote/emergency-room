@@ -262,17 +262,22 @@ def get_client_socket_by_ip(ip):
 
 def verificar_conexiones():
     """
-    Verifica las conexiones activas usando fileno.
+    Verifica las conexiones activas usando MSG_PEEK.
     Si la conexión está inactiva, elimina el nodo de la lista de conexiones activas.
     """
     log_message("[Verificación] Iniciando verificación de conexiones...")
 
     conexiones_inactivas = []  # Lista para almacenar nodos inactivos
 
-    for node_id, client in list(active_connections.items()):
-        if client.fileno() == -1:  # Verifica si el socket está inactivo
-            log_message(f"[Conexión perdida] Nodo {node_id}.")
-            print(f"[Conexión perdida] Nodo {node_id}.")
+    for node_id, client in list(active_connections.items()):  # Convertir a lista para evitar modificar durante la iteración
+        try:
+            # Intentamos usar MSG_PEEK para verificar actividad
+            client.send(b"", socket.MSG_PEEK)  # No modifica el socket ni espera respuesta
+            log_message(f"[Conexión activa] Nodo {node_id}.")
+        except (socket.error, OSError) as e:
+            # Si hay un error, la conexión está inactiva
+            log_message(f"[Conexión perdida] Nodo {node_id}. Error: {e}")
+            print(f"[Conexión perdida] Nodo {node_id}. Error: {e}")
             conexiones_inactivas.append(node_id)
             client.close()  # Cerramos el socket inactivo
 
@@ -280,6 +285,9 @@ def verificar_conexiones():
     for node_id in conexiones_inactivas:
         del active_connections[node_id]
         log_message(f"[Conexión eliminada] Nodo {node_id} eliminado del diccionario de conexiones activas.")
+
+    # Actualizar el nodo maestro
+    if conexiones_inactivas:
         elegir_nodo_maestro()
 
 
