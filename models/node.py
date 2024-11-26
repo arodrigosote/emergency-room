@@ -4,7 +4,7 @@ from utils.log import log_message
 from controllers.server_client import get_client_socket_by_ip, active_connections, unactive_connections, elegir_nodo_maestro  # Asegúrate de tener una función para obtener el socket del cliente
 from controllers.nodes import get_network_nodes, get_own_node
 from models.database import guardar_cambios_db_changestomake
-from controllers.handle_down import verificar_conexiones
+# from controllers.handle_down import verificar_conexiones
 
 
 def obtener_nodo_propio(cursor, own_node_ip):
@@ -66,7 +66,7 @@ def enviar_mensajes_a_todos(codigo, mensaje, incluir_propio=False):
 
 
 def procesar_consulta(consulta, es_compleja=False):
-    verificar_conexiones()
+    # verificar_conexiones()
     """Procesa consultas simples o complejas dependiendo del tipo."""
     try:
         master_node_id = max(active_connections.keys())
