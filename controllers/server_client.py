@@ -58,9 +58,6 @@ def handle_client(client_socket, addr):
                 respuestas = []
                 nodo_emisor = client_socket
                 # log_message('[Nodo Maestro] Recibe mensaje')
-                print('\n')
-                print(client.getpeername()[0])
-                print(nodo_emisor.getpeername()[0])
                 for destino, client in active_connections.items():
                     try:
                         if client.fileno() != -1:
