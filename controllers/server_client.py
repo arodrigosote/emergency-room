@@ -279,13 +279,13 @@ def verificar_conexiones2():
 
 def verificar_conexiones():
     """Verifica las conexiones activas y recalcula el nodo maestro si es necesario."""
-    # print("Verificando conexiones...")
+    print("Verificando conexiones...")
     try:
         nodos_red = get_network_nodes()
         nodos_activos = list(active_connections.keys())
 
         for nodo_id in nodos_activos:
-            # print(f"Verificando nodo {nodo_id}...")
+            print(f"Verificando nodo {nodo_id}...")
             client_socket = active_connections[nodo_id]
             if client_socket.fileno() == -1:  # Verifica que el socket siga activo
                 nodo_ip = client_socket.getpeername()[0]
