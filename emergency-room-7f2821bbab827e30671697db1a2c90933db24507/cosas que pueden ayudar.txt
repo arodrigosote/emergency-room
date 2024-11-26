@@ -1,0 +1,15 @@
+
+            if opcion == '1':
+                print("[Escaneo de red] Buscando nodos disponibles...")
+            elif opcion == '2':
+                nodo_id = input("Ingrese el ID del nodo al que desea enviar el mensaje: ")
+                mensaje = input("Ingrese el mensaje a enviar: ")
+                enviar_mensaje_a_nodo(mensaje, nodo_id)
+            elif opcion == '3':
+                mensaje = input("Ingrese el mensaje a enviara todos: ")
+                enviar_mensaje_a_todos(mensaje)
+            elif opcion == '5':
+                print("Saliendo...")
+                break
+            else:
+                print("Opción no válida, intente de nuevo.")
