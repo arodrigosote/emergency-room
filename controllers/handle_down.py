@@ -15,10 +15,11 @@ def verificar_conexiones():
                 client_socket = active_connections[nodo_id]
                 if client_socket.fileno() == -1:  # Verifica que el socket siga activo
                     nodo_ip = client_socket.getpeername()[0]
+                    unactive_connections.append(nodo_id)
                     print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                     log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                     client_socket.close()
-                    unactive_connections.append(nodo_id)
+                    
 
                     elegir_nodo_maestro()
 
