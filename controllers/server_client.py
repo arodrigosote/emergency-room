@@ -150,7 +150,7 @@ def handle_client(client_socket, addr):
                     from controllers.handle_down import verificar_conexiones
                     verificar_conexiones()
                     # Enviar el contenido de las conecciones inactivas
-                    client_socket.send(unactive_connection.encode())
+                    client_socket.send(str(unactive_connection).encode())
                     log_message("[Cliente Mensaje enviado] Contenido del archivo 'db_changes' enviado.")
                 except Exception as e:
                     log_message(f"[Error] No se pudo procesar el mensaje '12': {e}")

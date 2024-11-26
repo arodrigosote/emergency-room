@@ -53,7 +53,10 @@ def enviar_mensajes_a_todos(codigo, mensaje, incluir_propio=False):
         return respuestas_texto
         
     if codigo == "14":
-        return all(res == respuestas[0] for res in respuestas)
+        if all(res == respuestas[0] for res in respuestas):
+            return True
+        else:
+            return False
 
     consenso = True
     for res in respuestas:
