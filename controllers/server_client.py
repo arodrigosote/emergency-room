@@ -249,3 +249,17 @@ def elegir_nodo_maestro():
 def get_client_socket_by_ip(ip):
     id = int(ip.split('.')[-1])
     return active_connections.get(id, None)
+
+
+def verificar_conexiones():
+    # Verifica y elimina conexiones inactivas
+    conexiones_inactivas = []
+    for node_id, client in active_connections.items():
+        if client.fileno() == -1:  # Verifica si el socket está cerrado
+            conexiones_inactivas.append(node_id)
+    
+    for node_id in conexiones_inactivas:
+        log_message(f"[Conexión inactiva] Nodo {node_id} eliminado.")
+        del active_connections[node_id]
+    
+    return conexiones_inactivas
