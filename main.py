@@ -23,6 +23,13 @@ def verificar_conexiones_en_hilo():
         verificar_conexiones()
         time.sleep(1)  # Ajusta el intervalo a 1 segundo
 
+def conectar_nodo(node):
+    node_id = node.get("id")
+    if node_id not in active_connections:
+        conn = connect_to_node(node)
+        if conn:
+            active_connections[node_id] = conn
+
 def main():
     server_thread = threading.Thread(target=start_server, daemon=True)
     server_thread.start()
@@ -66,12 +73,14 @@ def main():
 
     print("Conectando a la red...")
     nodes = get_network_nodes()  # Obtener nodos de la red
+    threads = []
     for node in nodes:
-        node_id = node.get("id")  
-        if node_id not in active_connections:
-            conn = connect_to_node(node)
-            if conn:
-                active_connections[node_id] = conn
+        thread = threading.Thread(target=conectar_nodo, args=(node,))
+        thread.start()
+        threads.append(thread)
+
+    for thread in threads:
+        thread.join()
     print("Conexiones establecidas.")
 
     own_node = get_own_node()
