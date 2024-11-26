@@ -60,14 +60,17 @@ def handle_client(client_socket, addr):
                 # log_message('[Nodo Maestro] Recibe mensaje')
                 for destino, client in active_connections.items():
                     try:
-                        if client.fileno() != -1 and client != nodo_emisor:  # Verifica que el socket siga activo y no es el nodo emisor
-                            client.send(mensaje_nuevo.encode())
-                            log_message(f"[Master Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
+                        if client.fileno() != -1:
+                            if client != nodo_emisor:
+                                client.send(mensaje_nuevo.encode())
+                                log_message(f"[Master Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
 
-                            # Analizar la respuesta del servidor
-                            respuesta = client.recv(1024).decode()  
-                            log_message(f"[Master Respuesta recibida] De nodo {destino}: {respuesta}")
-                            respuestas.append(respuesta)
+                                # Analizar la respuesta del servidor
+                                respuesta = client.recv(1024).decode()  
+                                log_message(f"[Master Respuesta recibida] De nodo {destino}: {respuesta}")
+                                respuestas.append(respuesta)
+                            else:
+                                log_message(f'[Master] Nodo {destino} es el emisor')
                         else:
                             log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
                     except Exception as e:

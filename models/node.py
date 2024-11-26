@@ -41,7 +41,7 @@ def enviar_mensajes_a_todos(codigo, mensaje, incluir_propio=False):
             destino_ip = client_socket.getpeername()[0]
 
             if destino_ip != own_node_ip['ip']:
-                print(destino_ip)
+                # print(destino_ip)
                 respuesta = enviar_mensaje(client_socket, codigo, mensaje)
                 if respuesta:
                     respuestas.append(respuesta)
