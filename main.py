@@ -3,7 +3,7 @@ import threading
 from controllers.nodes import get_network_nodes, get_own_node
 from utils.menu import mostrar_menu, mostrar_menu_trabajador_social, mostrar_menu_doctor, realizar_accion_trabajador_social, realizar_accion_doctor, mostrar_menu_utilidades, realizar_accion_utilidades, mostrar_menu_utilidades, mostrar_menu_tablas, realizar_accion_tablas, mostrar_menu_admin, realizar_accion_admin
 from utils.log import log_message
-from controllers.server_client import start_server, connect_to_node, mostrar_conexiones, active_connections, elegir_nodo_maestro
+from controllers.server_client import start_server, connect_to_node, mostrar_conexiones, active_connections, elegir_nodo_maestro, unactive_connections
 from controllers.messages import enviar_mensaje_a_nodo, enviar_mensaje_a_todos
 from controllers.database import init_db, agregar_salas_emergencia, ejecutar_dbchanges
 from controllers.handle_down import verificar_conexiones
@@ -21,6 +21,9 @@ import time
 def verificar_conexiones_en_hilo():
     while True:
         verificar_conexiones()
+        if unactive_connections:
+            for nodo_id in unactive_connections:
+                desactivar_sala(nodo_id)
         time.sleep(1)  # Ajusta el intervalo a 1 segundo
 
 def conectar_nodo(node):
