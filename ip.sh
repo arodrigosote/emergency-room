@@ -8,10 +8,11 @@ fi
 
 # Verifica que se pase un parámetro
 if [ "$#" -ne 1 ]; then
-    echo "Uso: $0 <opcion>"
-    echo "Opciones disponibles:"
-    echo "  opcion1 - Asigna IP 192.168.1.100"
-    echo "  opcion2 - Asigna IP 192.168.1.101"
+    echo "Uso: $0 <nodo>"
+    echo "Nodos disponibles:"
+    echo "  nodo1 - Asigna IP 192.168.174.140"
+    echo "  nodo2 - Asigna IP 192.168.174.141"
+    echo "  nodo3 - Asigna IP 192.168.174.142"
     exit 1
 fi
 
@@ -25,20 +26,24 @@ fi
 
 echo "Se detectó la interfaz activa: $INTERFAZ"
 
-# Asigna la IP según el parámetro
+# Asigna la IP según el nodo
 case "$1" in
-    opcion1)
-        IP="192.168.1.100"
+    nodo1)
+        IP="192.168.174.140"
         ;;
-    opcion2)
-        IP="192.168.1.101"
+    nodo2)
+        IP="192.168.174.141"
+        ;;
+    nodo3)
+        IP="192.168.174.142"
         ;;
     *)
-        echo "Opción no válida: $1"
-        echo "Uso: $0 <opcion>"
-        echo "Opciones disponibles:"
-        echo "  opcion1 - Asigna IP 192.168.1.100"
-        echo "  opcion2 - Asigna IP 192.168.1.101"
+        echo "Nodo no válido: $1"
+        echo "Uso: $0 <nodo>"
+        echo "Nodos disponibles:"
+        echo "  nodo1 - Asigna IP 192.168.174.140"
+        echo "  nodo2 - Asigna IP 192.168.174.141"
+        echo "  nodo3 - Asigna IP 192.168.174.142"
         exit 1
         ;;
 esac
