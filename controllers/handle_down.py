@@ -19,9 +19,8 @@ def verificar_conexiones():
                     print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                     log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                     client_socket.close()
-                    
-
                     elegir_nodo_maestro()
+
 
                     
                 else:
@@ -30,6 +29,8 @@ def verificar_conexiones():
                         log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                         print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                         del active_connections[nodo_id]
+                        unactive_connections.append(nodo_id)
+                        desactivar_sala(destino_ip)
                         elegir_nodo_maestro()
 
         except Exception as e:
