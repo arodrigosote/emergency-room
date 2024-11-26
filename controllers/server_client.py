@@ -37,11 +37,11 @@ def handle_client(client_socket, addr):
                 continue
             elif mensaje_completo[:2] == "10":
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
-                log_message(f"[Query] Recibido: {hora_actual} - {query}")
+                log_message(f"[Cliente Query] Recibido: {hora_actual} - {query}")
 
                 resultado = execute_query(query)
                 response = "OK" if resultado else "Error"
-                log_message(f"[Query] Ejecutada - Estatus: {response} - {query}")
+                log_message(f"[Cliente Query] Ejecutada - Estatus: {response} - {query}")
                 client_socket.send(response.encode())
                 continue
             elif mensaje_completo[:2] == "11":
@@ -49,16 +49,16 @@ def handle_client(client_socket, addr):
                 mensaje_nuevo = f"10|{hora_actual}|{query}"
                 respuestas = []
                 nodo_emisor = client_socket
-                log_message('[Nodo Maestro] Recibe mensaje')
+                # log_message('[Nodo Maestro] Recibe mensaje')
                 for destino, client in active_connections.items():
                     try:
                         if client.fileno() != -1:  # Verifica que el socket siga activo
                             client.send(mensaje_nuevo.encode())
-                            log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
+                            log_message(f"[Master Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
 
                             # Analizar la respuesta del servidor
                             respuesta = client.recv(1024).decode()  
-                            log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
+                            log_message(f"[Master Respuesta recibida] De nodo {destino}: {respuesta}")
                             respuestas.append(respuesta)
                         else:
                             log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
@@ -66,8 +66,11 @@ def handle_client(client_socket, addr):
                         log_message(f"[Error] No se pudo enviar el mensaje a nodo {destino}: {e}")
 
                 # Verificar si todas las respuestas son "OK"
-                response = "OK" if all(respuesta == "OK" for respuesta in respuestas) else "Error"
-                log_message(f"[Query] Ejecutada: Estatus: {response} - {query}")
+                if all(respuesta == "OK" for respuesta in respuestas):
+                    response = "OK"
+                    log_message(f"[Master Consenso] Query Ejecutada: Estatus: {response} - {query}")
+                else:
+                    response = "Error"
                 nodo_emisor.send(response.encode())
                 continue
             elif mensaje_completo[:2] == "12":
@@ -75,7 +78,7 @@ def handle_client(client_socket, addr):
 
                     # Crear la carpeta 'database' si no existe
                     os.makedirs("history", exist_ok=True)
-                    log_message("[Info] Carpeta 'history' creada o ya existente.")
+                    # log_message("[Info] Carpeta 'history' creada o ya existente.")
 
                     # Ruta del archivo
                     archivo_path = os.path.join("history", "db_changes.txt")
@@ -86,7 +89,7 @@ def handle_client(client_socket, addr):
 
                     # Enviar el contenido del archivo como respuesta
                     client_socket.send(db_changes.encode())
-                    log_message("[Mensaje enviado] Contenido del archivo 'db_changes' enviado al cliente.")
+                    log_message("[Master Mensaje enviado] Contenido del archivo 'db_changes' enviado.")
 
                 except FileNotFoundError:
                     log_message("[Error] El archivo 'db_changes' no se encontró en la carpeta 'history'")
@@ -100,16 +103,16 @@ def handle_client(client_socket, addr):
                 mensaje_nuevo = f"12|{hora_actual}|{query}"
                 respuestas = []
                 nodo_emisor = client_socket
-                log_message('[Nodo Maestro] Recibe mensaje')
+                # log_message('[Nodo Maestro] Recibe mensaje')
                 for destino, client in active_connections.items():
                     try:
                         if client.fileno() != -1:  # Verifica que el socket siga activo
                             client.send(mensaje_nuevo.encode())
-                            log_message(f"[Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
+                            log_message(f"[Master Mensaje enviado] A nodo {destino}: {mensaje_nuevo}")
 
                             # Analizar la respuesta del servidor
                             respuesta = client.recv(1024).decode()  
-                            log_message(f"[Respuesta recibida] De nodo {destino}: {respuesta}")
+                            log_message(f"[Master Respuesta recibida] De nodo {destino}: {respuesta}")
                             respuestas.append(respuesta)
                         else:
                             log_message(f"[Error] La conexión con el nodo {destino} no está activa.")
@@ -121,8 +124,11 @@ def handle_client(client_socket, addr):
                     nodo_emisor.send(respuestas_texto.encode())
                 
                 # Verificar si todas las respuestas son "OK"
-                response = "OK" if all(respuesta == "OK" for respuesta in respuestas) else "Error"
-                log_message(f"[Query] Ejecutada: Estatus: {response} - {query}")
+                if all(respuesta == "OK" for respuesta in respuestas):
+                    response = "OK"
+                    log_message(f"[Master Consenso] Query Ejecutada: Estatus: {response} - {query}")
+                else:
+                    response = "Error"
                 nodo_emisor.send(response.encode())
                 continue
             else:

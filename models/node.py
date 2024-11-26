@@ -52,10 +52,17 @@ def enviar_mensajes_a_todos(codigo, mensaje, incluir_propio=False):
         return respuestas_texto
         
 
-    if all(res == "OK" for res in respuestas):
+    consenso = True
+    for res in respuestas:
+        if res != "OK":
+            consenso = False
+            break
+
+    if consenso:
         log_message("[Consenso] Todos los nodos respondieron OK.")
     else:
         log_message("[Sin consenso] No todos los nodos respondieron OK.")
+
 
 def procesar_consulta(consulta, es_compleja=False):
     """Procesa consultas simples o complejas dependiendo del tipo."""
