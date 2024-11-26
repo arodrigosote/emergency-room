@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS visitas_emergencia (
     id_sala INTEGER NOT NULL,
     id_cama INTEGER NOT NULL,
     id_trabajador_social INTEGER NOT NULL,
-    fecha_entrada TIMESTAMP , 
+    fecha_entrada TIMESTAMP ,
     fecha_salida TIMESTAMP,
     estado VARCHAR(20) DEFAULT 'activa', -- activa/cerrada
     FOREIGN KEY (id_paciente) REFERENCES pacientes(id_paciente) ON DELETE SET NULL,

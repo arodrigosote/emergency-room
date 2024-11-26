@@ -18,7 +18,7 @@ def get_db_connection():
 # Diccionario para mantener las conexiones activas
 active_connections = {}
 master_node = None
-unactive_connections = []
+unactive_connection = None
 
 def handle_client(client_socket, addr):
     # Maneja la conexión con un cliente
@@ -144,6 +144,17 @@ def handle_client(client_socket, addr):
                 continue
             elif mensaje_completo == "ping":
                 client_socket.send("pong".encode())
+                continue
+            elif mensaje_completo[:2] == "14":
+                try:
+                    from controllers.handle_down import verificar_conexiones
+                    verificar_conexiones()
+                    # Enviar el contenido de las conecciones inactivas
+                    client_socket.send(unactive_connection.encode())
+                    log_message("[Cliente Mensaje enviado] Contenido del archivo 'db_changes' enviado.")
+                except Exception as e:
+                    log_message(f"[Error] No se pudo procesar el mensaje '12': {e}")
+                    client_socket.send(f"[Error] No se pudo procesar el mensaje '12': {e}".encode())
                 continue
             else:
                 log_message("[Error] No se encontró el código de instrucción")
