@@ -9,27 +9,16 @@ def listar_visitas():
     # Lista todas las visitas en la base de datos y las muestra en una tabla por consola
     conn = sqlite3.connect('nodos.db')
     cursor = conn.cursor()
-    cursor.execute('''
-        SELECT 
-            v.id_visita, v.folio, v.motivo, p.nombre AS paciente, d.nombre AS doctor, 
-            s.nombre AS sala, c.numero_cama AS cama, t.nombre AS trabajador_social, 
-            v.fecha_entrada, v.fecha_salida, v.estado 
-        FROM visitas_emergencia v
-        JOIN pacientes p ON v.id_paciente = p.id_paciente
-        JOIN doctores d ON v.id_doctor = d.id_doctor
-        JOIN salas_emergencia s ON v.id_sala = s.id_sala
-        JOIN camas c ON v.id_cama = c.id_cama
-        JOIN trabajadores_sociales t ON v.id_trabajador_social = t.id_trabajador
-    ''')
+    cursor.execute('SELECT id_visita, folio, motivo, id_paciente, id_doctor, id_sala, id_cama, id_trabajador_social, fecha_salida, estado FROM visitas_emergencia')
     visitas = cursor.fetchall()
     conn.close()
 
     # Mostrar las visitas en una tabla por consola sin utilizar tabulate
-    headers = ["ID Visita", "Folio", "Motivo", "Paciente", "Doctor", "Sala", "Cama", "Trabajador Social", "Fecha entrada", "Fecha Salida", "Estado"]
-    print(f"{headers[0]:<10} {headers[1]:<13} {headers[2]:<20} {headers[3]:<20} {headers[4]:<20} {headers[5]:<15} {headers[6]:<8} {headers[7]:<20} {headers[8]:<20} {headers[9]:<20} {headers[10]:<10}")
-    print("-" * 180)
+    headers = ["ID Visita", "Folio", "Motivo", "ID Paciente", "ID Doctor", "ID Sala", "ID Cama", "ID Trabajador Social", "Fecha Salida", "Estado"]
+    print(f"{headers[0]:<10} {headers[1]:<15} {headers[2]:<30} {headers[3]:<12} {headers[4]:<10} {headers[5]:<8} {headers[6]:<8} {headers[7]:<20} {headers[8]:<20} {headers[9]:<10}")
+    print("-" * 160)
     for visita in visitas:
-        print(f"{visita[0]:<10} {visita[1]:<15} {visita[2]:<20} {visita[3]:<20} {visita[4]:<20} {visita[5]:<15} {visita[6]:<8} {visita[7]:<20} {visita[8]:<20} {visita[9]:<20} {visita[10]:<10}")
+        print(f"{visita[0]:<10} {visita[1]:<15} {visita[2]:<30} {visita[3]:<12} {visita[4]:<10} {visita[5]:<8} {visita[6]:<8} {visita[7]:<20} {visita[8]:<20} {visita[9]:<10}")
 
 def agregar_visita(id_trabajador):
     try:
@@ -149,4 +138,4 @@ def cerrar_visita_emergencia(id_doctor):
     except sqlite3.Error as e:
         log_message(f"[Error] No se pudo cerrar la visita de emergencia: {e}")
     finally:
-        conn.close()
+        conn.close() 
