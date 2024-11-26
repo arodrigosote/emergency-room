@@ -197,49 +197,49 @@ def start_server():
 
 def connect_to_node(node):
     """
-    Conecta con un nodo específico dado su dirección IP.
+    Conecta con un nodo específico dado su dirección IP y almacena la conexión si es exitosa.
     """
-    # Generar un ID basado en la IP
     node_id = int(node['id'])
     node_ip = node['ip']
-    if node_id in [1, 2, 254]:  # Opcional: omitir nodos específicos
+
+    # Omitir nodos específicos si están en la lista negra
+    if node_id in {1, 2, 254}:  # Usamos un conjunto para mayor eficiencia en búsquedas
         return None
 
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Verificar si el nodo ya está conectado
+    if node_id in active_connections:
+        log_message(f"[Info] Nodo {node_id} ya está conectado. Omitiendo.")
+        return
+
     try:
         log_message(f"[Intentando conectar] Nodo IP: {node_ip}")
-        client.connect((node_ip, 9999))
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
+            client.connect((node_ip, 9999))
 
-        # Verificar si el nodo ya está conectado
-        if node_id in active_connections:
-            log_message(f"[Info] Nodo {node_id} ya está conectado.")
-            client.close()  # Cerrar la conexión redundante
-            return
+            # Enviar mensaje de conexión inicial
+            instruction_code = "01"
+            message = f"{instruction_code} Hola, soy un nodo nuevo en el sistema"
+            client.send(message.encode())
+            log_message(f"[Conexión exitosa] Nodo {node_id} conectado.")
 
-        # Almacenar la conexión activa
-        active_connections[node_id] = client
+            # Esperar respuesta del nodo
+            data = client.recv(1024).decode()
+            if data == "OK":
+                log_message(f"[Respuesta recibida] De nodo {node_id}: {data}")
+            else:
+                log_message(f"[Error] Respuesta inesperada de nodo {node_id}: {data}")
+                return
 
-        # Enviar mensaje de conexión con código de instrucción
-        instruction_code = "01"
-        message = f"{instruction_code} Hola, soy un nodo nuevo en el sistema"
-        client.send(message.encode())
-        log_message(f"[Conexión exitosa] Nodo {node_id} conectado. Activas: {list(active_connections.keys())}")
+            # Almacenar la conexión activa si todo fue exitoso
+            active_connections[node_id] = client
+            log_message(f"[Conexiones activas] Nodos conectados: {list(active_connections.keys())}")
 
-        # Actualizar el nodo maestro
-        elegir_nodo_maestro()
+            # Actualizar nodo maestro
+            elegir_nodo_maestro()
 
-        log_message(f"[Actualizar base de datos] Esperando respuesta de nodo {node_id} ...")
-        data = client.recv(1024).decode()
-
-        if data == "OK":
-            log_message(f"[Respuesta recibida] De nodo {node_id}: {data}")
-
-    except Exception as e:
+    except (socket.error, OSError) as e:
         log_message(f"[Error] No se pudo conectar con el nodo {node_ip}: {e}")
-    finally:
-        # Asegurarse de cerrar la conexión si no se almacenó correctamente
-        if node_id not in active_connections:
-            client.close()
+
 
 def mostrar_conexiones():
     # Muestra las conexiones activas

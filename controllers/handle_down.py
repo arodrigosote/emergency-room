@@ -18,7 +18,7 @@ def verificar_conexiones():
                 print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                 log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                 del active_connections[nodo_id]
-                unactive_connections.append(nodo_id)
+                # unactive_connections.append(nodo_id)
                 
                 # desactivar_sala(nodo_ip)
 
