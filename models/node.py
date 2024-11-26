@@ -33,13 +33,14 @@ def enviar_mensaje(client_socket, codigo, mensaje):
 def enviar_mensajes_a_todos(codigo, mensaje, incluir_propio=False):
     """Envía un mensaje a todos los nodos conectados."""
     respuestas = []
-    own_node_ip = get_own_node()['ip']
+    own_node_ip = get_own_node()
 
     for destino_id, client_socket in active_connections.items():
         try:
             destino_ip = client_socket.getpeername()[0]
 
-            if destino_ip != own_node_ip:
+            if destino_ip != own_node_ip['ip']:
+                print(destino_ip)
                 respuesta = enviar_mensaje(client_socket, codigo, mensaje)
                 if respuesta:
                     respuestas.append(respuesta)
