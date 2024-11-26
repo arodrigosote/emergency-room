@@ -1,2 +1,0 @@
-pip install tabulate --break-system-packages
-pip install scapy --break-system-packages
