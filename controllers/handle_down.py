@@ -22,10 +22,10 @@ def verificar_conexiones():
                     
             
                     # redistribuir_carga(nodo_ip)
-
+                    desactivar_sala(nodo_ip)
                     elegir_nodo_maestro()
 
-                    desactivar_sala(nodo_ip)
+                    
                 else:
                     destino_ip = client_socket.getpeername()[0]
                     if destino_ip not in [nodo['ip'] for nodo in nodos_red]:
