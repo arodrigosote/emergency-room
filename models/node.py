@@ -1,7 +1,7 @@
 import sqlite3
 from datetime import datetime
 from utils.log import log_message
-from controllers.server_client import get_client_socket_by_ip, active_connections, unactive_connections, elegir_nodo_maestro  # Asegúrate de tener una función para obtener el socket del cliente
+from controllers.server_client import get_client_socket_by_ip, active_connections, elegir_nodo_maestro  # Asegúrate de tener una función para obtener el socket del cliente
 from controllers.nodes import get_network_nodes, get_own_node
 from models.database import guardar_cambios_db_changestomake
 # from controllers.handle_down import verificar_conexiones
@@ -164,7 +164,7 @@ def calculo_distribucion(ip_sala):
                 SELECT id_visita, id_cama, id_sala 
                 FROM visitas_emergencia 
                 WHERE id_sala = (SELECT id_sala FROM salas_emergencia WHERE ip = ?) AND estado = 'activa'
-            """, (ip_sala,))
+            """, (ip_sala,)) 
             visitas = cursor.fetchall()
 
             if not visitas:
