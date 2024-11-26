@@ -14,11 +14,11 @@ def listar_visitas():
     conn.close()
 
     # Mostrar las visitas en una tabla por consola sin utilizar tabulate
-    headers = ["ID Visita", "Folio", "Motivo", "ID Paciente", "ID Doctor", "ID Sala", "ID Cama", "ID Trabajador Social", "Fecha Salida", "Estado"]
-    print(f"{headers[0]:<10} {headers[1]:<15} {headers[2]:<30} {headers[3]:<12} {headers[4]:<10} {headers[5]:<8} {headers[6]:<8} {headers[7]:<20} {headers[8]:<20} {headers[9]:<10}")
+    headers = ["ID Visita", "Folio", "Motivo", "ID Paciente", "ID Doctor", "ID Sala", "ID Cama", "ID Trabajador Social", "Fecha entrada", "Fecha Salida", "Estado"]
+    print(f"{headers[0]:<10} {headers[1]:<13} {headers[2]:<20} {headers[3]:<12} {headers[4]:<10} {headers[5]:<8} {headers[6]:<8} {headers[7]:<20} {headers[8]:<20} {headers[9]:<20} {headers[10]:<10}")
     print("-" * 160)
     for visita in visitas:
-        print(f"{visita[0]:<10} {visita[1]:<15} {visita[2]:<30} {visita[3]:<12} {visita[4]:<10} {visita[5]:<8} {visita[6]:<8} {visita[7]:<20} {visita[8]:<20} {visita[9]:<10}")
+        print(f"{visita[0]:<10} {visita[1]:<15} {visita[2]:<20} {visita[3]:<12} {visita[4]:<10} {visita[5]:<8} {visita[6]:<8} {visita[7]:<20} {headers[8]:<20} {visita[9]:<20} {visita[10]:<10}")
 
 def agregar_visita(id_trabajador):
     try:
@@ -99,6 +99,7 @@ def agregar_visita(id_trabajador):
         log_database(f"# {consulta}")
         procesar_consulta(consulta)
         log_message("[Base de Datos] Visita de emergencia agregada a la base de datos.")
+        print("\nVisita de emergencia agregada con éxito.")
     except sqlite3.Error as e:
         log_message(f"[Error] No se pudo agregar la visita de emergencia: {e}")
     finally:
@@ -133,6 +134,7 @@ def cerrar_visita_emergencia(id_doctor):
         procesar_consulta(mensaje)
         log_database(f"# {mensaje}")
         log_message("[Base de Datos] Visita de emergencia cerrada.")
+        print("\nVisita de emergencia cerrada con éxito.")
     except sqlite3.Error as e:
         log_message(f"[Error] No se pudo cerrar la visita de emergencia: {e}")
     finally:
