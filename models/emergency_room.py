@@ -2,7 +2,7 @@ import sqlite3
 import os
 from utils.log import log_message, log_database
 from models.node import procesar_consulta
-from datetime import datetime
+
 
 
 DB_PATH = 'nodos.db'
