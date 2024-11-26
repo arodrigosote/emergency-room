@@ -255,18 +255,20 @@ def get_client_socket_by_ip(ip):
 
 def verificar_conexiones():
     """
-    Verifica las conexiones activas y elimina las inactivas del diccionario active_connections.
+    Verifica las conexiones activas enviando un mensaje de prueba.
+    Si la conexión está inactiva, elimina el nodo de la lista de conexiones activas.
     """
+    log_message("[Verificación] Iniciando verificación de conexiones...")
     conexiones_inactivas = []  # Lista para almacenar nodos inactivos
 
-    for node_id, client in list(active_connections.items()):  # Convertimos el diccionario en una lista para evitar modificarlo mientras iteramos
+    for node_id, client in list(active_connections.items()):
         try:
-            # Usamos MSG_PEEK para verificar actividad sin alterar el socket
-            client.send(b"ping", socket.MSG_PEEK)
+            # Intentamos enviar un mensaje de prueba
+            client.send(b"ping")
             log_message(f"[Conexión activa] Nodo {node_id}.")
-        except (socket.error, OSError):
-            # Si hay un error, consideramos la conexión como inactiva
-            log_message(f"[Conexión inactiva] Nodo {node_id}. Eliminando conexión...")
+        except (socket.error, OSError) as e:
+            # Si hay un error, la conexión está inactiva
+            log_message(f"[Conexión inactiva] Nodo {node_id}. Error: {e}")
             conexiones_inactivas.append(node_id)
             client.close()  # Cerramos el socket inactivo
 
@@ -274,4 +276,5 @@ def verificar_conexiones():
     for node_id in conexiones_inactivas:
         del active_connections[node_id]
         log_message(f"[Conexión eliminada] Nodo {node_id} eliminado del diccionario de conexiones activas.")
+
     
