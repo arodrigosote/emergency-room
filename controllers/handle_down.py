@@ -20,8 +20,8 @@ def verificar_conexiones():
                     del active_connections[nodo_id]
                     unactive_connections.append(nodo_id)
                     
-            
-                    # redistribuir_carga(nodo_ip)
+                    # Agregar línea de registro para verificar la llamada a desactivar_sala
+                    log_message(f"Llamando a desactivar_sala con IP: {nodo_ip}")
                     desactivar_sala(nodo_ip)
                     elegir_nodo_maestro()
 

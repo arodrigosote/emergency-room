@@ -97,19 +97,24 @@ def obtener_sala_y_cama():
 
 def desactivar_sala(ip):
     print("Desactivando sala de emergencia...")
-   
-    with get_db_connection() as conn:
-        cursor = conn.cursor()
-        query = "UPDATE salas_emergencia SET estado = 'inactiva' WHERE ip = ?"
-        cursor.execute(query, (ip,))
-        conn.commit()
-        print("Sala desactivada con éxito.")
-        log_database(f"# UPDATE salas_emergencia SET estado = 'inactiva' WHERE ip = '{ip}'")
-        log_message(f"[Consulta] Desactivación de sala de emergencia con IP '{ip}' guardada en la base de datos.")
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            query = "UPDATE salas_emergencia SET estado = 'inactiva' WHERE ip = ?"
+            cursor.execute(query, (ip,))
+            conn.commit()
+            print("Sala desactivada con éxito.")
+            log_database(f"# UPDATE salas_emergencia SET estado = 'inactiva' WHERE ip = '{ip}'")
+            log_message(f"[Consulta] Desactivación de sala de emergencia con IP '{ip}' guardada en la base de datos.")
 
-        cursor.execute("SELECT * FROM salas_emergencia WHERE ip = ?", (ip,))
-        nodo_propio = cursor.fetchone()
+            cursor.execute("SELECT * FROM salas_emergencia WHERE ip = ?", (ip,))
+            nodo_propio = cursor.fetchone()
+            print("Nodo propio:", nodo_propio)  # Debug
 
-        mensaje = f"UPDATE salas_emergencia SET estado = 'desactivada' WHERE ip = '{ip}'"
+            mensaje = f"UPDATE salas_emergencia SET estado = 'desactivada' WHERE ip = '{ip}'"
+            print("Mensaje a procesar:", mensaje)  # Debug
 
-        # procesar_consulta(mensaje)
+            # procesar_consulta(mensaje)
+    except sqlite3.Error as e:
+        log_message(f"[Error] No se pudo desactivar la sala: {e}")
+        print(f"[Error] No se pudo desactivar la sala: {e}")  # Debug
