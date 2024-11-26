@@ -1,5 +1,5 @@
 from controllers.server_client import active_connections, elegir_nodo_maestro, unactive_connections
-from models.emergency_room import desactivar_sala
+from models.emergency_room import activar_sala, obtener_sala_y_cama, desactivar_sala
 from controllers.nodes import get_network_nodes
 from utils.log import log_message, log_database
 
@@ -18,11 +18,11 @@ def verificar_conexiones():
                 print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                 log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                 del active_connections[nodo_id]
-                # unactive_connections.append(nodo_id)
+                unactive_connections.append(nodo_id)
                 
-                # desactivar_sala(nodo_ip)
+                desactivar_sala(nodo_ip)
 
-                # redistribuir_carga(nodo_ip)   #s
+                # redistribuir_carga(nodo_ip)
 
                 elegir_nodo_maestro()
             else:
@@ -35,4 +35,3 @@ def verificar_conexiones():
 
     except Exception as e:
         log_message(f"[Error] {str(e)}")
-
