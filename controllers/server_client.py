@@ -261,6 +261,8 @@ def verificar_conexiones():
     """
     log_message("[Verificación] Iniciando verificación de conexiones...")
 
+    conexiones_inactivas = []  # Lista para almacenar nodos inactivos
+
     for node_id, client in list(active_connections.items()):
         try:
             # Intentamos enviar un mensaje de prueba
@@ -271,14 +273,13 @@ def verificar_conexiones():
             print(f"[Conexión perdida] Nodo {node_id}. Error: {e}")
             conexiones_inactivas.append(node_id)
             client.close()  # Cerramos el socket inactivo
-            elegir_nodo_maestro()
 
     # Eliminar nodos inactivos del diccionario de conexiones activas
-    if conexiones_inactivas:
-        for node_id in conexiones_inactivas:
-            del active_connections[node_id]
-            log_message(f"[Conexión eliminada] Nodo {node_id} eliminado del diccionario de conexiones activas.")
+    for node_id in conexiones_inactivas:
+        del active_connections[node_id]
+        log_message(f"[Conexión eliminada] Nodo {node_id} eliminado del diccionario de conexiones activas.")
+        elegir_nodo_maestro()
 
 
 
-    
+
