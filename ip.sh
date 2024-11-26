@@ -15,19 +15,23 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-# Interface de red (cambia 'eth0' por el nombre de tu interfaz de red)
-INTERFAZ="eth0"
+# Detecta automáticamente una interfaz de red activa (excluyendo loopback)
+INTERFAZ=$(ip -o link show | awk -F': ' '{print $2}' | grep -v lo | head -n 1)
+
+if [ -z "$INTERFAZ" ]; then
+    echo "No se encontró una interfaz de red activa. Asegúrate de estar conectado a una red."
+    exit 1
+fi
+
+echo "Se detectó la interfaz activa: $INTERFAZ"
 
 # Asigna la IP según el parámetro
 case "$1" in
     opcion1)
-        IP="192.168.174.140"
+        IP="192.168.1.100"
         ;;
     opcion2)
-        IP="192.168.174.141"
-        ;;
-    opcion3)
-        IP="192.168.174.142"
+        IP="192.168.1.101"
         ;;
     *)
         echo "Opción no válida: $1"
@@ -39,7 +43,7 @@ case "$1" in
         ;;
 esac
 
-# Cambia solo la dirección IP de la interfaz
+# Cambia solo la dirección IP de la interfaz detectada
 echo "Configurando la interfaz $INTERFAZ con la IP $IP..."
 ip addr flush dev "$INTERFAZ"
 ip addr add "$IP" dev "$INTERFAZ"
