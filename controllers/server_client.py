@@ -26,23 +26,20 @@ def handle_client(client_socket, addr):
         log_message(f"[Servidor] Conexión establecida con {addr}")
         while True:
             data = client_socket.recv(1024)
-            mensaje_completo = data.decode()
-            
             if not data:
                 break
+            mensaje_completo = data.decode()
             if mensaje_completo[:2] == "ex":
                 break
             elif mensaje_completo[:2] == "01":
                 nodos = get_network_nodes()
                 for node in nodos:
-                    node_id = node.get("id")  
+                    node_id = node.get("id")
                     if node_id not in active_connections:
                         conn = connect_to_node(node)
                         if conn:
                             active_connections[node_id] = conn
-
                 client_socket.send("OK".encode())
-                continue
             elif mensaje_completo[:2] == "10":
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 log_message(f"[Cliente Query] Recibido: {hora_actual} - {query}")
@@ -51,7 +48,6 @@ def handle_client(client_socket, addr):
                 response = "OK" if resultado else "Error"
                 log_message(f"[Cliente Query] Ejecutada - Estatus: {response} - {query}")
                 client_socket.send(response.encode())
-                continue
             elif mensaje_completo[:2] == "11":
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 mensaje_nuevo = f"10|{hora_actual}|{query}"
@@ -80,7 +76,6 @@ def handle_client(client_socket, addr):
                 else:
                     response = "Error"
                 nodo_emisor.send(response.encode())
-                continue
             elif mensaje_completo[:2] == "12":
                 try:
 
@@ -105,7 +100,6 @@ def handle_client(client_socket, addr):
                 except Exception as e:
                     log_message(f"[Error] No se pudo procesar el mensaje '12': {e}")
                     client_socket.send(f"[Error] No se pudo procesar el mensaje '12': {e}".encode())
-                continue
             elif mensaje_completo[:2] == "13":
                 codigo_instruccion, hora_actual, query = mensaje_completo.split("|")
                 mensaje_nuevo = f"12|{hora_actual}|{query}"
@@ -138,10 +132,8 @@ def handle_client(client_socket, addr):
                 else:
                     response = "Error"
                 nodo_emisor.send(response.encode())
-                continue
             elif mensaje_completo == "ping":
                 client_socket.send("pong".encode())
-                continue
             else:
                 log_message("[Error] No se encontró el código de instrucción")
                 log_message(mensaje_completo)

@@ -28,8 +28,24 @@ def verificar_conexiones_en_hilo():
     """Ejecuta la verificación de conexiones activas continuamente."""
     while not stop_event.is_set():
         verificar_conexiones()
-        threading.Event().wait(1)  # Intervalo de 1 segundo
+        stop_event.wait(1)  # Intervalo de 1 segundo
 
+def refrescar_conexiones():
+    """Refresca las conexiones de los nodos en caso de que se caigan."""
+    while not stop_event.is_set():
+        nodes = get_network_nodes()
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            executor.map(conectar_nodo, nodes)
+        stop_event.wait(10)  # Intervalo de 10 segundos para refrescar conexiones
+
+def limpiar_archivos(files_to_clean):
+    """Limpia los archivos históricos especificados."""
+    for file_path, file_name in files_to_clean:
+        if os.path.exists(file_path):
+            open(file_path, 'w').close()
+            log_message(f"[Archivo] El archivo '{file_name}' ha sido limpiado.")
+        else:
+            log_message(f"[Advertencia] El archivo '{file_name}' no existe.")
 
 def conectar_nodo(node):
     """Conecta un nodo a la red."""
@@ -38,8 +54,6 @@ def conectar_nodo(node):
         conn = connect_to_node(node)
         if conn:
             active_connections[node_id] = conn
-
-
 
 def main():
     server_thread = threading.Thread(target=start_server, daemon=True)
@@ -55,13 +69,7 @@ def main():
         (os.path.join(history_dir, 'server_log.txt'), 'server_log.txt'),
         (os.path.join(database_dir, 'changestomake.txt'), 'changestomake.txt'),
     ]
-
-    for file_path, file_name in files_to_clean:
-        if os.path.exists(file_path):
-            open(file_path, 'w').close()
-            log_message(f"[Archivo] El archivo '{file_name}' ha sido limpiado.")
-        else:
-            log_message(f"[Advertencia] El archivo '{file_name}' no existe.")
+    limpiar_archivos(files_to_clean)
 
     # Configuración inicial de la base de datos
     agregar_salas_emergencia()
@@ -95,9 +103,12 @@ def main():
     print("---------------------------------------------------")
 
     try:
-        # Crear y empezar el hilo para verificar conexiones
+        # Crear y empezar los hilos para verificar y refrescar conexiones
         verificar_conexiones_thread = threading.Thread(target=verificar_conexiones_en_hilo, daemon=True)
         verificar_conexiones_thread.start()
+
+        refrescar_conexiones_thread = threading.Thread(target=refrescar_conexiones, daemon=True)
+        refrescar_conexiones_thread.start()
 
         while True:
             mostrar_menu()
