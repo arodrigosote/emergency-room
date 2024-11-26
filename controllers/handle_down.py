@@ -22,7 +22,7 @@ def verificar_conexiones():
                     unactive_connections.append(nodo_id)
                     desactivar_sala(destino_ip)
                     elegir_nodo_maestro()
-                    # distribuir_carga()
+                    distribuir_carga()
                         
         except Exception as e:
             log_message(f"[Error] {str(e)}")

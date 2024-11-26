@@ -21,7 +21,7 @@ import time
 def verificar_conexiones_en_hilo():
     while True:
         verificar_conexiones()
-        time.sleep(1)  # Ajusta el intervalo a 1 segundo
+        time.sleep(5)  # Ajusta el intervalo a 1 segundo
 
 def main():
     server_thread = threading.Thread(target=start_server, daemon=True)
