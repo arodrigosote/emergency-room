@@ -3,14 +3,14 @@ import threading
 from controllers.nodes import get_network_nodes, get_own_node
 from utils.menu import mostrar_menu, mostrar_menu_trabajador_social, mostrar_menu_doctor, realizar_accion_trabajador_social, realizar_accion_doctor, mostrar_menu_utilidades, realizar_accion_utilidades, mostrar_menu_utilidades, mostrar_menu_tablas, realizar_accion_tablas, mostrar_menu_admin, realizar_accion_admin
 from utils.log import log_message
-from controllers.server_client import start_server, connect_to_node, mostrar_conexiones, active_connections, elegir_nodo_maestro, verificar_conexiones
+from controllers.server_client import start_server, connect_to_node, mostrar_conexiones, active_connections, elegir_nodo_maestro
 from controllers.messages import enviar_mensaje_a_nodo, enviar_mensaje_a_todos
 from controllers.database import init_db, agregar_salas_emergencia, ejecutar_dbchanges
 from models.emergency_room import activar_sala, obtener_sala_y_cama
 from models.camas import agregar_camas
 from models.trabajadores import listar_trabajadores_sociales, agregar_trabajadores_sociales
 from models.doctors import agregar_doctores, listar_doctores_ocupados
-from models.node import solicitar_cambios_db
+from models.node import solicitar_cambios_db, verificar_conexiones
 import os
 import time
 

@@ -1,9 +1,10 @@
 import sqlite3
 from datetime import datetime
 from utils.log import log_message
-from controllers.server_client import get_client_socket_by_ip, active_connections  # Asegúrate de tener una función para obtener el socket del cliente
+from controllers.server_client import get_client_socket_by_ip, active_connections, unactive_connections, elegir_nodo_maestro  # Asegúrate de tener una función para obtener el socket del cliente
 from controllers.nodes import get_network_nodes, get_own_node
 from models.database import guardar_cambios_db_changestomake
+from models.emergency_room import desactivar_sala
 
 
 def obtener_nodo_propio(cursor, own_node_ip):
@@ -116,6 +117,39 @@ def solicitar_cambios_db():
                 respuestas = enviar_mensaje(master_socket, "13", "Solicitar cambios en la base de datos.")
                 guardar_cambios_db_changestomake(respuestas)
                 log_message("[Solicitar cambios] Se han solicitado los cambios en la base de datos.")
+
+    except Exception as e:
+        log_message(f"[Error] {str(e)}")
+
+def verificar_conexiones():
+    """Verifica las conexiones activas y recalcula el nodo maestro si es necesario."""
+    # print("Verificando conexiones...")
+    try:
+        nodos_red = get_network_nodes()
+        nodos_activos = list(active_connections.keys())
+
+        for nodo_id in nodos_activos:
+            # print(f"Verificando nodo {nodo_id}...")
+            client_socket = active_connections[nodo_id]
+            if client_socket.fileno() == -1:  # Verifica que el socket siga activo
+                nodo_ip = client_socket.getpeername()[0]
+                print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
+                log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
+                del active_connections[nodo_id]
+                unactive_connections.append(nodo_id)
+                
+                desactivar_sala(nodo_ip)
+
+                # redistribuir_carga(nodo_ip)
+
+                elegir_nodo_maestro()
+            else:
+                destino_ip = client_socket.getpeername()[0]
+                if destino_ip not in [nodo['ip'] for nodo in nodos_red]:
+                    log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
+                    print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
+                    del active_connections[nodo_id]
+                    elegir_nodo_maestro()
 
     except Exception as e:
         log_message(f"[Error] {str(e)}")
