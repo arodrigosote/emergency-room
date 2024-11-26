@@ -20,14 +20,16 @@ def main():
     server_thread = threading.Thread(target=start_server, daemon=True)
     server_thread.start()
 
-    # Hilo para verificar conexiones en un bucle infinito
     def run_verificar_conexiones():
+        """
+        Bucle que verifica las conexiones activas periódicamente.
+        """
+        log_message("[Hilo] Iniciando verificación de conexiones en bucle.")
         while True:
             verificar_conexiones()
-            time.sleep(1)  
+            time.sleep(1)  # Intervalo de verificación (en segundos)
 
-    verificar_conexiones_thread = threading.Thread(target=run_verificar_conexiones, daemon=True)
-    verificar_conexiones_thread.start()
+    
 
     init_db()
 
@@ -94,6 +96,9 @@ def main():
     print("|              Rodrigo Sotelo                     |")
     print("|                                                 |")
     print("---------------------------------------------------")
+
+    verificar_conexiones_thread = threading.Thread(target=run_verificar_conexiones, daemon=True)
+    verificar_conexiones_thread.start()
 
     try:
         while True:
