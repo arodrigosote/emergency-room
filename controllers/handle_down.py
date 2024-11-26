@@ -1,15 +1,7 @@
-import sqlite3
 from controllers.server_client import active_connections, elegir_nodo_maestro, unactive_connections
+from models.emergency_room import desactivar_sala
 from controllers.nodes import get_network_nodes
 from utils.log import log_message, log_database
-from models.node import procesar_consulta
-
-DB_PATH = 'nodos.db'
-
-
-# Función auxiliar para conexión a la base de datos
-def get_db_connection():
-    return sqlite3.connect(DB_PATH)
 
 def verificar_conexiones():
     """Verifica las conexiones activas y recalcula el nodo maestro si es necesario."""
@@ -44,22 +36,3 @@ def verificar_conexiones():
     except Exception as e:
         log_message(f"[Error] {str(e)}")
 
-def desactivar_sala(ip):
-    try:
-        with get_db_connection() as conn:
-            cursor = conn.cursor()
-            query = "UPDATE salas_emergencia SET estado = 'desactivada' WHERE ip = ?"
-            cursor.execute(query, (ip,))
-            conn.commit()
-            
-            log_database(f"# UPDATE salas_emergencia SET estado = 'desactivada' WHERE ip = '{ip}'")
-            log_message(f"[Consulta] Desactivación de sala de emergencia con IP '{ip}' guardada en la base de datos.")
-
-            cursor.execute("SELECT * FROM salas_emergencia WHERE ip = ?", (ip,))
-            nodo_propio = cursor.fetchone()
-
-            mensaje = f"UPDATE salas_emergencia SET estado = 'desactivada' WHERE ip = '{ip}'"
-
-            procesar_consulta(mensaje)
-    except sqlite3.Error as e:
-        log_message(f"[Error] No se pudo desactivar la sala: {e}")
