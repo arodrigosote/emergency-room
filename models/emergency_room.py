@@ -54,14 +54,15 @@ def activar_sala(ip):
 
 
 def desactivar_sala(ip):
+    print("Desactivando sala de emergencia...")
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
-            query = "UPDATE salas_emergencia SET estado = 'desactivada' WHERE ip = ?"
+            query = "UPDATE salas_emergencia SET estado = 'inactiva' WHERE ip = ?"
             cursor.execute(query, (ip,))
             conn.commit()
-            
-            log_database(f"# UPDATE salas_emergencia SET estado = 'desactivada' WHERE ip = '{ip}'")
+            print("Sala desactivada con éxito.")
+            log_database(f"# UPDATE salas_emergencia SET estado = 'inactiva' WHERE ip = '{ip}'")
             log_message(f"[Consulta] Desactivación de sala de emergencia con IP '{ip}' guardada en la base de datos.")
 
             cursor.execute("SELECT * FROM salas_emergencia WHERE ip = ?", (ip,))
