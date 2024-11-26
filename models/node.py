@@ -159,6 +159,7 @@ import sqlite3
 def calculo_distribucion(ip_sala):
     """Reasigna las visitas de una sala inactiva a camas en salas activas, priorizando la disponibilidad."""
     try:
+        print("Calculando distribución...")
         with sqlite3.connect('nodos.db') as conn:
             cursor = conn.cursor()
             
@@ -229,41 +230,58 @@ def calculo_distribucion(ip_sala):
                 id_nueva_sala, nueva_ip, nueva_cama_id = nueva_sala
 
                 # Actualizar la visita para asignarla a la nueva sala y cama
-                cursor.execute("""
+                consulta = """
                     UPDATE visitas_emergencia 
                     SET nodo_ip = ?, id_sala = ?, id_cama = ? 
                     WHERE id_visita = ?
-                """, (nueva_ip, id_nueva_sala, nueva_cama_id, id_visita))
+                """
+                cursor.execute(consulta, (nueva_ip, id_nueva_sala, nueva_cama_id, id_visita))
+                procesar_consulta(consulta)
+                log_database(f"# {consulta}")
 
                 # Actualizar estado de la cama asignada
-                cursor.execute("""
+                consulta = """
                     UPDATE camas 
                     SET estado = 'ocupada' 
                     WHERE id_cama = ?
-                """, (nueva_cama_id,))
+                """
+                cursor.execute(consulta, (nueva_cama_id,))
+                procesar_consulta(consulta)
+                log_database(f"# {consulta}")
 
                 # Liberar la cama anterior
-                cursor.execute("""
+                consulta = """
                     UPDATE camas 
                     SET estado = 'disponible' 
                     WHERE id_cama = ?
-                """, (id_cama,))
+                """
+                cursor.execute(consulta, (id_cama,))
+                procesar_consulta(consulta)
+                log_database(f"# {consulta}")
 
                 # Actualizar capacidad disponible en las salas
-                cursor.execute("""
+                consulta = """
                     UPDATE salas_emergencia 
                     SET capacidad_disponible = capacidad_disponible + 1 
                     WHERE id_sala = ?
-                """, (id_sala_origen,))
+                """
+                cursor.execute(consulta, (id_sala_origen,))
+                procesar_consulta(consulta)
+                log_database(f"# {consulta}")
                 
-                cursor.execute("""
+                consulta = """
                     UPDATE salas_emergencia 
                     SET capacidad_disponible = capacidad_disponible - 1 
                     WHERE id_sala = ?
-                """, (id_nueva_sala,))
+                """
+                cursor.execute(consulta, (id_nueva_sala,))
+                procesar_consulta(consulta)
+                log_database(f"# {consulta}")
 
                 conn.commit()
                 log_message(f"[Distribución] Visita {id_visita} reasignada a sala {nueva_ip} y cama {nueva_cama_id}.")
+                log_database(f"[Distribución] Visita {id_visita} reasignada a sala {nueva_ip} y cama {nueva_cama_id}.")
 
     except Exception as e:
         log_message(f"[Error] {str(e)}")
+        log_database(f"[Error] {str(e)}")
