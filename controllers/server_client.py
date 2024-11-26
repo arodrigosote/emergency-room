@@ -274,9 +274,10 @@ def verificar_conexiones():
             elegir_nodo_maestro()
 
     # Eliminar nodos inactivos del diccionario de conexiones activas
-    for node_id in conexiones_inactivas:
-        del active_connections[node_id]
-        log_message(f"[Conexión eliminada] Nodo {node_id} eliminado del diccionario de conexiones activas.")
+    if conexiones_inactivas:
+        for node_id in conexiones_inactivas:
+            del active_connections[node_id]
+            log_message(f"[Conexión eliminada] Nodo {node_id} eliminado del diccionario de conexiones activas.")
 
 
 
