@@ -17,9 +17,10 @@ def verificar_conexiones():
                     nodo_ip = client_socket.getpeername()[0]
                     print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                     log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
+                    client_socket.close()
                     del active_connections[nodo_id]
                     unactive_connections.append(nodo_id)
-                    
+                    print(unactive_connections)
                     # Agregar línea de registro para verificar la llamada a desactivar_sala
                     log_message(f"Llamando a desactivar_sala con IP: {nodo_ip}")
                     desactivar_sala(nodo_ip)
