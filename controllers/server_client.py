@@ -261,34 +261,28 @@ def get_client_socket_by_ip(ip):
     return active_connections.get(id, None)
 
 def verificar_conexiones():
-    """
-    Verifica las conexiones activas usando MSG_PEEK.
-    Si la conexión está inactiva, elimina el nodo de la lista de conexiones activas.
-    """
-    log_message("[Verificación] Iniciando verificación de conexiones...")
+    """Verifica las conexiones activas y recalcula el nodo maestro si es necesario."""
+    
+    try:
+        nodos_red = get_network_nodes()
+        nodos_activos = list(active_connections.keys())
 
-    conexiones_inactivas = []  # Lista para almacenar nodos inactivos
+        for nodo_id in nodos_activos:
+            try:
+                client_socket = active_connections[nodo_id]
+                if client_socket.fileno() == -1:  # Verifica si el socket sigue activo
+                    raise ConnectionError("Socket inactivo.")
+            except Exception as e:
+                log_message(f"[Conexión perdida] Nodo {nodo_id}: {e}")
+                conexiones_inactivas.append(nodo_id)
+                client_socket.close()
+                del active_connections[nodo_id]
+                elegir_nodo_maestro()
 
-    for node_id, client in list(active_connections.items()):  # Convertir a lista para evitar modificar durante la iteración
-        try:
-            # Intentamos usar MSG_PEEK para verificar actividad
-            client.send(b"", socket.MSG_PEEK)  # No modifica el socket ni espera respuesta
-            log_message(f"[Conexión activa] Nodo {node_id}.")
-        except (socket.error, OSError) as e:
-            # Si hay un error, la conexión está inactiva
-            log_message(f"[Conexión perdida] Nodo {node_id}. Error: {e}")
-            print(f"[Conexión perdida] Nodo {node_id}. Error: {e}")
-            conexiones_inactivas.append(node_id)
-            client.close()  # Cerramos el socket inactivo
-
-    # Eliminar nodos inactivos del diccionario de conexiones activas
-    for node_id in conexiones_inactivas:
-        del active_connections[node_id]
-        log_message(f"[Conexión eliminada] Nodo {node_id} eliminado del diccionario de conexiones activas.")
-
-    # Actualizar el nodo maestro
-    if conexiones_inactivas:
-        elegir_nodo_maestro()
+    except Exception as e:
+        log_message(f"[Error] {str(e)}")
+    
+    # return conexiones_cerradas
 
 
 
