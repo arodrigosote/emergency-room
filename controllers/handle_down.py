@@ -19,10 +19,7 @@ def verificar_conexiones():
                     log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                     client_socket.close()
                     unactive_connections.append(nodo_id)
-                    print(unactive_connections)
-                    # Agregar línea de registro para verificar la llamada a desactivar_sala
-                    log_message(f"Llamando a desactivar_sala con IP: {nodo_ip}")
-                    desactivar_sala(nodo_ip)
+
                     elegir_nodo_maestro()
 
                     
