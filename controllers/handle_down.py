@@ -22,7 +22,7 @@ def verificar_conexiones():
                 
                 desactivar_sala(nodo_ip)
 
-                # redistribuir_carga(nodo_ip)
+                # redistribuir_carga(nodo_ip)   #s
 
                 elegir_nodo_maestro()
             else:
