@@ -14,24 +14,16 @@ def verificar_conexiones():
             for nodo_id in nodos_activos:
                 # print(f"Verificando nodo {nodo_id}...")
                 client_socket = active_connections[nodo_id]
-                if client_socket.fileno() == -1:  # Verifica que el socket siga activo
+                destino_ip = client_socket.getpeername()[0]
+                if destino_ip not in [nodo['ip'] for nodo in nodos_red]:
+                    log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
                     print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
-                    client_socket.close()
-                    unactive_connections.append(nodo_id)
                     del active_connections[nodo_id]
-                    desactivar_sala(nodo_id)
-                else:
-                    destino_ip = client_socket.getpeername()[0]
-                    if destino_ip not in [nodo['ip'] for nodo in nodos_red]:
-                        log_message(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
-                        print(f"[Conexión perdida] Nodo {nodo_id} desconectado.")
-                        del active_connections[nodo_id]
-                        unactive_connections.append(nodo_id)
-                        desactivar_sala(destino_ip)
-                        elegir_nodo_maestro()
-                        distribuir_carga()
+                    unactive_connections.append(nodo_id)
+                    desactivar_sala(destino_ip)
+                    elegir_nodo_maestro()
+                    distribuir_carga()
                         
-
         except Exception as e:
             log_message(f"[Error] {str(e)}")
 
