@@ -7,7 +7,7 @@ from controllers.server_client import start_server, connect_to_node, mostrar_con
 from controllers.messages import enviar_mensaje_a_nodo, enviar_mensaje_a_todos
 from controllers.database import init_db, agregar_salas_emergencia, ejecutar_dbchanges
 from controllers.handle_down import verificar_conexiones
-from models.emergency_room import activar_sala, obtener_sala_y_cama
+from models.emergency_room import activar_sala, obtener_sala_y_cama, desactivar_sala
 from models.camas import agregar_camas
 from models.trabajadores import listar_trabajadores_sociales, agregar_trabajadores_sociales
 from models.doctors import agregar_doctores, listar_doctores_ocupados
@@ -21,9 +21,6 @@ import time
 def verificar_conexiones_en_hilo():
     while True:
         verificar_conexiones()
-        if unactive_connections:
-            for nodo_id in unactive_connections:
-                desactivar_sala(nodo_id)
         time.sleep(1)  # Ajusta el intervalo a 1 segundo
 
 def conectar_nodo(node):
