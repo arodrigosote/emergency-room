@@ -40,14 +40,6 @@ def conectar_nodo(node):
             active_connections[node_id] = conn
 
 
-def refrescar_conexiones():
-    """Refresca las conexiones de los nodos en caso de que se caigan."""
-    while not stop_event.is_set():
-        nodes = get_network_nodes()
-        with ThreadPoolExecutor(max_workers=10) as executor:
-            executor.map(conectar_nodo, nodes)
-        threading.Event().wait(10)  # Intervalo de 10 segundos para refrescar conexiones
-
 
 def main():
     server_thread = threading.Thread(target=start_server, daemon=True)
@@ -106,10 +98,6 @@ def main():
         # Crear y empezar el hilo para verificar conexiones
         verificar_conexiones_thread = threading.Thread(target=verificar_conexiones_en_hilo, daemon=True)
         verificar_conexiones_thread.start()
-
-        # Crear y empezar el hilo para refrescar conexiones
-        refrescar_conexiones_thread = threading.Thread(target=refrescar_conexiones, daemon=True)
-        refrescar_conexiones_thread.start()
 
         while True:
             mostrar_menu()
