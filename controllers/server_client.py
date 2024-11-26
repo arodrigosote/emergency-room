@@ -89,7 +89,7 @@ def handle_client(client_socket, addr):
 
                     # Enviar el contenido del archivo como respuesta
                     client_socket.send(db_changes.encode())
-                    log_message("[Master Mensaje enviado] Contenido del archivo 'db_changes' enviado.")
+                    log_message("[Cliente Mensaje enviado] Contenido del archivo 'db_changes' enviado.")
 
                 except FileNotFoundError:
                     log_message("[Error] El archivo 'db_changes' no se encontró en la carpeta 'history'")

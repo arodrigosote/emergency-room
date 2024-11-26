@@ -118,7 +118,7 @@ def cerrar_visita_emergencia(id_doctor):
 
         # Mostrar visitas de emergencia en curso y seleccionar una
         print("\nVisita de emergencia activa:")
-        print(f"ID Visita: {visita[0]}, Folio: {visita[1]}")
+        print(f"ID Visita: {visita}")
         
         id_visita = visita[0]
 
