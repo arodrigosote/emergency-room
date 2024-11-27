@@ -1,7 +1,0 @@
-01 - Cliente solicita a servidor que el servidor se conecte al cliente como cliente. 
-
-10 - Ejecutar query en todos los nodos y obtener consenso siendo nodo maestro
-
-11 - Ejecutar query enviando primero al nodo maestro para que este mande a los demas
-
-12 - Emparejar nueva conexion con los cambios hehcos en la base de datos

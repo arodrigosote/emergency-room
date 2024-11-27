@@ -99,7 +99,6 @@ def main():
         # verificar_conexiones_thread.start()
         while True:
             verificar_conexiones()
-            print(unactive_connection)
             mostrar_menu()
 
             try:
